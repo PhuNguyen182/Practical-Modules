@@ -6,43 +6,45 @@ using Microsoft.Extensions.Logging;
 using ZLogger;
 using ZLogger.Unity;
 
-namespace PracticalModules.Temps.Scripts;
-public class YourClass
+namespace PracticalModules.Temps.Scripts
 {
-    public void Foo()
+    public class YourClass
     {
-        Debug.Log("Hello, World!");
-    }
-}
-
-public class ExampleString : MonoBehaviour
-{
-    private void TestString()
-    {
-        string formattedString = ZString.Format("Hello {0} {1}", 1, 2);
-        string concatenatedString = ZString.Concat("Hello ", "World", "!");
-
-        using (var sb = ZString.CreateUtf8StringBuilder())
+        public void Foo()
         {
-            sb.Append("sdfsdf");
-            sb.AppendJoin(",", new List<string> { "1", "2", "3" });
-            string result = sb.ToString();
+            Debug.Log("Hello, World!");
         }
     }
 
-    private void TestLogger()
+    public class ExampleString : MonoBehaviour
     {
-        var loggerFactory = LoggerFactory.Create(logging =>
+        private void TestString()
         {
-            logging.SetMinimumLevel(LogLevel.Trace);
-            logging.AddZLoggerUnityDebug(); // log to UnityDebug
-        });
+            string formattedString = ZString.Format("Hello {0} {1}", 1, 2);
+            string concatenatedString = ZString.Concat("Hello ", "World", "!");
 
-        var x = loggerFactory.CreateLogger("");
-        var logger = loggerFactory.CreateLogger<YourClass>();
-        //logger.ZLogDebug("Hello, World!");
+            using (var sb = ZString.CreateUtf8StringBuilder())
+            {
+                sb.Append("sdfsdf");
+                sb.AppendJoin(",", new List<string> { "1", "2", "3" });
+                string result = sb.ToString();
+            }
+        }
 
-        var name = "foo";
-        logger.ZLogInformation($"Hello, {name}!");
+        private void TestLogger()
+        {
+            var loggerFactory = LoggerFactory.Create(logging =>
+            {
+                logging.SetMinimumLevel(LogLevel.Trace);
+                logging.AddZLoggerUnityDebug(); // log to UnityDebug
+            });
+
+            var x = loggerFactory.CreateLogger("");
+            var logger = loggerFactory.CreateLogger<YourClass>();
+            //logger.ZLogDebug("Hello, World!");
+
+            var name = "foo";
+            //logger.ZLogInformation($"Hello, {name}!");
+        }
     }
 }
