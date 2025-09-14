@@ -12,7 +12,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.Timers
         public int TicksPerSecond { get; private set; }
         public override bool IsFinished => !IsRunning;
 
-        public Action OnTick = delegate { };
+        public Action? OnTick = delegate { };
 
         public FrequencyTimer(int ticksPerSecond) : base(0) => CalculateTimeThreshold(ticksPerSecond);
 

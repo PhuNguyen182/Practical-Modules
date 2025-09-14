@@ -46,7 +46,7 @@ namespace PracticalModules.PlayerLoopServices.Core
                     RemoveTimeSystem<Update>(ref currentPlayerLoop);
                     RemoveTimeSystem<FixedUpdate>(ref currentPlayerLoop);
                     PlayerLoop.SetPlayerLoop(currentPlayerLoop);
-                    TimeServiceManager.Clear();
+                    FixedUpdateServiceManager.Clear();
                 }
             }
 #endif
@@ -81,13 +81,12 @@ namespace PracticalModules.PlayerLoopServices.Core
 
         private static void Update()
         {
-            TimeServiceManager.UpdateTime();
             UpdateServiceManager.UpdateTime();
         }
         
         private static void FixedUpdate()
         {
-            TimeServiceManager.FixedUpdateTime();
+            FixedUpdateServiceManager.FixedUpdateTime();
         }
     }
 }

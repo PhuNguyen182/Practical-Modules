@@ -1,5 +1,6 @@
 using System;
 using PracticalModules.PlayerLoopServices.Core.Handlers;
+using PracticalModules.PlayerLoopServices.UpdateServices;
 using UnityEngine;
 
 namespace PracticalModules.PlayerLoopServices.TimeServices.Timers
@@ -30,7 +31,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.Timers
             if (!IsRunning)
             {
                 IsRunning = true;
-                TimeServiceManager.RegisterUpdateHandler(this);
+                UpdateServiceManager.RegisterUpdateHandler(this);
                 OnTimerStart?.Invoke();
             }
         }
@@ -40,7 +41,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.Timers
             if (IsRunning)
             {
                 IsRunning = false;
-                TimeServiceManager.DeregisterUpdateHandler(this);
+                UpdateServiceManager.DeregisterUpdateHandler(this);
                 OnTimerStop?.Invoke();
             }
         }
@@ -74,7 +75,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.Timers
                 return;
 
             if (disposing)
-                TimeServiceManager.DeregisterUpdateHandler(this);
+                UpdateServiceManager.DeregisterUpdateHandler(this);
 
             _disposed = true;
         }
