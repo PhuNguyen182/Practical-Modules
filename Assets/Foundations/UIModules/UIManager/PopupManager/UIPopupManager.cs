@@ -87,17 +87,28 @@ namespace Foundations.UIModules.UIManager.PopupManager
 
         public void CloseAllPopups()
         {
-            
+            var popupIds = new List<string>(_activePopups.Keys);
+            foreach (var popupId in popupIds)
+            {
+                ClosePopup(popupId);
+            }
         }
 
         public void CloseAllPopupsExcept(string keepPopupId)
         {
-            
+            var popupIds = new List<string>(_activePopups.Keys);
+            foreach (var popupId in popupIds)
+            {
+                if (string.CompareOrdinal(popupId, keepPopupId) == 0)
+                    continue;
+
+                ClosePopup(popupId);
+            }
         }
 
         public BasePopupPresenter<TPopupViewData, TPresenterData> GetPopupInfo(string popupId)
         {
-            throw new NotImplementedException();
+            return _activePopups.GetValueOrDefault(popupId);
         }
 
         public bool IsPopupShown(string popupId)
