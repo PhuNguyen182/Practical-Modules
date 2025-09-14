@@ -3,14 +3,16 @@ using Foundations.UIModules.UIView;
 
 namespace Foundations.UIModules.UIPresenter
 {
-    public interface IUIPresenter : IUpdatePresenter
+    public interface IPresenterViewConverter<in TPresenterData, out TViewData>
     {
-        public IUIView View { get; }
+        public TViewData ConvertToView(TPresenterData presenterData);
     }
-
-    public interface IUIPresenter<T> : IUpdatePresenter<T>
+    
+    public interface IUIPresenter<TViewData, TPresenterData> : IUpdatePresenter<TPresenterData>, IPresenterShowable,
+        IPresenterViewConverter<TPresenterData, TViewData>, IPresenterHideable
     {
-        public Action<T> OnDataUpdated { get; set; }
-        public IUIView<T> View { get; }
+        public void SetActive(bool active);
+        public Action<TPresenterData> OnPresenterDataUpdated { get; set; }
+        public IUIView<TViewData> View { get; }
     }
 }

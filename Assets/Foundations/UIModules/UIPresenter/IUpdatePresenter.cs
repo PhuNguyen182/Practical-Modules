@@ -5,9 +5,9 @@
         public void UpdatePresenter();
     }
 
-    public interface IUpdatePresenter<T>
+    public interface IUpdatePresenter<TPresenterData>
     {
-        public T Data { get; }
-        public void UpdatePresenter(T data);
+        public TPresenterData PresenterData { get; }
+        public void UpdatePresenter(TPresenterData presenterData);
     }
 }

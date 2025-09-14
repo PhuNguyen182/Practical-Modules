@@ -1,16 +1,16 @@
-using Foundations.UIModules.UIPresenter;
+using System;
 
 namespace Foundations.UIModules.UIView
 {
-    public abstract class BaseUIViewGeneric<T>: BaseUIView, IUIView<T>, IPresentable<T>
+    public abstract class BaseUIView<TViewData>: BaseUIView, IUIView<TViewData>
     {
-        public T Data { get; private set; }
-        
-        public abstract IUIPresenter<T> Presenter { get; }
-        
-        public virtual void UpdateData(T data)
+        public TViewData ViewData { get; private set; }
+        public Action<TViewData> OnViewDataUpdated { get; set; }
+
+        public virtual void UpdateData(TViewData viewData)
         {
-            Data = data;
+            ViewData = viewData;
+            OnViewDataUpdated?.Invoke(ViewData);
         }
     }
 }
