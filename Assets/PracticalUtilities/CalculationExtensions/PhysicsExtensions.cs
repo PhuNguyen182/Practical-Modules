@@ -8,14 +8,14 @@ namespace PracticalUtilities.CalculationExtensions
             rigidbody.maxLinearVelocity = maxMagnitude;
 
         public static Vector3 GetFlatVelocity(this Rigidbody rigidbody) =>
-            rigidbody.velocity.x * Vector3.right + rigidbody.velocity.z * Vector3.forward;
+            rigidbody.linearVelocity.x * Vector3.right + rigidbody.linearVelocity.z * Vector3.forward;
 
         public static float GetSquaredFlatSpeed(this Rigidbody rigidbody)
         {
-            Vector3 flatVelocity = rigidbody.velocity.x * Vector3.right + rigidbody.velocity.z * Vector3.forward;
+            Vector3 flatVelocity = rigidbody.linearVelocity.x * Vector3.right + rigidbody.linearVelocity.z * Vector3.forward;
             return flatVelocity.sqrMagnitude;
         }
 
-        public static float GetSquaredSpeed(this Rigidbody rigidbody) => rigidbody.velocity.sqrMagnitude;
+        public static float GetSquaredSpeed(this Rigidbody rigidbody) => rigidbody.linearVelocity.sqrMagnitude;
     }
 }
