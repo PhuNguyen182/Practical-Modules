@@ -8,6 +8,7 @@
     "com.cysharp.zstring": "2.6.0",
     "com.github-glitchenzo.nugetforunity": "4.5.0",
     "com.gustavopsantos.reflex": "12.0.2",
+    "com.kyrylokuzyk.primetween": "file:../Assets/Plugins/PrimeTween/internal/com.kyrylokuzyk.primetween.tgz",
     "com.unity.addressables": "2.7.2",
     "com.unity.collab-proxy": "2.9.3",
     "com.unity.feature.2d": "2.0.1",
