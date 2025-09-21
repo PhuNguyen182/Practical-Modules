@@ -17,16 +17,16 @@ public class SimpleObjectPool : IDisposable
     // pluck an object from the start or middle of the array.
     // We'll always just grab the last one, which eliminates
     // any need to shuffle the objects around in memory.
-    private readonly Queue<GameObject> _inactive;
+    private Queue<GameObject> InactiveGameObjects { get; }
 
     //A Hashset which contains all GetInstanceIDs from the instantiated GameObjects 
     //so we know which GameObject is a member of this pool.
-    public readonly HashSet<int> MemberIDs;
+    public HashSet<int> MemberIDs { get; }
 
     // The prefab that we are pooling
     private readonly GameObject _prefab;
 
-    public int StackCount => _inactive.Count;
+    public int StackCount => InactiveGameObjects.Count;
 
     // Constructor
     public SimpleObjectPool(GameObject prefab, int initialQuantity)
@@ -36,7 +36,7 @@ public class SimpleObjectPool : IDisposable
         // If Stack uses a linked list internally, then this
         // whole initialQty thing is a placebo that we could
         // strip out for more minimal code. But it can't *hurt*.
-        _inactive = new(initialQuantity);
+        InactiveGameObjects = new(initialQuantity);
         MemberIDs = new();
     }
 
@@ -51,7 +51,7 @@ public class SimpleObjectPool : IDisposable
             // AddUpdateBehaviour the unique GameObject ID to our MemberHashset so we know this GO belongs to us.
             MemberIDs.Add(gameObject.GetInstanceID());
             gameObject.SetActive(false);
-            _inactive.Enqueue(gameObject);
+            InactiveGameObjects.Enqueue(gameObject);
         }
     }
 
@@ -61,7 +61,7 @@ public class SimpleObjectPool : IDisposable
         while (true)
         {
             GameObject gameObject;
-            if (_inactive.Count == 0)
+            if (InactiveGameObjects.Count == 0)
             {
                 // We don't have an object in our pool, so we
                 // instantiate a whole new object.
@@ -74,7 +74,7 @@ public class SimpleObjectPool : IDisposable
             else
             {
                 // Grab the last object in the inactive array
-                gameObject = _inactive.Dequeue();
+                gameObject = InactiveGameObjects.Dequeue();
 
                 if (!gameObject)
                 {
@@ -112,12 +112,12 @@ public class SimpleObjectPool : IDisposable
             return;
 
         gameObject.SetActive(false);
-        _inactive.Enqueue(gameObject);
+        InactiveGameObjects.Enqueue(gameObject);
     }
 
     public void Dispose()
     {
-        _inactive.Clear();
+        InactiveGameObjects.Clear();
         MemberIDs.Clear();
     }
 }

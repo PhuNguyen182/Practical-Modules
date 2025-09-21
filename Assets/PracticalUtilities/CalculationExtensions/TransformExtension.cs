@@ -42,16 +42,34 @@ namespace PracticalUtilities.CalculationExtensions
             transform.SetParent(parent);
         }
 
-        public static bool TryGetChildComponent<T>(this Transform transform, int childIndex, out T component)
+        public static bool TryGetChildComponent<T>(this Transform transform, out T component, int childIndex)
             where T : Component
         {
+            component = null;
             if (transform.childCount == 0 || childIndex >= transform.childCount)
-            {
-                component = null;
                 return false;
-            }
 
-            return transform.GetChild(childIndex).TryGetComponent<T>(out component);
+            return transform.GetChild(childIndex).TryGetComponent(out component);
+        }
+
+        public static bool TryGetChildComponent<T>(this Transform transform, out T component, params int[] childIndexes)
+            where T : Component
+        {
+            component = null;
+            if (transform.childCount == 0)
+                return false;
+
+            Transform checkinParent = transform;
+            for (int i = 0; i < childIndexes.Length; i++)
+            {
+                int childIndex = childIndexes[i];
+                if (checkinParent.childCount == 0 || childIndex >= checkinParent.childCount)
+                    return false;
+                
+                checkinParent = checkinParent.GetChild(childIndex);
+            }
+            
+            return checkinParent.TryGetComponent(out component);
         }
     }
 }
