@@ -15,22 +15,38 @@ MonoBehaviour:
   m_DefaultGroup: 257d662cbbe08114ba74a4c0969792be
   m_currentHash:
     serializedVersion: 2
-    Hash: 5d971ff64340febc917b371bba3f9c2f
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 1
-  m_BundleLocalCatalog: 0
   m_CatalogRequestsTimeout: 10
   m_DisableCatalogUpdateOnStart: 0
+  m_InternalIdNamingMode: 0
+  m_InternalBundleIdMode: 1
+  m_AssetLoadMode: 0
+  m_BundledAssetProviderType:
+    m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.BundledAssetProvider
+  m_AssetBundleProviderType:
+    m_AssemblyName: Unity.ResourceManager, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    m_ClassName: UnityEngine.ResourceManagement.ResourceProviders.AssetBundleProvider
   m_IgnoreUnsupportedFilesInBuild: 0
   m_UniqueBundleIds: 0
+  m_EnableJsonCatalog: 0
   m_NonRecursiveBuilding: 1
+  m_AllowNestedBundleFolders: 0
   m_CCDEnabled: 0
   m_maxConcurrentWebRequests: 3
+  m_UseUWRForLocalBundles: 0
+  m_BundleTimeout: 0
+  m_BundleRetryCount: 0
+  m_BundleRedirectLimit: -1
+  m_SharedBundleSettings: 0
+  m_SharedBundleSettingsCustomGroupIndex: 0
   m_ContiguousBundles: 1
   m_StripUnityVersionFromBundleBuild: 1
   m_DisableVisibleSubAssetRepresentations: 1
-  m_ShaderBundleNaming: 0
-  m_ShaderBundleCustomNaming: 
+  m_BuiltInBundleNaming: 0
+  mBuiltInBundleCustomNaming: 
   m_MonoScriptBundleNaming: 1
   m_CheckForContentUpdateRestrictionsOption: 0
   m_MonoScriptBundleCustomNaming: 
@@ -48,8 +64,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bdd2519805ae09a4d806640863e568c8, type: 2}
   - {fileID: 11400000, guid: 1b225dd1e81eae348abf48f1b8ccc2de, type: 2}
   m_BuildSettings:
-    m_CompileScriptsInVirtualMode: 0
-    m_CleanupStreamingAssetsAfterBuilds: 1
     m_LogResourceManagerExceptions: 1
     m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
   m_ProfileSettings:
@@ -59,13 +73,15 @@ MonoBehaviour:
       m_ProfileName: Default
       m_Values:
       - m_Id: 0dfe2e1bcbf4157409901cd0df317cd8
-        m_Value: ServerData/[BuildTarget]
+        m_Value: 'ServerData/[BuildTarget]'
       - m_Id: 45e2c3ffaeac4ce41a2c97dec6cd55a5
-        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
+        m_Value: 'http://[PrivateIpAddress]:[HostingServicePort]'
       - m_Id: 58d2f9a30275f00479694545f4c5cf33
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 63015f20ea913c148b704b768b2028fb
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: c4f52546545ff044dad94124260c4649
+        m_Value: '[UnityEditor.PlayerSettings.bundleVersion]'
       - m_Id: cd579bee147e7984bb16266a9f5c1744
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
     - m_InheritedParent: 
@@ -73,13 +89,15 @@ MonoBehaviour:
       m_ProfileName: Android
       m_Values:
       - m_Id: 0dfe2e1bcbf4157409901cd0df317cd8
-        m_Value: ServerData/[BuildTarget]
+        m_Value: 'ServerData/[BuildTarget]'
       - m_Id: 45e2c3ffaeac4ce41a2c97dec6cd55a5
-        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
+        m_Value: 'http://[PrivateIpAddress]:[HostingServicePort]'
       - m_Id: 58d2f9a30275f00479694545f4c5cf33
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 63015f20ea913c148b704b768b2028fb
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: c4f52546545ff044dad94124260c4649
+        m_Value: '[UnityEditor.PlayerSettings.bundleVersion]'
       - m_Id: cd579bee147e7984bb16266a9f5c1744
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
     - m_InheritedParent: 
@@ -87,13 +105,15 @@ MonoBehaviour:
       m_ProfileName: iOS
       m_Values:
       - m_Id: 0dfe2e1bcbf4157409901cd0df317cd8
-        m_Value: ServerData/[BuildTarget]
+        m_Value: 'ServerData/[BuildTarget]'
       - m_Id: 45e2c3ffaeac4ce41a2c97dec6cd55a5
-        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
+        m_Value: 'http://[PrivateIpAddress]:[HostingServicePort]'
       - m_Id: 58d2f9a30275f00479694545f4c5cf33
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 63015f20ea913c148b704b768b2028fb
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: c4f52546545ff044dad94124260c4649
+        m_Value: '[UnityEditor.PlayerSettings.bundleVersion]'
       - m_Id: cd579bee147e7984bb16266a9f5c1744
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
     - m_InheritedParent: 
@@ -101,13 +121,15 @@ MonoBehaviour:
       m_ProfileName: Windows
       m_Values:
       - m_Id: 0dfe2e1bcbf4157409901cd0df317cd8
-        m_Value: ServerData/[BuildTarget]
+        m_Value: 'ServerData/[BuildTarget]'
       - m_Id: 45e2c3ffaeac4ce41a2c97dec6cd55a5
-        m_Value: http://[PrivateIpAddress]:[HostingServicePort]
+        m_Value: 'http://[PrivateIpAddress]:[HostingServicePort]'
       - m_Id: 58d2f9a30275f00479694545f4c5cf33
         m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
       - m_Id: 63015f20ea913c148b704b768b2028fb
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+      - m_Id: c4f52546545ff044dad94124260c4649
+        m_Value: '[UnityEditor.PlayerSettings.bundleVersion]'
       - m_Id: cd579bee147e7984bb16266a9f5c1744
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
     m_ProfileEntryNames:
@@ -122,6 +144,9 @@ MonoBehaviour:
       m_InlineUsage: 0
     - m_Id: 63015f20ea913c148b704b768b2028fb
       m_Name: Local.LoadPath
+      m_InlineUsage: 0
+    - m_Id: c4f52546545ff044dad94124260c4649
+      m_Name: PlayerVersion
       m_InlineUsage: 0
     - m_Id: cd579bee147e7984bb16266a9f5c1744
       m_Name: BuildTarget
@@ -145,9 +170,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a4a6598fd7f4b504cb2d2f24af38a242, type: 2}
   - {fileID: 11400000, guid: 507044887b4d8894c89a8d99197395b3, type: 2}
   m_ActiveProfileId: db8e942466f792748bff54ee83d7879e
-  m_HostingServicesManager:
-    m_HostingServiceInfos: []
-    m_Settings: {fileID: 11400000}
-    m_NextInstanceId: 0
-    m_RegisteredServiceTypeRefs: []
-    m_PingTimeoutInMilliseconds: 5000
