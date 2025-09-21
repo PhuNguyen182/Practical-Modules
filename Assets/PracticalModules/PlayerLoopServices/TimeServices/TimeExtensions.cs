@@ -77,15 +77,17 @@ namespace PracticalModules.PlayerLoopServices.TimeServices
             return epoch.AddMilliseconds(timestamp).ToLocalTime();
         }
 
-        public static bool IsNewDay(DateTime dateTime)
+        public static bool IsNewDay(DateTime targetTime, bool useUtc = false)
         {
-            if (dateTime.Year > DateTime.Now.Year)
-                return true;
+            DateTime currentTime = useUtc ? DateTime.UtcNow : DateTime.Now;
+            int diffDayCount = GetDiffDayCount(currentTime, targetTime);
+            return diffDayCount > 0;
+        }
 
-            if (dateTime.Month > DateTime.Now.Month)
-                return true;
-
-            return dateTime.Day > DateTime.Now.Day;
+        public static int GetDiffDayCount(DateTime start, DateTime end)
+        {
+            TimeSpan offset = end.Subtract(start);
+            return offset.Days;
         }
     }
 }
