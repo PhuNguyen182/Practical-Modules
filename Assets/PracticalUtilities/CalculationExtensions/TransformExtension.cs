@@ -52,24 +52,24 @@ namespace PracticalUtilities.CalculationExtensions
             return transform.GetChild(childIndex).TryGetComponent(out component);
         }
 
-        public static bool TryGetChildComponent<T>(this Transform transform, out T component, params int[] childIndexes)
-            where T : Component
+        public static bool TryGetChildComponent<T>(this Transform transform, out T component,
+            params int[] hierarchyIndexes) where T : Component
         {
             component = null;
             if (transform.childCount == 0)
                 return false;
 
-            Transform checkinParent = transform;
-            for (int i = 0; i < childIndexes.Length; i++)
+            Transform checkinTransform = transform;
+            for (int i = 0; i < hierarchyIndexes.Length; i++)
             {
-                int childIndex = childIndexes[i];
-                if (checkinParent.childCount == 0 || childIndex >= checkinParent.childCount)
+                int childIndex = hierarchyIndexes[i];
+                if (checkinTransform.childCount == 0 || childIndex >= checkinTransform.childCount)
                     return false;
-                
-                checkinParent = checkinParent.GetChild(childIndex);
+
+                checkinTransform = checkinTransform.GetChild(childIndex);
             }
-            
-            return checkinParent.TryGetComponent(out component);
+
+            return checkinTransform.TryGetComponent(out component);
         }
     }
 }
