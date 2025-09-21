@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
 using Foundations.UIModules.UIManager.UICanvases;
-using PracticalModules.Patterns.SimpleObjectPooling;
 using Foundations.UIModules.Popups;
 
 namespace Foundations.UIModules.UIManager.PopupManager
