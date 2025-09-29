@@ -1,0 +1,58 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Android;
+using Newtonsoft.Json;
+using UnityEngine.Pool;
+
+namespace FatalAid.ApplicationExitTracker
+{
+    public class ApplicationExitController
+    {
+        private const int MaxHistoryCount = 30;
+
+        /// <summary>
+        /// This method is only available on Android. Use this at the time the game started to retrieve application exit info history.
+        /// </summary>
+        /// <param name="maxHistoryCount"></param>
+        public void ExportExitInfoHistory(int maxHistoryCount = MaxHistoryCount)
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            string packageName = Application.identifier;
+            IApplicationExitInfo[] history =
+                ApplicationExitInfoProvider.GetHistoricalProcessExitInfo(packageName, pid: 0, maxHistoryCount);
+
+            using var listPool = ListPool<ExitInfoRecord>.Get(out var exitInfoRecords);
+            foreach (var record in history)
+            {
+                exitInfoRecords.Add(new()
+                {
+                    description = record.description,
+                    describeContents = record.describeContents,
+                    definingUid = record.definingUid,
+                    importance = record.importance,
+                    packageUid = record.packageUid,
+                    pid = record.pid,
+                    processName = record.processName,
+                    processStateSummary = record.processStateSummary,
+                    pss = record.pss,
+                    realUid = record.realUid,
+                    reason = record.reason,
+                    rss = record.rss,
+                    status = record.status,
+                    timestamp = record.timestamp,
+                    trace = record.trace,
+                    traceAsString = record.traceAsString,
+                });
+            }
+            
+            ExitRecord exitRecord = new()
+            {
+                exitInfoRecords = exitInfoRecords
+            };
+
+            string recordJson = JsonConvert.SerializeObject(exitRecord);
+            Debug.Log($"Application exit info: {recordJson}");
+#endif
+        }
+    }
+}
