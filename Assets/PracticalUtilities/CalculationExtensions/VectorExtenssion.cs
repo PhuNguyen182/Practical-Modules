@@ -55,7 +55,6 @@ namespace PracticalUtilities.CalculationExtensions
         /// <param name="vector"></param>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        /// <param name="z"></param>
         /// <returns></returns>
         public static Vector2 FasterAdd(this Vector2 vector, float x = 0, float y = 0)
         {
