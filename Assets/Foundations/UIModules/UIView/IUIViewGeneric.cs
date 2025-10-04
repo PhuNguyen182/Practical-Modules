@@ -1,10 +1,11 @@
 using System;
-using Foundations.UIModules.UIPresenter;
 
 namespace Foundations.UIModules.UIView
 {
     public interface IUIView<TViewData> : IUIView, IViewUpdater<TViewData>
     {
-        public Action<TViewData> OnViewDataUpdated { get; set; }
+        // Events for user interactions with specific data context
+        public event Action<TViewData> OnUserInteraction;
+        public event Action<TViewData> OnViewDataUpdated;
     }
 }
