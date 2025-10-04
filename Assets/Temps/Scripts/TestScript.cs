@@ -8,16 +8,16 @@ using Random = UnityEngine.Random;
 public class TestScript : MonoBehaviour
 {
     public int count = 10000;
-    public Vector3[] positions;
+    public Vector3Int[] positions;
     [FormerlySerializedAs("a")] public float fullValue;
     [FormerlySerializedAs("b")] public float separate;
     
     private void Start()
     {
-        positions = new Vector3[count];
+        positions = new Vector3Int[count];
         for (int i = 0; i < count; i++)
         {
-            positions[i] = Random.insideUnitSphere;
+            positions[i] = Vector3Int.one;
         }
     }
 
@@ -47,7 +47,7 @@ public class TestScript : MonoBehaviour
         float time = Time.realtimeSinceStartup;
         for (int i = 0; i < count; i++)
         {
-            positions[i] += Vector3.one;
+            positions[i] += Vector3Int.one;
         }
 
         fullValue = Time.realtimeSinceStartup - time;
@@ -58,7 +58,7 @@ public class TestScript : MonoBehaviour
         float time = Time.realtimeSinceStartup;
         for (int i = 0; i < count; i++)
         {
-            positions[i] = positions[i].FasterAdd(Vector3.one);
+            positions[i] = positions[i].FasterAdd(1, 1, 1);
         }
         
         separate = Time.realtimeSinceStartup - time;

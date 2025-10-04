@@ -35,9 +35,25 @@ namespace PracticalUtilities.CalculationExtensions
             vector.z += z;
             return vector;
         }
+        
+        /// <summary>
+        /// Use this instead of adding normal Vector3 for performance. It's ~25 - 30 % faster. Use this version if you want to add separated values, and optimization is the top priority.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
+        public static Vector3Int FasterAdd(this Vector3Int vector, int x = 0, int y = 0, int z = 0)
+        {
+            vector.x += x;
+            vector.y += y;
+            vector.z += z;
+            return vector;
+        }
 
         /// <summary>
-        /// Use this instead of adding normal Vector3 for performance. It's ~17 - 18 % faster. Use this version if you want to add optimizing for performance in an efficiency sense'.
+        /// Use this instead of adding normal Vector3 for performance. It's ~16 - 17 % faster. Use this version if you want to add optimizing for performance in an efficiency sense'.
         /// </summary>
         /// <param name="vector"></param>
         /// <param name="value"></param>
@@ -50,7 +66,7 @@ namespace PracticalUtilities.CalculationExtensions
         }
         
         /// <summary>
-        /// Use this instead of adding normal Vector3 for performance. It's ~25 - 30 % faster. Use this version if you want to add separated values, and optimization is the top priority.
+        /// Use this instead of adding normal Vector3 for performance. It's ~22 - 24 % faster. Use this version if you want to add separated values, and optimization is the top priority.
         /// </summary>
         /// <param name="vector"></param>
         /// <param name="x"></param>
@@ -63,7 +79,7 @@ namespace PracticalUtilities.CalculationExtensions
             return vector;
         }
         
-        public static Vector3 Quantize(this Vector3Int vector, Vector3 quantization)
+        public static Vector3 Quantize(this Vector3Int vector, Vector3 quantization = default)
         {
             Vector3 scaleVector = new()
             {
@@ -73,6 +89,20 @@ namespace PracticalUtilities.CalculationExtensions
             };
             
             Vector3 quantizedVector = Vector3.Scale(quantization, scaleVector);
+            return quantizedVector;
+        }
+
+        public static Vector3 Quantize(this Vector3Int vector, float xQuantization = 0, float yQuantization = 0,
+            float zQuantization = 0)
+        {
+            Vector3 scaleVector = new()
+            {
+                x = Mathf.Floor(vector.x / xQuantization),
+                y = Mathf.Floor(vector.y / yQuantization),
+                z = Mathf.Floor(vector.z / zQuantization)
+            };
+
+            Vector3 quantizedVector = Vector3.Scale(new(xQuantization, yQuantization, zQuantization), scaleVector);
             return quantizedVector;
         }
     }

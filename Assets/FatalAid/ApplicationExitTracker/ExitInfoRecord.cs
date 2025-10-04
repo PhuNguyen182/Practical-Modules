@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine.Android;
 
 namespace FatalAid.ApplicationExitTracker
@@ -23,11 +22,5 @@ namespace FatalAid.ApplicationExitTracker
         public long timestamp;
         public byte[] trace;
         public string traceAsString;
-    }
-
-    [Serializable]
-    public struct ExitRecord
-    {
-        public List<ExitInfoRecord> exitInfoRecords;
     }
 }

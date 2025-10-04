@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+#if UNITY_ANDROID && !UNITY_EDITOR && DEVELOPMENT_BUILD
 using UnityEngine;
 using UnityEngine.Android;
 using Newtonsoft.Json;
 using UnityEngine.Pool;
+#endif
 
 namespace FatalAid.ApplicationExitTracker
 {
@@ -16,7 +17,7 @@ namespace FatalAid.ApplicationExitTracker
         /// <param name="maxHistoryCount">Maximum number of records that could be included in the report</param>
         public void ReportExitInfoHistory(int maxHistoryCount = MaxHistoryCount)
         {
-#if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR && DEVELOPMENT_BUILD
             string packageName = Application.identifier;
             IApplicationExitInfo[] history =
                 ApplicationExitInfoProvider.GetHistoricalProcessExitInfo(packageName, pid: 0, maxHistoryCount);
@@ -45,7 +46,7 @@ namespace FatalAid.ApplicationExitTracker
                 });
             }
             
-            ExitRecord exitRecord = new()
+            ApplicationExitRecord exitRecord = new()
             {
                 exitInfoRecords = exitInfoRecords
             };
