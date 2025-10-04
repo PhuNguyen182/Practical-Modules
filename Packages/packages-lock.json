@@ -26,7 +26,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "d887c10ac0e13e0c2e57b03c57aafb54358c428d"
+      "hash": "f59785046a36605378e18678af15ee66549aa26b"
     },
     "com.cysharp.zlogger": {
       "version": "https://github.com/Cysharp/ZLogger.git?path=src/ZLogger.Unity/Assets/ZLogger.Unity",
@@ -50,7 +50,7 @@
       "url": "https://package.openupm.com"
     },
     "com.gustavopsantos.reflex": {
-      "version": "12.0.2",
+      "version": "13.0.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -159,7 +159,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.addressables": {
-      "version": "2.7.2",
+      "version": "2.7.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -169,7 +169,7 @@
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0",
-        "com.unity.scriptablebuildpipeline": "2.4.1",
+        "com.unity.scriptablebuildpipeline": "2.4.2",
         "com.unity.modules.unitywebrequestassetbundle": "1.0.0"
       },
       "url": "https://packages.unity.com"
@@ -282,7 +282,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.profiling.core": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -332,7 +332,7 @@
       }
     },
     "com.unity.scriptablebuildpipeline": {
-      "version": "2.4.1",
+      "version": "2.4.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -358,7 +358,7 @@
       }
     },
     "com.unity.test-framework": {
-      "version": "1.5.1",
+      "version": "1.6.0",
       "depth": 0,
       "source": "builtin",
       "dependencies": {

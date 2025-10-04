@@ -13,8 +13,8 @@ namespace FatalAid.ApplicationExitTracker
         /// <summary>
         /// This method is only available on Android. Use this at the time the game started to retrieve application exit info history.
         /// </summary>
-        /// <param name="maxHistoryCount"></param>
-        public void ExportExitInfoHistory(int maxHistoryCount = MaxHistoryCount)
+        /// <param name="maxHistoryCount">Maximum number of records that could be included in the report</param>
+        public void ReportExitInfoHistory(int maxHistoryCount = MaxHistoryCount)
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
             string packageName = Application.identifier;
