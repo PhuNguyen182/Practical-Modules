@@ -1,19 +1,21 @@
 using PracticalModules.Patterns.Factory;
-using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Data;
 using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.TimeSchedulerComponent;
+using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Data;
 
 namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.TimeFactory
 {
-    public class CountdownTimerFactory : IFactory<TimeSchedulerConfig, CountdownTimer>
+    public class CountdownTimerFactory : BaseFactory<TimeSchedulerConfig, CountdownTimer>
     {
-        public CountdownTimer Produce(TimeSchedulerConfig config)
+        public override CountdownTimer Produce(TimeSchedulerConfig config)
         {
-            return new CountdownTimer(config.Key, config.Duration);
+            CountdownTimer countdownTimer = new(config.Key, config.Duration);
+            return countdownTimer;
         }
 
         public CountdownTimer ProduceFromSaveData(CountdownTimerData data)
         {
-            return new CountdownTimer(data);
+            CountdownTimer countdownTimer = new(data);
+            return countdownTimer;
         }
     }
 }
