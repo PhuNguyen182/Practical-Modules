@@ -11,7 +11,7 @@ using UnityEditor;
 
 namespace PracticalModules.PlayerLoopServices.Core
 {
-    public static class PlayerLoopBoostrapper
+    public static class PlayerLoopBootstrapper
     {
         private static PlayerLoopSystem _playerLoopSystem;
 
