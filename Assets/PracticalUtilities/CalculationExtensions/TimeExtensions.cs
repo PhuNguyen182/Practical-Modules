@@ -96,24 +96,21 @@ namespace PracticalUtilities.CalculationExtensions
         
         public static string ToShortReadableString(TimeSpan timeSpan, bool withCharacters = false)
         {
-            if (timeSpan.TotalDays < 1)
-                return ToHhMmSs(timeSpan, withCharacters);
-
-            if (timeSpan.TotalDays < 30)
-                return ToDaysAndHours(timeSpan, withCharacters);
-
-            if (timeSpan.TotalDays < 365)
-                return ToMonthAndDays(timeSpan, withCharacters);
-
-            return ToYearAndMonths(timeSpan, withCharacters);
+            return timeSpan.TotalDays switch
+            {
+                < 1 => ToHoursMinutesSeconds(timeSpan, withCharacters),
+                < 30 => ToDaysAndHours(timeSpan, withCharacters),
+                < 365 => ToMonthAndDays(timeSpan, withCharacters),
+                _ => ToYearAndMonths(timeSpan)
+            };
         }
         
-        public static string ToHhMm(TimeSpan timeSpan, bool withCharacters = false)
+        public static string ToHoursMinutes(TimeSpan timeSpan, bool withCharacters = false)
             => withCharacters
                 ? $"{timeSpan.Hours:D2}h:{timeSpan.Minutes:D2}m"
                 : $"{timeSpan.Hours:D2}:{timeSpan.Minutes:D2}";
 
-        public static string ToHhMmSs(TimeSpan timeSpan, bool withCharacters = false)
+        public static string ToHoursMinutesSeconds(TimeSpan timeSpan, bool withCharacters = false)
             => withCharacters
                 ? $"{timeSpan.Hours:D2}h:{timeSpan.Minutes:D2}m:{timeSpan.Seconds:D2}s"
                 : $"{timeSpan.Hours:D2}:{timeSpan.Minutes:D2}:{timeSpan.Seconds:D2}";
@@ -122,7 +119,7 @@ namespace PracticalUtilities.CalculationExtensions
         {
             int days = timeSpan.Days;
             int hours = timeSpan.Hours;
-            return hours > 0 ? $"{days}d{hours}h" : ToHhMm(timeSpan, withCharacters);
+            return hours > 0 ? $"{days}d{hours}h" : ToHoursMinutes(timeSpan, withCharacters);
         }
 
         public static string ToMonthAndDays(TimeSpan timeSpan, bool withCharacters = false)
@@ -132,7 +129,7 @@ namespace PracticalUtilities.CalculationExtensions
             return days > 0 ? $"{months}m{days}d" : ToDaysAndHours(timeSpan, withCharacters);
         }
         
-        public static string ToYearAndMonths(TimeSpan timeSpan, bool withCharacters = false)
+        public static string ToYearAndMonths(TimeSpan timeSpan)
         {
             int years = timeSpan.Days / 365;
             int monthsLeft = (timeSpan.Days % 365) / 30;
@@ -141,10 +138,7 @@ namespace PracticalUtilities.CalculationExtensions
             if (daysLeft > 0)
                 return $"{years}y{monthsLeft}m{daysLeft}d";
             
-            if (monthsLeft > 0)
-                return $"{years}y{monthsLeft}m";
-            
-            return $"{years}y";
+            return monthsLeft > 0 ? $"{years}y{monthsLeft}m" : $"{years}y";
         }
 
         #endregion
