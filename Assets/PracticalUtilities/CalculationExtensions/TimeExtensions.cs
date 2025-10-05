@@ -35,9 +35,9 @@ namespace PracticalUtilities.CalculationExtensions
 
         public static long GetCurrentLocalTimestampInSeconds() => DateTimeToUnixSeconds(CurrentTime);
 
-        public static long GetCurrentUtcTimestampInSeconds() => DateTimeToUnixSeconds(DateTime.UtcNow);
+        public static long GetCurrentUtcTimestampInSeconds() => DateTimeToUnixSeconds(CurrentUtcTime);
 
-        public static long GetCurrentLocalTimestampInMilliseconds() => DateTimeToUnixMilliseconds(DateTime.Now);
+        public static long GetCurrentLocalTimestampInMilliseconds() => DateTimeToUnixMilliseconds(CurrentTime);
 
         public static long GetCurrentUtcTimestampInMilliseconds() => DateTimeToUnixMilliseconds(CurrentUtcTime);
 
