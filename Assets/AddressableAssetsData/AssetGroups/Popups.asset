@@ -11,15 +11,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
   m_Name: Popups
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Popups
-  m_Data:
-    m_SerializedData: []
-  m_GUID: a8f91c66021c8ca418954947385dd89f
+  m_GUID: a26670d0c785f5f4db6ddd906ce3c78d
   m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 682f1dd04fad2764daa5c03261f15810, type: 2}
   m_SchemaSet:
-    m_Schemas:
-    - {fileID: 11400000, guid: 0d598b511028c9b4190cc2d00f949e95, type: 2}
-    - {fileID: 11400000, guid: eb10160f176e093489972552c5d2f090, type: 2}
+    m_Schemas: []
