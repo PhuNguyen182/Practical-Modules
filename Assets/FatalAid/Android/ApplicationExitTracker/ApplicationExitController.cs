@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using UnityEngine.Pool;
 #endif
 
-namespace FatalAid.ApplicationExitTracker
+namespace FatalAid.Android.ApplicationExitTracker
 {
     public class ApplicationExitController
     {

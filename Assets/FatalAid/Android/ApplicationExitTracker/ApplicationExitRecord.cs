@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FatalAid.ApplicationExitTracker
+namespace FatalAid.Android.ApplicationExitTracker
 {
     [Serializable]
     public struct ApplicationExitRecord

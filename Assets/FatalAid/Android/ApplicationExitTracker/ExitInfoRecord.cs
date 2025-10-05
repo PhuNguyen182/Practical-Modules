@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.Android;
 
-namespace FatalAid.ApplicationExitTracker
+namespace FatalAid.Android.ApplicationExitTracker
 {
     [Serializable]
     public struct ExitInfoRecord
