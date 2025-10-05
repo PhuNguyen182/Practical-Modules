@@ -1,7 +1,6 @@
 ---
-alwaysApply: true
+alwaysApply: false
 ---
-
 # Documentation Writing Rules for Unity Projects
 
 This document outlines mandatory documentation rules for creating comprehensive and user-friendly documentation for Unity project features, ensuring proper setup, usage, and maintenance.
