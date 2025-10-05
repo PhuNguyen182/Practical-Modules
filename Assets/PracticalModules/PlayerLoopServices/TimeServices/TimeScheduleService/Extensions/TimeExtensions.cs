@@ -1,6 +1,6 @@
 using System;
 
-namespace PracticalUtilities.CalculationExtensions
+namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Extensions
 {
     public static class TimeExtensions
     {
