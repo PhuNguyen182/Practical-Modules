@@ -30,7 +30,12 @@ namespace Foundations.UIModules.Popups.Popups.ConfirmPopup
             if (confirmPopupView == null)
                 confirmPopupView = GetComponent<ConfirmPopupView>();
         }
-        
+
+        public override ConfirmPopupData ConvertToView(ConfirmPopupData presenterData)
+        {
+            return presenterData;
+        }
+
         public override void Initialize()
         {
             base.Initialize();

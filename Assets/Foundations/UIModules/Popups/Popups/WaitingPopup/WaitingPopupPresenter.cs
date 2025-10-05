@@ -32,7 +32,12 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
             if (!waitingPopupView)
                 waitingPopupView = GetComponent<WaitingPopupView>();
         }
-        
+
+        public override WaitingPopupData ConvertToView(WaitingPopupData presenterData)
+        {
+            return presenterData;
+        }
+
         public override void Initialize()
         {
             base.Initialize();
