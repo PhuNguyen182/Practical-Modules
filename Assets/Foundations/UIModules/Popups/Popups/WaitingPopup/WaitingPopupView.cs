@@ -1,11 +1,11 @@
 using System;
+using Foundations.UIModules.Popups.Data;
+using Foundations.UIModules.Popups.Views;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using Foundations.Popups.Data;
-using Foundations.Popups.Views;
 
-namespace Foundations.Popups.Popups.WaitingPopup
+namespace Foundations.UIModules.Popups.Popups.WaitingPopup
 {
     /// <summary>
     /// View for Waiting popup with timeout functionality

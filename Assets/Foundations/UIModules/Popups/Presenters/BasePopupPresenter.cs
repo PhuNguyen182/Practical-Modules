@@ -1,9 +1,9 @@
+using Foundations.UIModules.Popups.Data;
+using Foundations.UIModules.Popups.Interfaces;
 using Foundations.UIModules.UIPresenter;
-using Foundations.Popups.Interfaces;
-using Foundations.Popups.Data;
 using Foundations.UIModules.UIView;
 
-namespace Foundations.Popups.Presenters
+namespace Foundations.UIModules.Popups.Presenters
 {
     /// <summary>
     /// Base presenter for popups without data

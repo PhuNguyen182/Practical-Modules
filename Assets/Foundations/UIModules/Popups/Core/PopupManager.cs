@@ -1,22 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using Foundations.UIModules.Popups.Interfaces;
+using Foundations.UIModules.UIManager.UICanvases;
 using UnityEngine;
-using Foundations.Popups.Interfaces;
+using UnityEngine.AddressableAssets;
+using Object = UnityEngine.Object;
 
-namespace Foundations.Popups.Core
+namespace Foundations.UIModules.Popups.Core
 {
     /// <summary>
     /// Core popup manager that handles creation, destruction, and lifecycle of all popups
-    /// Implements IPopupManager interface following MVP pattern
+    /// Implements IPopupManager interface following the MVP pattern
     /// </summary>
-    public class PopupManager : MonoBehaviour, IPopupManager
+    public class PopupManager : IPopupManager
     {
-        [Header("Popup Manager Settings")]
-        [SerializeField] private Transform popupParent;
-        [SerializeField] private Canvas popupCanvas;
-        [SerializeField] private int defaultSortingOrder = 100;
-        
+        private readonly IUICanvasManager _uiCanvasManager;
         private readonly Dictionary<Type, List<IPopup>> _activePopups = new();
         private readonly Dictionary<Type, GameObject> _popupPrefabs = new();
         private int _currentSortingOrder;
@@ -24,34 +24,21 @@ namespace Foundations.Popups.Core
         public event Action<IPopup> OnPopupShown;
         public event Action<IPopup> OnPopupHidden;
         public event Action<IPopup> OnPopupDestroyed;
-        
-        private void Awake()
+
+        public PopupManager(IUICanvasManager uiCanvasManager)
         {
+            _uiCanvasManager = uiCanvasManager;
             InitializePopupManager();
         }
         
         private void InitializePopupManager()
         {
-            if (!popupParent)
-                popupParent = transform;
-                
-            if (!popupCanvas)
-            {
-                popupCanvas = GetComponent<Canvas>();
-                if (!popupCanvas)
-                {
-                    popupCanvas = gameObject.AddComponent<Canvas>();
-                    popupCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                }
-            }
             
-            _currentSortingOrder = defaultSortingOrder;
-            popupCanvas.sortingOrder = _currentSortingOrder;
         }
         
-        public T ShowPopup<T>() where T : class, IPopup
+        public async UniTask<T> ShowPopup<T>() where T : class, IPopup
         {
-            var popup = CreatePopup<T>();
+            var popup = await CreatePopup<T>();
             if (popup != null)
             {
                 popup.Show();
@@ -59,19 +46,20 @@ namespace Foundations.Popups.Core
             }
             return popup;
         }
-        
-        public T ShowPopup<T, TData>(TData data) where T : class, IPopup<TData>
+
+        public async UniTask<T> ShowPopup<T, TData>(TData data) where T : class, IPopup<TData>
         {
-            var popup = CreatePopup<T>();
+            var popup = await CreatePopup<T>();
             if (popup != null)
             {
                 popup.UpdateData(data);
                 popup.Show();
                 OnPopupShown?.Invoke(popup);
             }
+
             return popup;
         }
-        
+
         public void HidePopup(IPopup popup)
         {
             if (popup == null) return;
@@ -111,19 +99,17 @@ namespace Foundations.Popups.Core
                 .ToList();
         }
         
-        private T CreatePopup<T>() where T : class, IPopup
+        // TODO: Use a pool for popups, or Addressable in the next version. MUST be refactored
+        private async UniTask<T> CreatePopup<T>() where T : class, IPopup
         {
             var popupType = typeof(T);
             
-            // Try to get prefab from dictionary first
+            // Try to get prefab from the dictionary first
             if (_popupPrefabs.TryGetValue(popupType, out GameObject prefab))
-            {
                 return InstantiatePopup<T>(prefab);
-            }
             
-            // Try to find prefab in Resources folder
-            prefab = Resources.Load<GameObject>($"Popups/{popupType.Name}");
-            if (prefab != null)
+            prefab = await Addressables.LoadAssetAsync<GameObject>(popupType.Name);
+            if (prefab)
             {
                 _popupPrefabs[popupType] = prefab;
                 return InstantiatePopup<T>(prefab);
@@ -135,13 +121,11 @@ namespace Foundations.Popups.Core
         
         private T InstantiatePopup<T>(GameObject prefab) where T : class, IPopup
         {
-            var instance = Instantiate(prefab, popupParent);
-            var popup = instance.GetComponent<T>();
-            
-            if (popup == null)
+            GameObject instance = ObjectPoolManager.Spawn(prefab);
+            if (!instance.TryGetComponent<T>(out var popup))
             {
                 Debug.LogError($"Popup component of type {typeof(T).Name} not found on prefab {prefab.name}");
-                Destroy(instance);
+                Object.Destroy(instance);
                 return null;
             }
             
@@ -158,11 +142,9 @@ namespace Foundations.Popups.Core
             _activePopups[popupType].Add(popup);
             
             // Set sorting order
-            var canvas = instance.GetComponent<Canvas>();
+            var canvas = _uiCanvasManager.GetCanvas(UICanvasType.Popup);
             if (canvas)
-            {
-                canvas.sortingOrder = ++_currentSortingOrder;
-            }
+                popup.Transform.SetParent(canvas.transform);
             
             return popup;
         }

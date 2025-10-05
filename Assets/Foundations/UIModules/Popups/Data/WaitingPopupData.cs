@@ -1,8 +1,9 @@
 using System;
 
-namespace Foundations.Popups.Data
+namespace Foundations.UIModules.Popups.Data
 {
     /// <summary>
+  
     /// Data structure for Waiting popup
     /// </summary>
     [Serializable]

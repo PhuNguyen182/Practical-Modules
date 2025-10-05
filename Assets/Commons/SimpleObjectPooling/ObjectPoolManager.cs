@@ -91,7 +91,7 @@ public static class ObjectPoolManager
 
     public static T Spawn<T>(T prefab) where T : Component => Spawn(prefab, Vector3.zero, Quaternion.identity);
 
-    public static T Spawn<T>(T prefab, string tag, Vector3 position, Quaternion rotation) where T : Component
+    public static T Spawn<T>(T prefab, string tag, Vector3 position = default, Quaternion rotation = default) where T : Component
     {
         InitializeObjectPools(prefab.gameObject);
         T bullet = Pools[prefab.gameObject.GetInstanceID()].Spawn<T>(position, rotation, null, true);
@@ -99,8 +99,8 @@ public static class ObjectPoolManager
         return bullet;
     }
 
-    public static T SpawnInstance<T>(T prefab, Vector3 position, Quaternion rotation, Transform parent = null,
-        bool worldPositionStay = true) where T : Component
+    public static T SpawnInstance<T>(T prefab, Vector3 position = default, Quaternion rotation = default, 
+        Transform parent = null, bool worldPositionStay = true) where T : Component
     {
         InitializeObjectPools(prefab.gameObject);
         T bullet = Pools[prefab.gameObject.GetInstanceID()].Spawn<T>(position, rotation, parent, worldPositionStay);

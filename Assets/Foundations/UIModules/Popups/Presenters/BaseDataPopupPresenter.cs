@@ -1,9 +1,9 @@
+using Foundations.UIModules.Popups.Data;
+using Foundations.UIModules.Popups.Interfaces;
 using Foundations.UIModules.UIPresenter;
-using Foundations.Popups.Interfaces;
-using Foundations.Popups.Data;
 using Foundations.UIModules.UIView;
 
-namespace Foundations.Popups.Presenters
+namespace Foundations.UIModules.Popups.Presenters
 {
     /// <summary>
     /// Base presenter for popups with data
@@ -11,7 +11,8 @@ namespace Foundations.Popups.Presenters
     /// </summary>
     /// <typeparam name="TPresenterData">Data type managed by presenter</typeparam>
     /// <typeparam name="TViewData">Data type understood by view</typeparam>
-    public abstract class BaseDataPopupPresenter<TPresenterData, TViewData> : BaseUIPresenter<TPresenterData, TViewData>, IUIPresenter<TViewData, TPresenterData>
+    public abstract class BaseDataPopupPresenter<TPresenterData, TViewData> : 
+        BaseUIPresenter<TPresenterData, TViewData>, IUIPresenter<TViewData, TPresenterData>
         where TPresenterData : PopupData
         where TViewData : PopupData
     {

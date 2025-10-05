@@ -1,10 +1,10 @@
 using System;
-using UnityEngine;
-using Foundations.Popups.Data;
-using Foundations.Popups.Presenters;
+using Foundations.UIModules.Popups.Data;
+using Foundations.UIModules.Popups.Presenters;
 using Foundations.UIModules.UIView;
+using UnityEngine;
 
-namespace Foundations.Popups.Popups.WaitingPopup
+namespace Foundations.UIModules.Popups.Popups.WaitingPopup
 {
     /// <summary>
     /// Presenter for Waiting popup following MVP pattern

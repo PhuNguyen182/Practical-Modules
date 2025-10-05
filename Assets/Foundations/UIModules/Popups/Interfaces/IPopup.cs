@@ -1,6 +1,7 @@
 using System;
+using UnityEngine;
 
-namespace Foundations.Popups.Interfaces
+namespace Foundations.UIModules.Popups.Interfaces
 {
     /// <summary>
     /// Base interface for all popups
@@ -11,6 +12,8 @@ namespace Foundations.Popups.Interfaces
         /// Unique identifier for this popup instance
         /// </summary>
         public string Id { get; }
+        
+        public bool ForceDestroy { get; }
         
         /// <summary>
         /// Popup type identifier
@@ -31,6 +34,8 @@ namespace Foundations.Popups.Interfaces
         /// Whether this popup can be closed by clicking outside
         /// </summary>
         public bool CanCloseOnOutsideClick { get; }
+        
+        public Transform Transform { get; }
         
         /// <summary>
         /// Shows the popup

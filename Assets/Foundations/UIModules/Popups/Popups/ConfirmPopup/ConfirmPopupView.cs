@@ -1,11 +1,11 @@
 using System;
+using Foundations.UIModules.Popups.Data;
+using Foundations.UIModules.Popups.Views;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Foundations.Popups.Data;
-using Foundations.Popups.Views;
 
-namespace Foundations.Popups.Popups.ConfirmPopup
+namespace Foundations.UIModules.Popups.Popups.ConfirmPopup
 {
     /// <summary>
     /// View for Confirm popup with flexible button configuration

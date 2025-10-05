@@ -1,6 +1,6 @@
 using System;
 
-namespace Foundations.Popups.Data
+namespace Foundations.UIModules.Popups.Data
 {
     /// <summary>
     /// Base data structure for all popups
