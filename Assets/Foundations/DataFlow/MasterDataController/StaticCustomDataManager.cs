@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Collections.Generic;
 using Foundations.DataFlow.MicroData.StaticDataControllers;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 using ZLinq;
 
 namespace Foundations.DataFlow.MasterDataController
@@ -48,7 +47,7 @@ namespace Foundations.DataFlow.MasterDataController
             }
         }
 
-        public TDataHandler? GetDataHandler<TDataHandler>()
+        public TDataHandler GetDataHandler<TDataHandler>()
             where TDataHandler : class, IStaticGameDataHandler
         {
             Type sourceDataType = typeof(TDataHandler);

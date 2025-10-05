@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine.Pool;
 using Foundations.DataFlow.MicroData.DynamicDataControllers;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 using ZLinq;
 
 namespace Foundations.DataFlow.MasterDataController
@@ -49,7 +48,7 @@ namespace Foundations.DataFlow.MasterDataController
             }
         }
 
-        public TDataHandler? GetDataHandler<TDataHandler>()
+        public TDataHandler GetDataHandler<TDataHandler>()
             where TDataHandler : class, IDynamicGameDataHandler
         {
             Type sourceDataType = typeof(TDataHandler);

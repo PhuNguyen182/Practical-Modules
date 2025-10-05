@@ -4,6 +4,7 @@ using PracticalUtilities.CalculationExtensions;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
+using ZLinq;
 
 public class TestScript : MonoBehaviour
 {
@@ -15,9 +16,15 @@ public class TestScript : MonoBehaviour
     private void Start()
     {
         positions = new Vector3Int[count];
+        var x = positions.AsValueEnumerable().Select(x => x.x);
         for (int i = 0; i < count; i++)
         {
             positions[i] = Vector3Int.one;
+        }
+
+        if (gameObject != null)
+        {
+            
         }
     }
 
