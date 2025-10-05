@@ -43,7 +43,7 @@ namespace Foundations.UIModules.Popups.Popups.ConfirmPopup
             base.Dispose();
         }
         
-        private void SubscribeToViewEvents()
+        public override void SubscribeToViewEvents()
         {
             if (confirmPopupView != null)
             {
@@ -55,7 +55,7 @@ namespace Foundations.UIModules.Popups.Popups.ConfirmPopup
             }
         }
         
-        private void UnsubscribeFromViewEvents()
+        public override void UnsubscribeFromViewEvents()
         {
             if (confirmPopupView != null)
             {

@@ -12,14 +12,13 @@ namespace Foundations.UIModules.Popups.Views
     public abstract class BasePopupView : BaseUIView, IPopup
     {
         [Header("Popup Settings")]
-        [SerializeField] private bool forceDestroy = false;
+        [SerializeField] private bool forceDestroy;
         [SerializeField] protected Canvas popupCanvas;
         [SerializeField] protected CanvasGroup popupCanvasGroup;
         [SerializeField] protected GameObject popupPanel;
         [SerializeField] protected bool canCloseOnOutsideClick = true;
-        [SerializeField] protected int priority = 0;
+        [SerializeField] protected int priority;
         
-        public string Id { get; private set; }
         public Type PopupType => GetType();
         public bool IsActive { get; private set; }
         public bool ForceDestroy => forceDestroy;
@@ -34,13 +33,12 @@ namespace Foundations.UIModules.Popups.Views
         protected override void Awake()
         {
             base.Awake();
-            Id = Guid.NewGuid().ToString();
             InitializePopup();
         }
         
         protected virtual void InitializePopup()
         {
-            // Set initial state
+            
         }
         
         public virtual void Show()

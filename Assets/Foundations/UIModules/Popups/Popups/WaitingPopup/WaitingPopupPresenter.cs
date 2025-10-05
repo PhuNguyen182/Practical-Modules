@@ -29,7 +29,7 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
         protected override void Awake()
         {
             base.Awake();
-            if (waitingPopupView == null)
+            if (!waitingPopupView)
                 waitingPopupView = GetComponent<WaitingPopupView>();
         }
         
@@ -48,7 +48,7 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
         
         public override void SubscribeToViewEvents()
         {
-            if (waitingPopupView != null)
+            if (waitingPopupView)
             {
                 waitingPopupView.OnCancelClicked += OnCancelButtonClicked;
                 waitingPopupView.OnTimeoutReached += OnTimeoutReachedInternal;
@@ -57,7 +57,7 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
         
         public override void UnsubscribeFromViewEvents()
         {
-            if (waitingPopupView != null)
+            if (waitingPopupView)
             {
                 waitingPopupView.OnCancelClicked -= OnCancelButtonClicked;
                 waitingPopupView.OnTimeoutReached -= OnTimeoutReachedInternal;

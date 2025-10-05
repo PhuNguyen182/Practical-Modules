@@ -14,17 +14,19 @@ namespace Foundations.UIModules.Popups.Interfaces
         /// Shows a popup with the given type
         /// </summary>
         /// <typeparam name="T">Popup type</typeparam>
+        /// <param name="popupName">Name of popup</param>
         /// <returns>Popup instance</returns>
-        public UniTask<T> ShowPopup<T>() where T : class, IPopup;
-        
+        public UniTask<T> ShowPopup<T>(string popupName) where T : class, IPopup;
+
         /// <summary>
         /// Shows a popup with data
         /// </summary>
         /// <typeparam name="T">Popup type</typeparam>
         /// <typeparam name="TData">Data type</typeparam>
+        /// <param name="popupName">Name of popup</param>
         /// <param name="data">Data to pass to popup</param>
         /// <returns>Popup instance</returns>
-        public UniTask<T> ShowPopup<T, TData>(TData data) where T : class, IPopup<TData>;
+        public UniTask<T> ShowPopup<T, TData>(string popupName, TData data) where T : class, IPopup<TData>;
         
         /// <summary>
         /// Hides the specified popup

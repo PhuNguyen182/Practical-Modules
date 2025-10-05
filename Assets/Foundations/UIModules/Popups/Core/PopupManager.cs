@@ -6,7 +6,7 @@ using Foundations.UIModules.Popups.Interfaces;
 using Foundations.UIModules.UIManager.UICanvases;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using Object = UnityEngine.Object;
+using ZLinq;
 
 namespace Foundations.UIModules.Popups.Core
 {
@@ -17,9 +17,8 @@ namespace Foundations.UIModules.Popups.Core
     public class PopupManager : IPopupManager
     {
         private readonly IUICanvasManager _uiCanvasManager;
-        private readonly Dictionary<Type, List<IPopup>> _activePopups = new();
-        private readonly Dictionary<Type, GameObject> _popupPrefabs = new();
-        private int _currentSortingOrder;
+        private readonly Dictionary<Type, List<IPopup>> _activePopups;
+        private readonly Dictionary<Type, GameObject> _popupPrefabs;
         
         public event Action<IPopup> OnPopupShown;
         public event Action<IPopup> OnPopupHidden;
@@ -28,6 +27,8 @@ namespace Foundations.UIModules.Popups.Core
         public PopupManager(IUICanvasManager uiCanvasManager)
         {
             _uiCanvasManager = uiCanvasManager;
+            _activePopups = new();
+            _popupPrefabs = new();
             InitializePopupManager();
         }
         
@@ -36,9 +37,9 @@ namespace Foundations.UIModules.Popups.Core
             
         }
         
-        public async UniTask<T> ShowPopup<T>() where T : class, IPopup
+        public async UniTask<T> ShowPopup<T>(string popupName) where T : class, IPopup
         {
-            var popup = await CreatePopup<T>();
+            var popup = await CreatePopup<T>(popupName);
             if (popup != null)
             {
                 popup.Show();
@@ -47,9 +48,9 @@ namespace Foundations.UIModules.Popups.Core
             return popup;
         }
 
-        public async UniTask<T> ShowPopup<T, TData>(TData data) where T : class, IPopup<TData>
+        public async UniTask<T> ShowPopup<T, TData>(string popupName, TData data) where T : class, IPopup<TData>
         {
-            var popup = await CreatePopup<T>();
+            var popup = await CreatePopup<T>(popupName);
             if (popup != null)
             {
                 popup.UpdateData(data);
@@ -62,7 +63,8 @@ namespace Foundations.UIModules.Popups.Core
 
         public void HidePopup(IPopup popup)
         {
-            if (popup == null) return;
+            if (popup == null) 
+                return;
             
             popup.Hide();
             OnPopupHidden?.Invoke(popup);
@@ -79,7 +81,7 @@ namespace Foundations.UIModules.Popups.Core
         
         public void HideAllPopups()
         {
-            var allPopups = _activePopups.Values.SelectMany(popupList => popupList).ToList();
+            var allPopups = _activePopups.Values.AsValueEnumerable().SelectMany(popupList => popupList).ToList();
             foreach (var popup in allPopups)
             {
                 HidePopup(popup);
@@ -88,34 +90,31 @@ namespace Foundations.UIModules.Popups.Core
         
         public bool IsPopupActive<T>() where T : class, IPopup
         {
-            return GetPopupsOfType<T>().Any(popup => popup.IsActive);
+            return GetPopupsOfType<T>().AsValueEnumerable().Any(popup => popup.IsActive);
         }
         
         public IReadOnlyList<IPopup> GetActivePopups()
         {
-            return _activePopups.Values
+            return _activePopups.Values.AsValueEnumerable()
                 .SelectMany(popupList => popupList)
                 .Where(popup => popup.IsActive)
                 .ToList();
         }
         
-        // TODO: Use a pool for popups, or Addressable in the next version. MUST be refactored
-        private async UniTask<T> CreatePopup<T>() where T : class, IPopup
+        private async UniTask<T> CreatePopup<T>(string popupName) where T : class, IPopup
         {
             var popupType = typeof(T);
-            
-            // Try to get prefab from the dictionary first
             if (_popupPrefabs.TryGetValue(popupType, out GameObject prefab))
                 return InstantiatePopup<T>(prefab);
             
-            prefab = await Addressables.LoadAssetAsync<GameObject>(popupType.Name);
+            prefab = await Addressables.LoadAssetAsync<GameObject>(popupName);
             if (prefab)
             {
                 _popupPrefabs[popupType] = prefab;
                 return InstantiatePopup<T>(prefab);
             }
             
-            Debug.LogError($"Popup prefab for type {popupType.Name} not found in Resources/Popups/");
+            Debug.LogError($"Popup prefab for type {popupType.Name} not found");
             return null;
         }
         
@@ -125,7 +124,7 @@ namespace Foundations.UIModules.Popups.Core
             if (!instance.TryGetComponent<T>(out var popup))
             {
                 Debug.LogError($"Popup component of type {typeof(T).Name} not found on prefab {prefab.name}");
-                Object.Destroy(instance);
+                ObjectPoolManager.Despawn(instance);
                 return null;
             }
             
@@ -182,6 +181,7 @@ namespace Foundations.UIModules.Popups.Core
             {
                 return popupList;
             }
+            
             return Enumerable.Empty<IPopup>();
         }
         

@@ -26,12 +26,6 @@ namespace Foundations.UIModules.Popups.Presenters
             Popup = GetComponent<IPopup<TViewData>>();
         }
         
-        public override TViewData ConvertToView(TPresenterData presenterData)
-        {
-            // Default conversion - can be overridden in derived classes
-            return presenterData as TViewData;
-        }
-        
         /// <summary>
         /// Show the popup with data
         /// </summary>
@@ -39,13 +33,13 @@ namespace Foundations.UIModules.Popups.Presenters
         protected virtual void ShowPopup(TPresenterData data)
         {
             UpdatePresenter(data);
-            Popup?.Show();
+            ShowPopup();
         }
         
         /// <summary>
         /// Show the popup with current data
         /// </summary>
-        public virtual void ShowPopup()
+        protected virtual void ShowPopup()
         {
             Popup?.Show();
         }

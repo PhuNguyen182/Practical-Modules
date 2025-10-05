@@ -9,7 +9,7 @@ namespace Foundations.UIModules.Popups.Presenters
     /// Base presenter for popups without data
     /// Manages popup lifecycle and handles events
     /// </summary>
-    public abstract class BasePopupPresenter : BaseUIPresenter<PopupData, PopupData>, IUIPresenter
+    public abstract class BasePopupPresenter : BaseUIPresenter<PopupData, PopupData>
     {
         protected IPopup Popup;
         
@@ -19,11 +19,6 @@ namespace Foundations.UIModules.Popups.Presenters
         {
             base.Awake();
             Popup = GetComponent<IPopup>();
-        }
-        
-        public override PopupData ConvertToView(PopupData presenterData)
-        {
-            return presenterData;
         }
         
         /// <summary>

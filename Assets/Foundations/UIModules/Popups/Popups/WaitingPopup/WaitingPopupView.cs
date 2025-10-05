@@ -1,9 +1,9 @@
 using System;
 using Foundations.UIModules.Popups.Data;
 using Foundations.UIModules.Popups.Views;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Foundations.UIModules.Popups.Popups.WaitingPopup
 {
@@ -26,8 +26,8 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
         public event Action OnCancelClicked;
         public event Action OnTimeoutReached;
         
-        private float currentTimeoutTimer;
-        private bool isTimeoutActive;
+        private float _currentTimeoutTimer;
+        private bool _isTimeoutActive;
         
         protected override void Awake()
         {
@@ -63,22 +63,22 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
         
         private void UpdateTexts()
         {
-            if (messageText != null)
+            if (messageText)
                 messageText.text = ViewData.message;
                 
-            if (cancelButtonText != null)
+            if (cancelButtonText)
                 cancelButtonText.text = ViewData.cancelButtonText;
         }
         
         private void UpdateButtonVisibility()
         {
-            if (cancelButton != null)
+            if (cancelButton)
                 cancelButton.gameObject.SetActive(ViewData.showCancelButton);
         }
         
         private void UpdateProgressBar()
         {
-            if (progressBar != null)
+            if (progressBar)
             {
                 progressBar.gameObject.SetActive(ViewData.showProgressBar);
             }
@@ -88,12 +88,12 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
         {
             if (ViewData.timeoutDuration > 0)
             {
-                currentTimeoutTimer = ViewData.timeoutDuration;
-                isTimeoutActive = true;
+                _currentTimeoutTimer = ViewData.timeoutDuration;
+                _isTimeoutActive = true;
             }
             else
             {
-                isTimeoutActive = false;
+                _isTimeoutActive = false;
             }
         }
         
@@ -101,13 +101,13 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
         {
             base.Show();
             
-            if (isTimeoutActive)
+            if (_isTimeoutActive)
             {
-                currentTimeoutTimer = ViewData.timeoutDuration;
+                _currentTimeoutTimer = ViewData.timeoutDuration;
             }
             
             // Make background cover full screen
-            if (backgroundImage != null)
+            if (backgroundImage)
             {
                 var rectTransform = backgroundImage.rectTransform;
                 rectTransform.anchorMin = Vector2.zero;
@@ -119,19 +119,19 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
         
         private void Update()
         {
-            if (!IsActive || !isTimeoutActive) return;
+            if (!IsActive || !_isTimeoutActive) return;
             
-            currentTimeoutTimer -= Time.deltaTime;
+            _currentTimeoutTimer -= Time.deltaTime;
             
             // Update progress bar if shown
-            if (ViewData.showProgressBar && progressBar != null)
+            if (ViewData.showProgressBar && progressBar)
             {
-                float progress = 1f - (currentTimeoutTimer / ViewData.timeoutDuration);
+                float progress = 1f - (_currentTimeoutTimer / ViewData.timeoutDuration);
                 progressBar.value = Mathf.Clamp01(progress);
             }
             
             // Check for timeout
-            if (currentTimeoutTimer <= 0)
+            if (_currentTimeoutTimer <= 0)
             {
                 OnTimeoutReached?.Invoke();
                 Hide();
@@ -156,7 +156,7 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
         /// <param name="message">New message</param>
         public void SetMessage(string message)
         {
-            if (messageText != null)
+            if (messageText)
                 messageText.text = message;
         }
         
@@ -170,10 +170,10 @@ namespace Foundations.UIModules.Popups.Popups.WaitingPopup
             }
         }
         
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             // Clean up button events
-            if (cancelButton != null)
+            if (cancelButton)
                 cancelButton.onClick.RemoveAllListeners();
         }
     }

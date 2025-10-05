@@ -8,11 +8,6 @@ namespace Foundations.UIModules.Popups.Interfaces
     /// </summary>
     public interface IPopup
     {
-        /// <summary>
-        /// Unique identifier for this popup instance
-        /// </summary>
-        public string Id { get; }
-        
         public bool ForceDestroy { get; }
         
         /// <summary>
