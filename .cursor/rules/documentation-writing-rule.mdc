@@ -1,0 +1,525 @@
+---
+alwaysApply: true
+---
+
+# Documentation Writing Rules for Unity Projects
+
+This document outlines mandatory documentation rules for creating comprehensive and user-friendly documentation for Unity project features, ensuring proper setup, usage, and maintenance.
+
+## 1. Mandatory README.md Requirements
+
+### Feature Documentation Rule
+- **Rule**: Every feature implemented following `code-organization-rule.mdc` MUST have a comprehensive README.md file
+- **Guidelines**:
+  - Place README.md in the root folder of each feature
+  - Use clear, professional English with proper grammar and spelling
+  - Include all mandatory sections as specified below
+  - Provide step-by-step instructions for setup and usage
+  - Include practical examples and code snippets
+  - Update documentation whenever the feature is modified
+- **Examples**:
+  ```
+  Assets/
+  ├── Foundations/
+  │   ├── Popups/
+  │   │   ├── README.md          # ✅ Feature documentation
+  │   │   ├── Interfaces/
+  │   │   ├── Core/
+  │   │   ├── Data/
+  │   │   ├── Views/
+  │   │   └── Presenters/
+  │   └── Audio/
+  │       ├── README.md          # ✅ Feature documentation
+  │       ├── Interfaces/
+  │       ├── Core/
+  │       └── Data/
+  ```
+
+## 2. Mandatory README.md Structure
+
+### Required Sections
+- **Rule**: Every README.md MUST include these sections in the specified order
+- **Guidelines**:
+  - Use proper Markdown formatting with clear headings
+  - Include table of contents for complex features
+  - Provide consistent formatting across all feature documentation
+  - Use code blocks with appropriate language syntax highlighting
+  - Include visual examples where helpful
+
+### Section 1: Feature Overview
+- **Rule**: Start with a clear introduction to the feature
+- **Guidelines**:
+  - Explain what the feature does in simple terms
+  - Describe the main purpose and benefits
+  - List key capabilities and use cases
+  - Mention any dependencies or prerequisites
+- **Example Structure**:
+  ```markdown
+  # Feature Name
+  
+  ## Overview
+  
+  This feature provides [brief description of what it does]. It is designed to [main purpose] and offers [key benefits].
+  
+  ### Key Features
+  - Feature capability 1
+  - Feature capability 2
+  - Feature capability 3
+  
+  ### Use Cases
+  - Primary use case 1
+  - Primary use case 2
+  - Primary use case 3
+  
+  ### Prerequisites
+  - Unity version requirement
+  - Required packages or dependencies
+  - Any setup requirements
+  ```
+
+### Section 2: Feature Components Explanation
+- **Rule**: Explain each component of the feature in detail
+- **Guidelines**:
+  - Document the purpose of each folder and file
+  - Explain the relationship between components
+  - Describe the data flow and architecture
+  - Include class diagrams or flowcharts when helpful
+- **Example Structure**:
+  ```markdown
+  ## Feature Components
+  
+  This feature follows the MVP (Model-View-Presenter) pattern and consists of the following components:
+  
+  ### Folder Structure
+  ```
+  FeatureName/
+  ├── Interfaces/          # Contract definitions
+  ├── Core/               # Business logic and managers
+  ├── Data/               # Data models and configurations
+  ├── Views/              # UI components and visual elements
+  └── Presenters/         # MVP presenters
+  ```
+  
+  ### Core Components
+  
+  #### Interfaces/
+  - **IFeatureManager.cs**: Main interface for feature management
+  - **IFeatureComponent.cs**: Interface for individual components
+  - **IFeatureData.cs**: Data contract interface
+  
+  #### Core/
+  - **FeatureManager.cs**: Central manager handling feature lifecycle
+  - **FeatureService.cs**: Business logic implementation
+  
+  #### Data/
+  - **FeatureData.cs**: Serializable data models
+  - **FeatureConfig.cs**: ScriptableObject configuration
+  - **FeatureSettings.cs**: Runtime settings
+  
+  #### Views/
+  - **FeatureView.cs**: UI components and visual representation
+  
+  #### Presenters/
+  - **FeaturePresenter.cs**: MVP presenter handling view logic
+  ```
+
+### Section 3: Usage Instructions
+- **Rule**: Provide detailed step-by-step usage instructions
+- **Guidelines**:
+  - Include setup instructions for Unity Inspector
+  - Provide code examples for common usage patterns
+  - Explain configuration options and their effects
+  - Include troubleshooting tips for common issues
+- **Example Structure**:
+  ```markdown
+  ## Usage Instructions
+  
+  ### Initial Setup
+  
+  1. **Import the Feature**
+     - Copy the feature folder to your Assets directory
+     - Ensure all dependencies are properly imported
+  
+  2. **Configure the Feature**
+     - Create a configuration asset: `Assets/Create/Foundations/Feature Config`
+     - Set up the configuration values in the Inspector
+     - Save the configuration asset
+  
+  ### Basic Usage
+  
+  #### Getting Started
+  ```csharp
+  // Get the feature manager
+  var featureManager = FindObjectOfType<FeatureManager>();
+  
+  // Initialize the feature
+  featureManager.Initialize(config);
+  
+  // Use the feature
+  featureManager.PerformAction();
+  ```
+  
+  #### Advanced Usage
+  ```csharp
+  // Custom configuration
+  var customConfig = new FeatureConfig
+  {
+      setting1 = "custom value",
+      setting2 = 42,
+      setting3 = true
+  };
+  
+  // Initialize with custom config
+  featureManager.Initialize(customConfig);
+  ```
+  ```
+
+### Section 4: Unity GameObject Setup (When Applicable)
+- **Rule**: Provide detailed Unity Inspector setup instructions when the feature involves GameObjects
+- **Guidelines**:
+  - Explain which components to add to which GameObjects
+  - Provide exact drag-and-drop instructions
+  - Specify required references and how to assign them
+  - Include screenshots or step-by-step visual guides
+- **Example Structure**:
+  ```markdown
+  ## Unity GameObject Setup
+  
+  ### Required GameObjects
+  
+  1. **Main Feature GameObject**
+     - Create an empty GameObject in your scene
+     - Name it "FeatureManager"
+     - Add the `FeatureManager` component to this GameObject
+  
+  2. **UI Canvas Setup**
+     - Create a Canvas in your scene (if UI is required)
+     - Name it "FeatureCanvas"
+     - Set Canvas Scaler to "Scale With Screen Size"
+     - Reference Resolution: 1920x1080
+  
+  ### Component Configuration
+  
+  #### FeatureManager Component
+  1. **Select the FeatureManager GameObject**
+  2. **In the Inspector, configure the following references:**
+   
+   **Required References:**
+   - **Feature Config**: Drag your FeatureConfig ScriptableObject asset here
+   - **Main Canvas**: Drag the FeatureCanvas GameObject here
+   - **Event System**: Drag the EventSystem GameObject here (if UI interactions are needed)
+   
+   **Optional References:**
+   - **Audio Source**: Drag an AudioSource component for sound effects
+   - **Camera**: Drag the main camera for UI positioning
+   
+   #### FeatureView Component (if applicable)
+  1. **Select the UI GameObject containing your feature UI**
+  2. **Add the FeatureView component**
+  3. **Configure the following references:**
+   
+   **UI Element References:**
+   - **Confirm Button**: Drag the confirm button GameObject here
+   - **Cancel Button**: Drag the cancel button GameObject here
+   - **Title Text**: Drag the title Text component here
+   - **Message Text**: Drag the message Text component here
+   
+   ### Step-by-Step Setup Process
+  
+  1. **Create the Feature GameObject**
+     ```
+     Right-click in Hierarchy → Create Empty
+     Name: "FeatureManager"
+     ```
+  
+  2. **Add the Manager Component**
+     ```
+     Select FeatureManager GameObject
+     Add Component → Scripts → FeatureManager
+     ```
+  
+  3. **Create the Configuration Asset**
+     ```
+     Right-click in Project window
+     Create → Foundations → Feature Config
+     Name: "FeatureConfig"
+     ```
+  
+  4. **Configure the Manager**
+     ```
+     Select FeatureManager GameObject
+     Drag FeatureConfig asset to "Feature Config" field
+     Set other required references
+     ```
+  
+  5. **Test the Setup**
+     ```
+     Press Play in Unity
+     Verify no errors in Console
+     Test feature functionality
+     ```
+  ```
+
+### Section 5: API Reference
+- **Rule**: Provide comprehensive API documentation
+- **Guidelines**:
+  - Document all public methods and properties
+  - Include parameter descriptions and return values
+  - Provide code examples for each major API
+  - Explain any important behavior or side effects
+- **Example Structure**:
+  ```markdown
+  ## API Reference
+  
+  ### FeatureManager Class
+  
+  #### Public Methods
+  
+  **Initialize(FeatureConfig config)**
+  - Initializes the feature with the provided configuration
+  - Parameters: `config` - The configuration to use
+  - Returns: `void`
+  - Example:
+    ```csharp
+    var config = Resources.Load<FeatureConfig>("FeatureConfig");
+    featureManager.Initialize(config);
+    ```
+  
+  **PerformAction()**
+  - Executes the main feature action
+  - Parameters: None
+  - Returns: `bool` - Success status
+  - Example:
+    ```csharp
+    bool success = featureManager.PerformAction();
+    if (success)
+    {
+        Debug.Log("Action completed successfully");
+    }
+    ```
+  
+  #### Public Properties
+  
+  **IsInitialized**
+  - Gets whether the feature has been initialized
+  - Type: `bool`
+  - Example:
+    ```csharp
+    if (featureManager.IsInitialized)
+    {
+        // Feature is ready to use
+    }
+    ```
+  
+  ### Events
+  
+  **OnFeatureCompleted**
+  - Raised when the feature completes its main action
+  - Event Type: `Action<bool>`
+  - Example:
+    ```csharp
+    featureManager.OnFeatureCompleted += (success) =>
+    {
+        Debug.Log($"Feature completed with success: {success}");
+    };
+    ```
+  ```
+
+### Section 6: Configuration Options
+- **Rule**: Document all configuration options and their effects
+- **Guidelines**:
+  - Explain each configuration parameter
+  - Provide recommended values
+  - Include examples of different configurations
+  - Explain the impact of each setting
+- **Example Structure**:
+  ```markdown
+  ## Configuration Options
+  
+  ### FeatureConfig Settings
+  
+  #### General Settings
+  
+  **Default Animation Duration** (float)
+  - Controls the duration of default animations
+  - Range: 0.1f - 5.0f
+  - Default: 0.3f
+  - Example: Set to 1.0f for slower animations
+  
+  **Max Concurrent Features** (int)
+  - Maximum number of features that can be active simultaneously
+  - Range: 1 - 10
+  - Default: 5
+  - Example: Set to 3 for performance optimization
+  
+  #### UI Settings
+  
+  **Default Background Color** (Color)
+  - Background color for feature UI elements
+  - Default: Black (0, 0, 0, 1)
+  - Example: Set to transparent (0, 0, 0, 0.7) for overlay effect
+  
+  **Enable Debug Logs** (bool)
+  - Whether to enable debug logging
+  - Default: false
+  - Example: Set to true during development
+  
+  ### Runtime Configuration
+  
+  You can modify configuration at runtime:
+  ```csharp
+  var config = featureManager.CurrentConfig;
+  config.defaultAnimationDuration = 1.0f;
+  config.enableDebugLogs = true;
+  featureManager.UpdateConfig(config);
+  ```
+  ```
+
+### Section 7: Troubleshooting
+- **Rule**: Include common issues and their solutions
+- **Guidelines**:
+  - List frequently encountered problems
+  - Provide step-by-step solutions
+  - Include error messages and their meanings
+  - Provide debugging tips and techniques
+- **Example Structure**:
+  ```markdown
+  ## Troubleshooting
+  
+  ### Common Issues
+  
+  #### Issue: "Feature not initializing"
+  **Symptoms:**
+  - FeatureManager shows as not initialized
+  - No response when calling feature methods
+  
+  **Solutions:**
+  1. Check that FeatureConfig asset is properly assigned
+  2. Verify all required references are set in Inspector
+  3. Check Console for error messages
+  4. Ensure dependencies are properly imported
+  
+  #### Issue: "UI elements not responding"
+  **Symptoms:**
+  - Buttons don't respond to clicks
+  - UI animations not playing
+  
+  **Solutions:**
+  1. Verify EventSystem is present in scene
+  2. Check that UI references are properly assigned
+  3. Ensure Canvas is set to correct render mode
+  4. Check that UI elements are not blocked by other objects
+  
+  #### Issue: "Performance problems"
+  **Symptoms:**
+  - Frame rate drops when using feature
+  - Memory usage increases over time
+  
+  **Solutions:**
+  1. Reduce Max Concurrent Features setting
+  2. Disable debug logs in production
+  3. Check for memory leaks in custom code
+  4. Profile with Unity Profiler
+  
+  ### Debug Tips
+  
+  **Enable Debug Mode:**
+  ```csharp
+  var config = featureManager.CurrentConfig;
+  config.enableDebugLogs = true;
+  featureManager.UpdateConfig(config);
+  ```
+  
+  **Check Feature Status:**
+  ```csharp
+  Debug.Log($"Feature initialized: {featureManager.IsInitialized}");
+  Debug.Log($"Active features: {featureManager.ActiveFeatureCount}");
+  ```
+  ```
+
+## 3. Documentation Quality Standards
+
+### Writing Style Requirements
+- **Rule**: Maintain consistent, professional documentation style
+- **Guidelines**:
+  - Use clear, concise language
+  - Avoid technical jargon without explanation
+  - Use active voice when possible
+  - Provide context for technical terms
+  - Include practical examples for complex concepts
+
+### Code Example Standards
+- **Rule**: All code examples must be complete and functional
+- **Guidelines**:
+  - Include necessary using statements
+  - Provide complete method implementations
+  - Use meaningful variable names
+  - Include error handling where appropriate
+  - Test all code examples before including them
+
+### Visual Documentation
+- **Rule**: Use visual aids to enhance understanding
+- **Guidelines**:
+  - Include screenshots for Unity Inspector setup
+  - Use diagrams for complex relationships
+  - Provide before/after examples where helpful
+  - Use consistent visual styling across documentation
+
+## 4. Documentation Maintenance
+
+### Update Requirements
+- **Rule**: Documentation must be updated whenever features are modified
+- **Guidelines**:
+  - Update README.md when adding new features
+  - Modify API documentation when changing public interfaces
+  - Update setup instructions when requirements change
+  - Review and update examples for accuracy
+
+### Version Control
+- **Rule**: Maintain documentation version history
+- **Guidelines**:
+  - Include version information in README.md
+  - Document breaking changes between versions
+  - Provide migration guides for major updates
+  - Keep changelog for significant modifications
+
+## 5. Enforcement Rules
+
+### Always Apply These Rules When:
+1. Creating new features following code-organization-rule.mdc
+2. Modifying existing features
+3. Adding new components to features
+4. Changing public APIs or interfaces
+5. Updating configuration options
+6. Fixing bugs that affect usage
+7. **MANDATORY**: Completing any feature implementation
+8. **MANDATORY**: Before committing feature code to version control
+9. **MANDATORY**: When preparing features for team use
+
+### Documentation Review Checklist:
+- [ ] README.md exists in feature root folder
+- [ ] All mandatory sections are present and complete
+- [ ] Feature overview clearly explains purpose and benefits
+- [ ] Components are explained with clear relationships
+- [ ] Usage instructions are step-by-step and complete
+- [ ] Unity GameObject setup includes drag-and-drop instructions
+- [ ] All required references are clearly specified
+- [ ] API reference documents all public methods and properties
+- [ ] Configuration options are fully documented
+- [ ] Troubleshooting section addresses common issues
+- [ ] Code examples are complete and functional
+- [ ] Documentation is written in clear, professional English
+- [ ] Visual aids are included where helpful
+- [ ] Version information is current and accurate
+
+### Quality Assurance:
+- [ ] Test all setup instructions on clean Unity project
+- [ ] Verify all code examples compile and run
+- [ ] Check all Unity Inspector references are correct
+- [ ] Validate all configuration options work as documented
+- [ ] Review documentation for clarity and completeness
+- [ ] Ensure consistency with other feature documentation
+- [ ] **MANDATORY**: Have another team member review documentation
+- [ ] **MANDATORY**: Update documentation before feature release
+
+By following these documentation rules, all features will have comprehensive, user-friendly documentation that enables easy setup, usage, and maintenance by all team members.
