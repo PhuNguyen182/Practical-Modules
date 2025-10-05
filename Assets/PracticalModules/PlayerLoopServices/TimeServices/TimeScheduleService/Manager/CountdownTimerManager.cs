@@ -69,9 +69,9 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.M
 
         public IReadOnlyDictionary<string, ICountdownTimer> GetAllTimers() => this._timers;
         
-        public void Tick(float deltaTime) => UpdateTimers(deltaTime);
+        public void Tick(float deltaTime) => UpdateTimers();
 
-        private void UpdateTimers(float deltaTime)
+        private void UpdateTimers()
         {
             if (this._disposed)
                 return;

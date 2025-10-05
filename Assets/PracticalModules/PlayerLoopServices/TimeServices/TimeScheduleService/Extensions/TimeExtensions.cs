@@ -84,7 +84,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.E
             return offset.Days;
         }
 
-        public static TimeSpan GetTimeOffset(DateTime start, DateTime end)
+        public static TimeSpan GetTimeDifferent(DateTime start, DateTime end)
         {
             TimeSpan offset = end.Subtract(start);
             return offset;
