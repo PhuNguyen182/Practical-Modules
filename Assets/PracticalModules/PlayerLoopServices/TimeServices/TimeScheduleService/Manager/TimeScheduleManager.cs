@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using PracticalModules.PlayerLoopServices.Core.Handlers;
+using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.TimeFactory;
 using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.TimeSchedulerComponent;
 using PracticalModules.PlayerLoopServices.UpdateServices;
 
@@ -7,10 +8,12 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.M
 {
     public class TimeScheduleManager : ITimeScheduleManager, IUpdateHandler
     {
+        private readonly TimeSchedulerFactory _timeSchedulerFactory;
         private readonly Dictionary<string, ITimeScheduler> _timeSchedulers;
         
         public TimeScheduleManager()
         {
+            _timeSchedulerFactory = new();
             _timeSchedulers = new();
             UpdateServiceManager.RegisterUpdateHandler(this);
             Initialize();
