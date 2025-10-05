@@ -54,7 +54,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.M
         /// Cập nhật tất cả các bộ đếm (được gọi trong Update loop)
         /// </summary>
         /// <param name="deltaTime">Thời gian delta</param>
-        public void UpdateTimers(float deltaTime);
+        public void Tick(float deltaTime);
         
         /// <summary>
         /// Lưu tất cả các bộ đếm
