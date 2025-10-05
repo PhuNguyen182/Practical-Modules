@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using PracticalModules.PlayerLoopServices.Core.Handlers;
 
-namespace PracticalModules.PlayerLoopServices.TimeServices
+namespace PracticalModules.PlayerLoopServices.UpdateServices
 {
     public static class FixedUpdateServiceManager
     {
