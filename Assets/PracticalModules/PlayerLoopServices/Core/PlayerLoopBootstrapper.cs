@@ -46,6 +46,7 @@ namespace PracticalModules.PlayerLoopServices.Core
                     RemoveTimeSystem<Update>(ref currentPlayerLoop);
                     RemoveTimeSystem<FixedUpdate>(ref currentPlayerLoop);
                     PlayerLoop.SetPlayerLoop(currentPlayerLoop);
+                    UpdateServiceManager.Clear();
                     FixedUpdateServiceManager.Clear();
                 }
             }
