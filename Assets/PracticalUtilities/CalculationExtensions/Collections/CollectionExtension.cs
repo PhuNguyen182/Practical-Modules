@@ -18,6 +18,18 @@ namespace PracticalUtilities.CalculationExtensions.Collections
             foreach (T item in hashSet)
                 callback?.Invoke(item);
         }
+
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T>? callback = null)
+        {
+            foreach (T item in collection)
+                callback?.Invoke(item);
+        }
+        
+        public static IEnumerable<TR> Iterator<T, TR>(this IEnumerable<T> collection, Func<T, TR> callback)
+        {
+            foreach (T item in collection)
+                yield return callback.Invoke(item);
+        }
         
         /// <summary>
         /// Get a list that removed the predicated elements.
@@ -139,7 +151,7 @@ namespace PracticalUtilities.CalculationExtensions.Collections
         /// <summary>
         /// Try to get an element from a list.
         /// </summary>
-        public static T TryGet<T>(this List<T> list, int index)
+        public static T? TryGet<T>(this List<T> list, int index)
             => index >= list.Count ? default : list[index];
 
         /// <summary>
