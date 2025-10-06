@@ -8,7 +8,7 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
     public static class WeightedRandomUtils
     {
         /// <summary>
-        /// Quick method to get a random index from a weights array
+        /// Quick method to get a random index from a weights array with optimized performance
         /// </summary>
         public static int GetRandomIndex(float[] weights)
         {
@@ -21,7 +21,7 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// </summary>
         public static int GetRandomIndex(List<float> weights)
         {
-            return GetRandomIndex(weights.ToArray());
+            return WeightedRandomUtils.GetRandomIndex(weights.ToArray());
         }
         
         /// <summary>

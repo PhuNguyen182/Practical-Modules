@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using PracticalModules.Probabilities.ProbabilityHandleByRarity;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace PracticalModules.Probabilities.ProbabilityHandle
+namespace PracticalModules.Probabilities.ProbabilityHandleByRarity
 {
     /// <summary>
-    /// Main controller for managing individual rarity probabilities
+    /// Main controller for managing individual rarity probabilities with optimized performance
     /// </summary>
     [CreateAssetMenu(fileName = "ProbabilityController", menuName = "Randomness/Probability Controller")]
-    public class ProbabilityController : ScriptableObject
+    public class ProbabilityController : ScriptableObject, IProbabilityController
     {
         [Header("Rarity Probability Configuration")]
         public List<RarityProbability> rarityProbabilities = new();
@@ -28,67 +26,131 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         public bool autoNormalizeProbabilities = true;
         public bool maintainRelativeRatios = true;
         
-        // Runtime data
-        //private System.Random _randomNumberGenerator;
+        // Runtime data - optimized for performance
         private Dictionary<Rarity, RarityProbability> _probabilityLookup;
-        
+        private RarityProbability[] _sortedRarities; // Cached sorted array for better performance
         private float _totalProbabilityWeight;
         private bool _isInitialized;
+        private bool _needsRecalculation = true;
         
         /// <summary>
-        /// Initialize the probability controller
+        /// Initialize the probability controller with optimized setup
         /// </summary>
         public void Initialize(int? seed = null)
         {
-            //_randomNumberGenerator = seed.HasValue ? new System.Random(seed.Value) : new System.Random();
             if (seed.HasValue)
+            {
                 Random.InitState(seed.Value);
+            }
             
-            BuildLookupDictionary();
-            CalculateTotalWeight();
-            _isInitialized = true;
+            this.BuildLookupDictionary();
+            this.CalculateTotalWeight();
+            this._isInitialized = true;
         }
         
         /// <summary>
-        /// Build the lookup dictionary for faster access
+        /// Build the lookup dictionary and sorted array for optimized access
         /// </summary>
         private void BuildLookupDictionary()
         {
-            _probabilityLookup = new Dictionary<Rarity, RarityProbability>();
+            this._probabilityLookup = new Dictionary<Rarity, RarityProbability>();
             
-            foreach (var rarityProb in rarityProbabilities)
+            // Add existing probabilities
+            for (int i = 0; i < this.rarityProbabilities.Count; i++)
             {
-                _probabilityLookup[rarityProb.rarity] = rarityProb;
+                var rarityProb = this.rarityProbabilities[i];
+                this._probabilityLookup[rarityProb.rarity] = rarityProb;
             }
             
-            // Ensure all rarities have entries
-            foreach (var rarity in Enum.GetValues(typeof(Rarity)).Cast<Rarity>())
+            // Ensure all rarities have entries - optimized without LINQ
+            var allRarities = (Rarity[])Enum.GetValues(typeof(Rarity));
+            for (int i = 0; i < allRarities.Length; i++)
             {
-                if (!_probabilityLookup.ContainsKey(rarity))
+                var rarity = allRarities[i];
+                if (!this._probabilityLookup.ContainsKey(rarity))
                 {
-                    var defaultProb = new RarityProbability(rarity, GetDefaultProbability(rarity));
-                    rarityProbabilities.Add(defaultProb);
-                    _probabilityLookup[rarity] = defaultProb;
+                    var defaultProb = new RarityProbability(rarity, this.GetDefaultProbability(rarity));
+                    this.rarityProbabilities.Add(defaultProb);
+                    this._probabilityLookup[rarity] = defaultProb;
                 }
+            }
+            
+            // Cache sorted rarities for better performance
+            this._sortedRarities = new RarityProbability[this.rarityProbabilities.Count];
+            for (int i = 0; i < this.rarityProbabilities.Count; i++)
+            {
+                this._sortedRarities[i] = this.rarityProbabilities[i];
+            }
+            
+            // Sort by rarity value (highest first) for better distribution
+            this.QuickSortRarities(0, this._sortedRarities.Length - 1);
+        }
+        
+        /// <summary>
+        /// Optimized quicksort for rarity probabilities
+        /// </summary>
+        private void QuickSortRarities(int low, int high)
+        {
+            if (low < high)
+            {
+                int pivotIndex = this.PartitionRarities(low, high);
+                this.QuickSortRarities(low, pivotIndex - 1);
+                this.QuickSortRarities(pivotIndex + 1, high);
             }
         }
         
         /// <summary>
-        /// Calculate total probability weight for normalization
+        /// Partition method for quicksort
+        /// </summary>
+        private int PartitionRarities(int low, int high)
+        {
+            var pivot = this._sortedRarities[high];
+            int i = low - 1;
+            
+            for (int j = low; j < high; j++)
+            {
+                if ((int)this._sortedRarities[j].rarity >= (int)pivot.rarity)
+                {
+                    i++;
+                    this.SwapRarities(i, j);
+                }
+            }
+            
+            this.SwapRarities(i + 1, high);
+            return i + 1;
+        }
+        
+        /// <summary>
+        /// Swap two rarity probabilities in the sorted array
+        /// </summary>
+        private void SwapRarities(int i, int j)
+        {
+            (this._sortedRarities[i], this._sortedRarities[j]) = (this._sortedRarities[j], this._sortedRarities[i]);
+        }
+        
+        /// <summary>
+        /// Calculate total probability weight for normalization with caching
         /// </summary>
         private void CalculateTotalWeight()
         {
-            _totalProbabilityWeight = 0f;
-            
-            foreach (var rarityProb in rarityProbabilities)
+            if (!this._needsRecalculation)
             {
-                _totalProbabilityWeight += rarityProb.GetCurrentProbability();
+                return;
             }
             
-            if (autoNormalizeProbabilities && _totalProbabilityWeight > 1f)
+            this._totalProbabilityWeight = 0f;
+            
+            for (int i = 0; i < this.rarityProbabilities.Count; i++)
             {
-                NormalizeProbabilities();
+                this._totalProbabilityWeight += this.rarityProbabilities[i].GetCurrentProbability();
             }
+            
+            if (this.autoNormalizeProbabilities && this._totalProbabilityWeight > 1f)
+            {
+                this.NormalizeProbabilities();
+            }
+            
+            this._needsRecalculation = false;
         }
         
         /// <summary>
@@ -96,19 +158,23 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         /// </summary>
         private void NormalizeProbabilities()
         {
-            if (_totalProbabilityWeight <= 0) return;
-            
-            if (maintainRelativeRatios)
+            if (this._totalProbabilityWeight <= 0) 
             {
-                float normalizationFactor = 1f / _totalProbabilityWeight;
-                foreach (var rarityProb in rarityProbabilities)
+                return;
+            }
+            
+            if (this.maintainRelativeRatios)
+            {
+                float normalizationFactor = 1f / this._totalProbabilityWeight;
+                for (int i = 0; i < this.rarityProbabilities.Count; i++)
                 {
+                    var rarityProb = this.rarityProbabilities[i];
                     rarityProb.baseProbability *= normalizationFactor;
                     rarityProb.MarkDirty();
                 }
             }
             
-            _totalProbabilityWeight = 1f;
+            this._totalProbabilityWeight = 1f;
         }
         
         /// <summary>
@@ -155,38 +221,45 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         }
         
         /// <summary>
-        /// Get a random rarity based on weighted probabilities
+        /// Get a random rarity based on weighted probabilities with optimized performance
         /// </summary>
         public Rarity SelectRandomRarity()
         {
-            if (!_isInitialized) Initialize();
+            if (!this._isInitialized) 
+            {
+                this.Initialize();
+            }
             
             // Recalculate total weight to account for dynamic changes
-            CalculateTotalWeight();
+            this.CalculateTotalWeight();
             
-            float randomValue = Random.value * _totalProbabilityWeight;
+            float randomValue = Random.value * this._totalProbabilityWeight;
             float currentWeight = 0f;
             
-            // Sort by rarity (highest first) for better distribution
-            var sortedRarities = rarityProbabilities.OrderByDescending(x => (int)x.rarity);
-            
-            foreach (var rarityProb in sortedRarities)
+            // Use cached sorted array for better performance
+            for (int i = 0; i < this._sortedRarities.Length; i++)
             {
-                currentWeight += rarityProb.GetCurrentProbability() * globalProbabilityMultiplier;
+                var rarityProb = this._sortedRarities[i];
+                float probability = rarityProb.GetCurrentProbability() * this.globalProbabilityMultiplier;
                 
-                if (enableGlobalLuckFactor)
+                if (this.enableGlobalLuckFactor)
                 {
-                    currentWeight *= luckFactor;
+                    probability *= this.luckFactor;
                 }
+                
+                currentWeight += probability;
                 
                 if (randomValue <= currentWeight)
                 {
                     rarityProb.RecordAttempt(true);
                     
-                    // Record failures for other rarities
-                    foreach (var otherRarity in rarityProbabilities.Where(x => x.rarity != rarityProb.rarity))
+                    // Record failures for other rarities - optimized without LINQ
+                    for (int j = 0; j < this._sortedRarities.Length; j++)
                     {
-                        otherRarity.RecordAttempt(false);
+                        if (j != i)
+                        {
+                            this._sortedRarities[j].RecordAttempt(false);
+                        }
                     }
                     
                     return rarityProb.rarity;
@@ -198,43 +271,46 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         }
         
         /// <summary>
-        /// Get all current probabilities as a dictionary
+        /// Get all current probabilities as a dictionary with optimized performance
         /// </summary>
         public Dictionary<Rarity, float> GetAllProbabilities()
         {
             var result = new Dictionary<Rarity, float>();
+            var allRarities = (Rarity[])Enum.GetValues(typeof(Rarity));
             
-            foreach (var rarity in Enum.GetValues(typeof(Rarity)).Cast<Rarity>())
+            for (int i = 0; i < allRarities.Length; i++)
             {
-                result[rarity] = GetProbability(rarity);
+                var rarity = allRarities[i];
+                result[rarity] = this.GetProbability(rarity);
             }
             
             return result;
         }
         
         /// <summary>
-        /// Simulate multiple rolls and return statistics
+        /// Simulate multiple rolls and return statistics with optimized performance
         /// </summary>
         public Dictionary<Rarity, float> SimulateRolls(int rollCount)
         {
             var results = new Dictionary<Rarity, int>();
-            var originalStates = SaveCurrentStates();
+            var originalStates = this.SaveCurrentStates();
+            var allRarities = (Rarity[])Enum.GetValues(typeof(Rarity));
             
-            // Initialize results
-            foreach (var rarity in Enum.GetValues(typeof(Rarity)).Cast<Rarity>())
+            // Initialize results - optimized without LINQ
+            for (int i = 0; i < allRarities.Length; i++)
             {
-                results[rarity] = 0;
+                results[allRarities[i]] = 0;
             }
             
             // Perform simulation
             for (int i = 0; i < rollCount; i++)
             {
-                var selectedRarity = SelectRandomRarity();
+                var selectedRarity = this.SelectRandomRarity();
                 results[selectedRarity]++;
             }
             
             // Restore original states
-            RestoreStates(originalStates);
+            this.RestoreStates(originalStates);
             
             // Convert to percentages
             var percentages = new Dictionary<Rarity, float>();
@@ -251,11 +327,11 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         /// </summary>
         public void ModifyProbability(Rarity rarity, float newBaseProbability)
         {
-            if (_probabilityLookup.ContainsKey(rarity))
+            if (this._probabilityLookup.ContainsKey(rarity))
             {
-                _probabilityLookup[rarity].baseProbability = Mathf.Clamp01(newBaseProbability);
-                _probabilityLookup[rarity].MarkDirty();
-                CalculateTotalWeight();
+                this._probabilityLookup[rarity].baseProbability = Mathf.Clamp01(newBaseProbability);
+                this._probabilityLookup[rarity].MarkDirty();
+                this.MarkDirty();
             }
         }
         
@@ -264,11 +340,20 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         /// </summary>
         public void ApplyTemporaryMultiplier(Rarity rarity, float multiplier)
         {
-            if (_probabilityLookup.ContainsKey(rarity))
+            if (this._probabilityLookup.ContainsKey(rarity))
             {
-                _probabilityLookup[rarity].weightMultiplier = multiplier;
-                _probabilityLookup[rarity].MarkDirty();
+                this._probabilityLookup[rarity].weightMultiplier = multiplier;
+                this._probabilityLookup[rarity].MarkDirty();
+                this.MarkDirty();
             }
+        }
+        
+        /// <summary>
+        /// Mark the controller as needing recalculation
+        /// </summary>
+        private void MarkDirty()
+        {
+            this._needsRecalculation = true;
         }
         
         /// <summary>
@@ -276,9 +361,9 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         /// </summary>
         public void ResetAllTracking()
         {
-            foreach (var rarityProb in rarityProbabilities)
+            for (int i = 0; i < this.rarityProbabilities.Count; i++)
             {
-                rarityProb.ResetTracking();
+                this.rarityProbabilities[i].ResetTracking();
             }
         }
         
@@ -287,7 +372,7 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         /// </summary>
         public (long attempts, long successes, float rate, int streak) GetRarityStats(Rarity rarity)
         {
-            if (_probabilityLookup.TryGetValue(rarity, out var prob))
+            if (this._probabilityLookup.TryGetValue(rarity, out var prob))
             {
                 return (prob.TotalAttempts, prob.TotalSuccesses, prob.GetSuccessRate(), prob.ConsecutiveFailures);
             }
@@ -319,7 +404,7 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         {
             var states = new Dictionary<Rarity, (int, long, long, DateTime)>();
             
-            foreach (var kvp in _probabilityLookup)
+            foreach (var kvp in this._probabilityLookup)
             {
                 var prob = kvp.Value;
                 states[kvp.Key] = (prob.ConsecutiveFailures, prob.TotalAttempts, prob.TotalSuccesses, prob.LastSuccessTime);
@@ -335,9 +420,9 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         {
             foreach (var kvp in states)
             {
-                if (_probabilityLookup.ContainsKey(kvp.Key))
+                if (this._probabilityLookup.ContainsKey(kvp.Key))
                 {
-                    var prob = _probabilityLookup[kvp.Key];
+                    var prob = this._probabilityLookup[kvp.Key];
                     prob.ConsecutiveFailures = kvp.Value.failures;
                     prob.TotalAttempts = kvp.Value.attempts;
                     prob.TotalSuccesses = kvp.Value.successes;
@@ -354,8 +439,9 @@ namespace PracticalModules.Probabilities.ProbabilityHandle
         {
             float totalProb = 0f;
             
-            foreach (var rarityProb in rarityProbabilities)
+            for (int i = 0; i < this.rarityProbabilities.Count; i++)
             {
+                var rarityProb = this.rarityProbabilities[i];
                 if (rarityProb.baseProbability < 0f || rarityProb.baseProbability > 1f)
                 {
                     Debug.LogError($"Invalid probability for {rarityProb.rarity}: {rarityProb.baseProbability}");

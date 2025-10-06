@@ -7,7 +7,7 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
     /// <summary>
     /// A weighted random selector that returns indices based on weight probabilities using UnityEngine.Random
     /// </summary>
-    public class WeightedRandomSelector
+    public class WeightedRandomSelector : IWeightedRandomSelector
     {
         private float[] _weights;
         private float[] _cumulativeWeights;
@@ -40,7 +40,15 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
             {
                 floatWeights[i] = weights[i];
             }
-            SetWeights(floatWeights);
+            this.SetWeights(floatWeights);
+        }
+        
+        /// <summary>
+        /// Initialize with partial array (for internal use with count parameter)
+        /// </summary>
+        private WeightedRandomSelector(float[] weights, int count)
+        {
+            this.SetWeights(weights, count);
         }
         
         /// <summary>
@@ -53,8 +61,21 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
                 throw new ArgumentException("Weights array cannot be null or empty");
             }
             
+            this.SetWeights(newWeights, newWeights.Length);
+        }
+        
+        /// <summary>
+        /// Set new weights with count parameter for partial arrays
+        /// </summary>
+        private void SetWeights(float[] newWeights, int count)
+        {
+            if (newWeights == null || count <= 0)
+            {
+                throw new ArgumentException("Weights array cannot be null or empty");
+            }
+            
             // Validate weights (must be non-negative)
-            for (int i = 0; i < newWeights.Length; i++)
+            for (int i = 0; i < count; i++)
             {
                 if (newWeights[i] < 0f)
                 {
@@ -63,11 +84,11 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
                 }
             }
             
-            _weights = new float[newWeights.Length];
-            Array.Copy(newWeights, _weights, newWeights.Length);
+            this._weights = new float[count];
+            Array.Copy(newWeights, this._weights, count);
             
-            _cumulativeWeights = new float[_weights.Length];
-            _isDirty = true;
+            this._cumulativeWeights = new float[this._weights.Length];
+            this._isDirty = true;
         }
         
         /// <summary>
@@ -75,9 +96,9 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// </summary>
         public void UpdateWeight(int index, float newWeight)
         {
-            if (index < 0 || index >= _weights.Length)
+            if (index < 0 || index >= this._weights.Length)
             {
-                throw new IndexOutOfRangeException($"Index {index} is out of range for weights array of length {_weights.Length}");
+                throw new IndexOutOfRangeException($"Index {index} is out of range for weights array of length {this._weights.Length}");
             }
             
             if (newWeight < 0f)
@@ -86,30 +107,30 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
                 newWeight = 0f;
             }
             
-            _weights[index] = newWeight;
-            _isDirty = true;
+            this._weights[index] = newWeight;
+            this._isDirty = true;
         }
         
         /// <summary>
-        /// Get a random index based on weights
+        /// Get a random index based on weights with optimized performance
         /// </summary>
         public int GetRandomIndex()
         {
-            if (_isDirty)
+            if (this._isDirty)
             {
-                RecalculateCumulativeWeights();
+                this.RecalculateCumulativeWeights();
             }
             
-            if (_totalWeight <= 0f)
+            if (this._totalWeight <= 0f)
             {
                 Debug.LogWarning("Total weight is 0 or negative. Returning random index.");
-                return UnityEngine.Random.Range(0, _weights.Length);
+                return UnityEngine.Random.Range(0, this._weights.Length);
             }
             
-            float randomValue = UnityEngine.Random.Range(0f, _totalWeight);
+            float randomValue = UnityEngine.Random.Range(0f, this._totalWeight);
             
             // Binary search for efficiency with large arrays
-            return BinarySearchIndex(randomValue);
+            return this.BinarySearchIndex(randomValue);
         }
         
         /// <summary>
@@ -120,60 +141,64 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
             int[] indices = new int[count];
             for (int i = 0; i < count; i++)
             {
-                indices[i] = GetRandomIndex();
+                indices[i] = this.GetRandomIndex();
             }
             return indices;
         }
         
         /// <summary>
-        /// Get multiple unique random indices (without replacement)
+        /// Get multiple unique random indices (without replacement) with optimized performance
         /// </summary>
         public int[] GetUniqueRandomIndices(int count)
         {
-            if (count > _weights.Length)
+            if (count > this._weights.Length)
             {
-                throw new ArgumentException($"Cannot select {count} unique indices from array of length {_weights.Length}");
+                throw new ArgumentException($"Cannot select {count} unique indices from array of length {this._weights.Length}");
             }
             
-            var availableIndices = new List<int>();
-            var tempWeights = new List<float>();
+            // Use arrays instead of Lists for better performance
+            var availableIndices = new int[this._weights.Length];
+            var tempWeights = new float[this._weights.Length];
+            int availableCount = 0;
             
             // Build available indices with non-zero weights
-            for (int i = 0; i < _weights.Length; i++)
+            for (int i = 0; i < this._weights.Length; i++)
             {
-                if (_weights[i] > 0f)
+                if (this._weights[i] > 0f)
                 {
-                    availableIndices.Add(i);
-                    tempWeights.Add(_weights[i]);
+                    availableIndices[availableCount] = i;
+                    tempWeights[availableCount] = this._weights[i];
+                    availableCount++;
                 }
             }
             
-            if (count > availableIndices.Count)
+            if (count > availableCount)
             {
-                throw new ArgumentException($"Cannot select {count} unique indices from {availableIndices.Count} available non-zero weighted items");
+                throw new ArgumentException($"Cannot select {count} unique indices from {availableCount} available non-zero weighted items");
             }
             
-            var selectedIndices = new List<int>();
-            var tempSelector = new WeightedRandomSelector(tempWeights);
+            var selectedIndices = new int[count];
+            var tempSelector = new WeightedRandomSelector(tempWeights, availableCount);
             
             for (int i = 0; i < count; i++)
             {
                 int tempIndex = tempSelector.GetRandomIndex();
                 int actualIndex = availableIndices[tempIndex];
                 
-                selectedIndices.Add(actualIndex);
+                selectedIndices[i] = actualIndex;
                 
-                // Remove selected item from temporary lists
-                availableIndices.RemoveAt(tempIndex);
-                tempWeights.RemoveAt(tempIndex);
+                // Remove selected item by swapping with last element
+                availableIndices[tempIndex] = availableIndices[availableCount - 1];
+                tempWeights[tempIndex] = tempWeights[availableCount - 1];
+                availableCount--;
                 
-                if (tempWeights.Count > 0)
+                if (availableCount > 0)
                 {
-                    tempSelector.SetWeights(tempWeights.ToArray());
+                    tempSelector.SetWeights(tempWeights, availableCount);
                 }
             }
             
-            return selectedIndices.ToArray();
+            return selectedIndices;
         }
         
         /// <summary>
@@ -181,15 +206,15 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// </summary>
         private void RecalculateCumulativeWeights()
         {
-            _totalWeight = 0f;
+            this._totalWeight = 0f;
             
-            for (int i = 0; i < _weights.Length; i++)
+            for (int i = 0; i < this._weights.Length; i++)
             {
-                _totalWeight += _weights[i];
-                _cumulativeWeights[i] = _totalWeight;
+                this._totalWeight += this._weights[i];
+                this._cumulativeWeights[i] = this._totalWeight;
             }
             
-            _isDirty = false;
+            this._isDirty = false;
         }
         
         /// <summary>
@@ -198,13 +223,13 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         private int BinarySearchIndex(float randomValue)
         {
             int left = 0;
-            int right = _cumulativeWeights.Length - 1;
+            int right = this._cumulativeWeights.Length - 1;
             
             while (left < right)
             {
                 int mid = left + (right - left) / 2;
                 
-                if (_cumulativeWeights[mid] < randomValue)
+                if (this._cumulativeWeights[mid] < randomValue)
                 {
                     left = mid + 1;
                 }
@@ -222,17 +247,17 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// </summary>
         public float GetProbability(int index)
         {
-            if (index < 0 || index >= _weights.Length)
+            if (index < 0 || index >= this._weights.Length)
             {
                 return 0f;
             }
             
-            if (_isDirty)
+            if (this._isDirty)
             {
-                RecalculateCumulativeWeights();
+                this.RecalculateCumulativeWeights();
             }
             
-            return _totalWeight > 0f ? _weights[index] / _totalWeight : 0f;
+            return this._totalWeight > 0f ? this._weights[index] / this._totalWeight : 0f;
         }
         
         /// <summary>
@@ -240,16 +265,16 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// </summary>
         public float[] GetAllProbabilities()
         {
-            if (_isDirty)
+            if (this._isDirty)
             {
-                RecalculateCumulativeWeights();
+                this.RecalculateCumulativeWeights();
             }
             
-            float[] probabilities = new float[_weights.Length];
+            float[] probabilities = new float[this._weights.Length];
             
-            for (int i = 0; i < _weights.Length; i++)
+            for (int i = 0; i < this._weights.Length; i++)
             {
-                probabilities[i] = _totalWeight > 0f ? _weights[i] / _totalWeight : 0f;
+                probabilities[i] = this._totalWeight > 0f ? this._weights[i] / this._totalWeight : 0f;
             }
             
             return probabilities;
@@ -260,12 +285,12 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// </summary>
         public float GetWeight(int index)
         {
-            if (index < 0 || index >= _weights.Length)
+            if (index < 0 || index >= this._weights.Length)
             {
                 return 0f;
             }
             
-            return _weights[index];
+            return this._weights[index];
         }
         
         /// <summary>
@@ -273,12 +298,12 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// </summary>
         public float GetTotalWeight()
         {
-            if (_isDirty)
+            if (this._isDirty)
             {
-                RecalculateCumulativeWeights();
+                this.RecalculateCumulativeWeights();
             }
             
-            return _totalWeight;
+            return this._totalWeight;
         }
         
         /// <summary>
@@ -286,8 +311,8 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// </summary>
         public float[] GetWeights()
         {
-            float[] copy = new float[_weights.Length];
-            Array.Copy(_weights, copy, _weights.Length);
+            float[] copy = new float[this._weights.Length];
+            Array.Copy(this._weights, copy, this._weights.Length);
             return copy;
         }
         
@@ -296,23 +321,23 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// </summary>
         public void NormalizeWeights()
         {
-            if (_isDirty)
+            if (this._isDirty)
             {
-                RecalculateCumulativeWeights();
+                this.RecalculateCumulativeWeights();
             }
             
-            if (_totalWeight <= 0f)
+            if (this._totalWeight <= 0f)
             {
                 Debug.LogWarning("Cannot normalize weights: total weight is 0 or negative");
                 return;
             }
             
-            for (int i = 0; i < _weights.Length; i++)
+            for (int i = 0; i < this._weights.Length; i++)
             {
-                _weights[i] /= _totalWeight;
+                this._weights[i] /= this._totalWeight;
             }
             
-            _isDirty = true;
+            this._isDirty = true;
         }
         
         /// <summary>
@@ -320,13 +345,13 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// </summary>
         public void ScaleWeights(float multiplier)
         {
-            for (int i = 0; i < _weights.Length; i++)
+            for (int i = 0; i < this._weights.Length; i++)
             {
-                _weights[i] *= multiplier;
-                if (_weights[i] < 0f) _weights[i] = 0f;
+                this._weights[i] *= multiplier;
+                if (this._weights[i] < 0f) this._weights[i] = 0f;
             }
             
-            _isDirty = true;
+            this._isDirty = true;
         }
         
         /// <summary>
@@ -337,7 +362,7 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
             var results = new Dictionary<int, int>();
             
             // Initialize results
-            for (int i = 0; i < _weights.Length; i++)
+            for (int i = 0; i < this._weights.Length; i++)
             {
                 results[i] = 0;
             }
@@ -345,7 +370,7 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
             // Perform simulation
             for (int i = 0; i < selectionCount; i++)
             {
-                int selectedIndex = GetRandomIndex();
+                int selectedIndex = this.GetRandomIndex();
                 results[selectedIndex]++;
             }
             
@@ -355,22 +380,22 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByWeights
         /// <summary>
         /// Get the number of available indices (weights.Length)
         /// </summary>
-        public int Count => _weights.Length;
+        public int Count => this._weights.Length;
         
         /// <summary>
         /// Check if the selector has valid weights
         /// </summary>
         public bool IsValid()
         {
-            if (_weights == null || _weights.Length == 0)
+            if (this._weights == null || this._weights.Length == 0)
                 return false;
                 
-            if (_isDirty)
+            if (this._isDirty)
             {
-                RecalculateCumulativeWeights();
+                this.RecalculateCumulativeWeights();
             }
             
-            return _totalWeight > 0f;
+            return this._totalWeight > 0f;
         }
     }
 }

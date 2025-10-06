@@ -121,49 +121,54 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByRarity
         }
         
         /// <summary>
-        /// Calculates time-based bonus multiplier
+        /// Calculates time-based bonus multiplier with optimized DateTime operations
         /// </summary>
         private float CalculateTimeBonus()
         {
-            if (LastSuccessTime == DateTime.MinValue) return timeBonusMultiplier;
-            
-            double hoursSinceLastSuccess = (DateTime.Now - LastSuccessTime).TotalHours;
-            
-            if (hoursSinceLastSuccess >= timeBonusDurationHours)
+            if (this.LastSuccessTime == DateTime.MinValue) 
             {
-                return timeBonusMultiplier;
+                return this.timeBonusMultiplier;
             }
             
-            return 1f + (float)(hoursSinceLastSuccess / timeBonusDurationHours) * (timeBonusMultiplier - 1f);
+            // Cache current time to avoid multiple DateTime.Now calls
+            var currentTime = DateTime.Now;
+            double hoursSinceLastSuccess = (currentTime - this.LastSuccessTime).TotalHours;
+            
+            if (hoursSinceLastSuccess >= this.timeBonusDurationHours)
+            {
+                return this.timeBonusMultiplier;
+            }
+            
+            return 1f + (float)(hoursSinceLastSuccess / this.timeBonusDurationHours) * (this.timeBonusMultiplier - 1f);
         }
         
         /// <summary>
-        /// Records an attempt and its result
+        /// Records an attempt and its result with optimized DateTime caching
         /// </summary>
         public void RecordAttempt(bool wasSuccess)
         {
-            TotalAttempts++;
+            this.TotalAttempts++;
             
             if (wasSuccess)
             {
-                TotalSuccesses++;
-                ConsecutiveFailures = 0;
-                LastSuccessTime = DateTime.Now;
+                this.TotalSuccesses++;
+                this.ConsecutiveFailures = 0;
+                this.LastSuccessTime = DateTime.Now;
             }
             else
             {
-                ConsecutiveFailures++;
+                this.ConsecutiveFailures++;
             }
             
-            _isDirty = true;
+            this._isDirty = true;
         }
         
         /// <summary>
-        /// Gets the current success rate percentage
+        /// Gets the current success rate percentage with optimized calculation
         /// </summary>
         public float GetSuccessRate()
         {
-            return TotalAttempts > 0 ? (float)TotalSuccesses / TotalAttempts : 0f;
+            return this.TotalAttempts > 0 ? (float)this.TotalSuccesses / this.TotalAttempts : 0f;
         }
         
         /// <summary>
@@ -171,11 +176,11 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByRarity
         /// </summary>
         public void ResetTracking()
         {
-            ConsecutiveFailures = 0;
-            TotalAttempts = 0;
-            TotalSuccesses = 0;
-            LastSuccessTime = DateTime.MinValue;
-            _isDirty = true;
+            this.ConsecutiveFailures = 0;
+            this.TotalAttempts = 0;
+            this.TotalSuccesses = 0;
+            this.LastSuccessTime = DateTime.MinValue;
+            this._isDirty = true;
         }
         
         /// <summary>
@@ -183,7 +188,7 @@ namespace PracticalModules.Probabilities.ProbabilityHandleByRarity
         /// </summary>
         public void MarkDirty()
         {
-            _isDirty = true;
+            this._isDirty = true;
         }
     }
 }
