@@ -6,6 +6,7 @@ using UnityEngine.Pool;
 using Foundations.DataFlow.MicroData.DynamicDataControllers;
 using Cysharp.Threading.Tasks;
 using PracticalModules.TypeCreator.Core;
+using UnityEngine;
 using ZLinq;
 
 namespace Foundations.DataFlow.MasterDataController
@@ -80,6 +81,7 @@ namespace Foundations.DataFlow.MasterDataController
         {
             foreach (IDynamicGameDataHandler dynamicDataHandler in _dynamicDataHandlers.Values)
                 dynamicDataHandler.Save();
+            PlayerPrefs.Save();
         }
 
         ~DynamicCustomDataManager() => Dispose(false);
