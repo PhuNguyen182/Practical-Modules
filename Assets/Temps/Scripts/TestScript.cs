@@ -12,6 +12,8 @@ public class TestScript : MonoBehaviour
     public Vector3Int[] positions;
     [FormerlySerializedAs("a")] public float fullValue;
     [FormerlySerializedAs("b")] public float separate;
+    public float getComponentTime;
+    public float tryGetComponentTime;
     
     private void Start()
     {
@@ -32,21 +34,43 @@ public class TestScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            CheckAddVectorByFullValue();
+            TestGetComponent();
         }
         
         if (Input.GetKeyDown(KeyCode.B))
         {
-            CheckAddVectorByPartialValue();
+            TestTryGetComponent();
         }
         
         if (Input.GetKeyDown(KeyCode.C))
         {
-            Debug.Log(separate < fullValue
-                ? "Separate value is faster than full component."
-                : "Full component is faster than separate value.");
-            Debug.Log((fullValue - separate)/fullValue * 100);
+            Debug.Log(getComponentTime < tryGetComponentTime
+                ? "getComponentTime value is faster."
+                : "tryGetComponentTime component is faster.");
+            Debug.Log(tryGetComponentTime / getComponentTime >= 1
+                ? tryGetComponentTime / getComponentTime
+                : 1 / tryGetComponentTime / getComponentTime);
         }
+    }
+    
+    private void TestGetComponent()
+    {
+        float time = Time.realtimeSinceStartup;
+        for (int i = 0; i < count; i++)
+        {
+            GetComponent<MessageBrokerExample>();
+        }
+        getComponentTime = Time.realtimeSinceStartup - time;
+    }
+
+    private void TestTryGetComponent()
+    {
+        float time = Time.realtimeSinceStartup;
+        for (int i = 0; i < count; i++)
+        {
+            TryGetComponent<MessageBrokerExample>(out var x);
+        }
+        tryGetComponentTime = Time.realtimeSinceStartup - time;
     }
 
     private void CheckAddVectorByFullValue()
