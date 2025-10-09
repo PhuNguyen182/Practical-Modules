@@ -1,6 +1,6 @@
-using System;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using PracticalModules.TypeCreator.Core;
 
 namespace Foundations.SaveSystem.CustomDataSaverService
 {
@@ -20,7 +20,7 @@ namespace Foundations.SaveSystem.CustomDataSaverService
         public async UniTask<T> LoadData(string name)
         {
             if (!PlayerPrefs.HasKey(name))
-                return Activator.CreateInstance<T>();
+                return TypeFactory.Create<T>();
 
             await UniTask.CompletedTask;
             string serializedData = PlayerPrefs.GetString(name);

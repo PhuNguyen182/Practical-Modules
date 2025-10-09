@@ -1,6 +1,6 @@
-using System;
 using System.IO;
 using Cysharp.Threading.Tasks;
+using PracticalModules.TypeCreator.Core;
 using UnityEngine;
 
 namespace Foundations.SaveSystem.CustomDataSaverService
@@ -29,7 +29,7 @@ namespace Foundations.SaveSystem.CustomDataSaverService
         {
             string dataPath = GetDataPath(name);
             if (!File.Exists(dataPath))
-                return Activator.CreateInstance<T>();
+                return TypeFactory.Create<T>();
 
             using StreamReader streamReader = new(dataPath);
             string serializedData = await streamReader.ReadToEndAsync();

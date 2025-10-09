@@ -26,7 +26,7 @@ public class TestScript : MonoBehaviour
 
         if (gameObject != null)
         {
-            
+            //Activator.CreateInstance()
         }
     }
 

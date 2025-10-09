@@ -1,6 +1,6 @@
-using System;
 using Cysharp.Threading.Tasks;
 using PracticalModules.MessageBrokers.MessageTypes;
+using PracticalModules.TypeCreator.Core;
 using MessagePipe;
 
 namespace PracticalModules.MessageBrokers.Utils
@@ -12,7 +12,7 @@ namespace PracticalModules.MessageBrokers.Utils
         public static UniTask<TAsyncMessageData> PublishAsyncMessage(IPublisher<TAsyncMessage> publisher,
             TAsyncMessageData messageData)
         {
-            TAsyncMessage message = Activator.CreateInstance<TAsyncMessage>();
+            TAsyncMessage message = TypeFactory.Create<TAsyncMessage>();
             message.MessageData = messageData;
             message.CompletionSource = new();
 

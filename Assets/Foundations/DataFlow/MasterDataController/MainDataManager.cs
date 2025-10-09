@@ -7,8 +7,8 @@ namespace Foundations.DataFlow.MasterDataController
 {
     public class MainDataManager : IMainDataManager
     {
-        private IStaticCustomDataManager? _staticCustomDataManager;
-        private IDynamicCustomDataManager? _dynamicCustomDataManager;
+        private IStaticCustomDataManager _staticCustomDataManager;
+        private IDynamicCustomDataManager _dynamicCustomDataManager;
         
         public async UniTask InitializeDataHandlers()
         {
@@ -21,11 +21,11 @@ namespace Foundations.DataFlow.MasterDataController
             await _dynamicCustomDataManager.InitializeDataHandlers();
         }
 
-        public TStaticGameDataHandler? GetStaticDataHandler<TStaticGameDataHandler>()
+        public TStaticGameDataHandler GetStaticDataHandler<TStaticGameDataHandler>()
             where TStaticGameDataHandler : class, IStaticGameDataHandler
             => _staticCustomDataManager?.GetDataHandler<TStaticGameDataHandler>();
 
-        public TDynamicGameDataHandler? GetDynamicDataHandler<TDynamicGameDataHandler>()
+        public TDynamicGameDataHandler GetDynamicDataHandler<TDynamicGameDataHandler>()
             where TDynamicGameDataHandler : class, IDynamicGameDataHandler =>
             _dynamicCustomDataManager?.GetDataHandler<TDynamicGameDataHandler>();
 

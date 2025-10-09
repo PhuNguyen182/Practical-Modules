@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using Foundations.DataFlow.MicroData.StaticDataControllers;
 using Cysharp.Threading.Tasks;
+using PracticalModules.TypeCreator.Core;
 using ZLinq;
 
 namespace Foundations.DataFlow.MasterDataController
@@ -26,7 +27,7 @@ namespace Foundations.DataFlow.MasterDataController
             
             foreach (Type dataHandlerType in allDataHandlerTypes)
             {
-                if (Activator.CreateInstance(dataHandlerType) is not IStaticGameDataHandler dataHandler)
+                if (TypeFactory.Create(dataHandlerType) is not IStaticGameDataHandler dataHandler)
                     continue;
 
                 await dataHandler.Initialize();

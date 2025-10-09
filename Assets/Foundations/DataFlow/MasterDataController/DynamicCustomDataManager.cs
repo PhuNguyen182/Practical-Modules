@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.Pool;
 using Foundations.DataFlow.MicroData.DynamicDataControllers;
 using Cysharp.Threading.Tasks;
+using PracticalModules.TypeCreator.Core;
 using ZLinq;
 
 namespace Foundations.DataFlow.MasterDataController
@@ -27,7 +28,7 @@ namespace Foundations.DataFlow.MasterDataController
             
             foreach (Type dataHandlerType in allDataHandlerTypes)
             {
-                if (Activator.CreateInstance(dataHandlerType) is not IDynamicGameDataHandler dataHandler)
+                if (TypeFactory.Create(dataHandlerType) is not IDynamicGameDataHandler dataHandler)
                     continue;
                 
                 await dataHandler.Load();
