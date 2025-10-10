@@ -49,8 +49,8 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.T
         public bool IsExpired => this._isExpired;
         public bool IsPaused => this._isPaused;
         
-        public event Action<float> OnUpdate;
-        public event Action OnComplete;
+        public event Action<float>? OnUpdate;
+        public event Action? OnComplete;
         
         public CountdownTimer(string key, float durationSeconds, bool startPaused = false)
         {

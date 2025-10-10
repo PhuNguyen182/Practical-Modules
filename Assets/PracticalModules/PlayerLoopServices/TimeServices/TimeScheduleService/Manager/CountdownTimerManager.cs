@@ -6,7 +6,6 @@ using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.TimeF
 using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.TimeSchedulerComponent;
 using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Persistence;
 using PracticalModules.PlayerLoopServices.UpdateServices;
-using UnityEngine;
 
 namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Manager
 {
@@ -155,7 +154,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.M
         {
             var timerDataList = this._persistence.LoadTimers();
             
-            if (timerDataList == null || timerDataList.Count == 0)
+            if (timerDataList.Count == 0)
             {
                 return;
             }
@@ -167,12 +166,9 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.M
                     var timer = this._timerFactory.ProduceFromSaveData(data);
                     
                     // Timer will be loaded in paused state
-                    if (timer != null)
-                    {
-                        this._timers[data.key] = timer;
-                        timer.OnComplete += () => this.HandleTimerCompleted(data.key);
-                        Debug.Log($"Loaded timer '{data.key}' in paused state. Call StartTimer('{data.key}') to resume.");
-                    }
+                    this._timers[data.key] = timer;
+                    timer.OnComplete += () => this.HandleTimerCompleted(data.key);
+                    Debug.Log($"Loaded timer '{data.key}' in paused state. Call StartTimer('{data.key}') to resume.");
                 }
                 catch (Exception ex)
                 {
