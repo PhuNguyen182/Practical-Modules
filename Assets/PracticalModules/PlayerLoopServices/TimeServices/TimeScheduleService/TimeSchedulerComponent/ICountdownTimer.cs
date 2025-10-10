@@ -39,6 +39,11 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.T
         public bool IsExpired { get; }
         
         /// <summary>
+        /// Kiểm tra bộ đếm có đang tạm dừng không
+        /// </summary>
+        public bool IsPaused { get; }
+        
+        /// <summary>
         /// Sự kiện khi bộ đếm được cập nhật
         /// </summary>
         public event Action<float> OnUpdate;
@@ -76,5 +81,15 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.T
         /// </summary>
         /// <param name="newDuration">Thời gian mới (seconds)</param>
         public void Reset(float newDuration);
+        
+        /// <summary>
+        /// Tiếp tục đếm ngược sau khi tạm dừng
+        /// </summary>
+        public void Resume();
+        
+        /// <summary>
+        /// Tạm dừng đếm ngược
+        /// </summary>
+        public void Pause();
     }
 }

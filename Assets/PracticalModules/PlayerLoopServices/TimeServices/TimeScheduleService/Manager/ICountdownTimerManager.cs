@@ -18,6 +18,13 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.M
         public ICountdownTimer GetOrCreateTimer(string key, float durationSeconds);
         
         /// <summary>
+        /// Bắt đầu đếm ngược cho timer đã load
+        /// </summary>
+        /// <param name="key">Khóa định danh</param>
+        /// <returns>Bộ đếm thời gian</returns>
+        public ICountdownTimer StartTimer(string key);
+        
+        /// <summary>
         /// Lấy bộ đếm thời gian theo key
         /// </summary>
         /// <param name="key">Khóa định danh</param>
@@ -62,7 +69,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.M
         public void SaveAllTimers();
         
         /// <summary>
-        /// Tải tất cả các bộ đếm từ dữ liệu đã lưu
+        /// Tải tất cả các bộ đếm từ dữ liệu đã lưu (ở trạng thái paused)
         /// </summary>
         public void LoadAllTimers();
         
