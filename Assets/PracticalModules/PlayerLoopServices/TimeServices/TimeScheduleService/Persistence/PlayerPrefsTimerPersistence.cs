@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Foundations.SaveSystem;
 using Foundations.SaveSystem.CustomDataSaverService;
 using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Data;
-using UnityEngine;
 
 namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Persistence
 {
@@ -25,7 +25,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.P
 
         public bool SaveTimers(List<CountdownTimerData> timerDataList)
         {
-            if (timerDataList == null || timerDataList.Count == 0)
+            if (timerDataList.Count == 0)
             {
                 return this.ClearTimers();
             }
@@ -43,14 +43,14 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.P
             }
         }
 
-        public List<CountdownTimerData> LoadTimers()
+        public async UniTask<List<CountdownTimerData>> LoadTimers()
         {
             try
             {
                 var loadTask = this._dataSaveService.LoadData(SaveKey);
-                var timerDataList = loadTask.GetAwaiter().GetResult();
+                var timerDataList = await loadTask;
                 
-                if (timerDataList != null && timerDataList.Count > 0)
+                if (timerDataList is { Count: > 0 })
                 {
                     Debug.Log($"[PlayerPrefsTimerPersistence] Loaded {timerDataList.Count} timers from PlayerPrefs");
                 }
@@ -79,12 +79,12 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.P
             }
         }
 
-        public bool HasSavedTimers()
+        public async UniTask<bool> HasSavedTimers()
         {
             try
             {
-                var timerDataList = this.LoadTimers();
-                return timerDataList != null && timerDataList.Count > 0;
+                var timerDataList = await this.LoadTimers();
+                return timerDataList is { Count: > 0 };
             }
             catch
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Foundations.SaveSystem;
 using Foundations.SaveSystem.CustomDataSaverService;
 using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Data;
@@ -42,16 +43,14 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.P
             }
         }
 
-        public List<CountdownTimerData> LoadTimers()
+        public async UniTask<List<CountdownTimerData>> LoadTimers()
         {
             try
             {
                 var loadTask = this._dataSaveService.LoadData(SaveFileName);
-                loadTask.GetAwaiter().GetResult();
+                var timerDataList = await loadTask;
                 
-                var timerDataList = loadTask.GetAwaiter().GetResult();
-                
-                if (timerDataList != null && timerDataList.Count > 0)
+                if (timerDataList is { Count: > 0 })
                 {
                     Debug.Log($"[FileTimerPersistence] Loaded {timerDataList.Count} timers from file");
                 }
@@ -80,11 +79,11 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.P
             }
         }
 
-        public bool HasSavedTimers()
+        public async UniTask<bool> HasSavedTimers()
         {
             try
             {
-                var timerDataList = this.LoadTimers();
+                var timerDataList = await this.LoadTimers();
                 return timerDataList is { Count: > 0 };
             }
             catch

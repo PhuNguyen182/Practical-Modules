@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using PracticalModules.PlayerLoopServices.Core.Handlers;
 using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Data;
 using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.TimeFactory;
@@ -150,9 +151,9 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.M
             this._persistence.SaveTimers(timerDataList);
         }
 
-        public void LoadAllTimers()
+        public async UniTask LoadAllTimers()
         {
-            var timerDataList = this._persistence.LoadTimers();
+            var timerDataList = await this._persistence.LoadTimers();
             
             if (timerDataList.Count == 0)
             {

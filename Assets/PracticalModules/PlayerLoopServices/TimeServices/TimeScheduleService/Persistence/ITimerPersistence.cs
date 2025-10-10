@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Data;
 
 namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Persistence
@@ -20,7 +21,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.P
         /// Tải danh sách timer data
         /// </summary>
         /// <returns>Danh sách timer đã lưu</returns>
-        public List<CountdownTimerData> LoadTimers();
+        public UniTask<List<CountdownTimerData>> LoadTimers();
         
         /// <summary>
         /// Xóa tất cả timer data đã lưu
@@ -32,7 +33,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.P
         /// Kiểm tra có timer data đã lưu không
         /// </summary>
         /// <returns>True nếu có data</returns>
-        public bool HasSavedTimers();
+        public UniTask<bool> HasSavedTimers();
     }
 }
 

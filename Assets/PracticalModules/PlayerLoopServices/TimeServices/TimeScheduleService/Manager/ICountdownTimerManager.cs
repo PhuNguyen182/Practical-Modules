@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.TimeSchedulerComponent;
 
 namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Manager
@@ -71,7 +72,7 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.M
         /// <summary>
         /// Tải tất cả các bộ đếm từ dữ liệu đã lưu (ở trạng thái paused)
         /// </summary>
-        public void LoadAllTimers();
+        public UniTask LoadAllTimers();
         
         /// <summary>
         /// Xóa tất cả các bộ đếm
