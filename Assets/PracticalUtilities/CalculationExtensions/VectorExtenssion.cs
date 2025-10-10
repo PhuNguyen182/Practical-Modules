@@ -105,5 +105,17 @@ namespace PracticalUtilities.CalculationExtensions
             Vector3 quantizedVector = Vector3.Scale(new(xQuantization, yQuantization, zQuantization), scaleVector);
             return quantizedVector;
         }
+        
+        public static Vector3 ForwardToOrientation(this Vector3 vector, Quaternion rotation)
+        {
+            Vector3 forward = rotation * vector;
+            return forward.normalized;
+        }
+
+        public static Vector3 ScaleWith(this Vector3 vector, Vector3 scale)
+        {
+            Vector3 scaledVector = Vector3.Scale(vector, scale);
+            return scaledVector;
+        }
     }
 }
