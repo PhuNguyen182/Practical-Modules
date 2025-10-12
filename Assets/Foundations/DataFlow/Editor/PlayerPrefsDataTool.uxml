@@ -1,0 +1,36 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="PlayerPrefsDataTool.uss" />
+    
+    <!-- Header Section -->
+    <ui:VisualElement class="header-container">
+        <ui:Label text="🎮 PlayerPrefs Data Manager" class="title-label" />
+        <ui:Label text="Manage your game data with ease" class="subtitle-label" />
+    </ui:VisualElement>
+    
+    <!-- Main Controls -->
+    <ui:VisualElement class="controls-container">
+        <ui:VisualElement class="button-row">
+            <ui:Button name="load-all-button" text="📥 Load All Data" class="primary-button" />
+            <ui:Button name="save-all-button" text="💾 Save All Data" class="success-button" />
+            <ui:Button name="delete-all-button" text="🗑️ Clear All Data" class="danger-button" />
+        </ui:VisualElement>
+        
+        <ui:VisualElement class="info-row">
+            <ui:Label name="data-count-label" text="📊 Found 0 data types" class="info-label" />
+            <ui:Label name="last-action-label" text="Ready to load data" class="status-label" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    
+    <!-- Data List Container -->
+    <ui:ScrollView name="data-scroll-view" class="data-scroll-view">
+        <ui:VisualElement name="data-container" class="data-container">
+            <!-- Data entries will be populated here -->
+        </ui:VisualElement>
+    </ui:ScrollView>
+    
+    <!-- Empty State -->
+    <ui:VisualElement name="empty-state" class="empty-state">
+        <ui:Label text="📁 No Data Found" class="empty-title" />
+        <ui:Label text="Click 'Load All Data' to scan for IGameData implementations" class="empty-description" />
+    </ui:VisualElement>
+</ui:UXML>

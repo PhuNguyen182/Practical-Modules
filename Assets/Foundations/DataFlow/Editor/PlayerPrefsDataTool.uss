@@ -1,0 +1,316 @@
+/* PlayerPrefs Data Tool Styling */
+
+/* Root Container */
+.unity-editor-window {
+    padding: 10px;
+    background-color: rgb(56, 56, 56);
+}
+
+/* Header Section */
+.header-container {
+    background-color: rgb(64, 64, 64);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-left: 4px solid rgb(88, 166, 255);
+}
+
+.title-label {
+    font-size: 18px;
+    color: rgb(210, 210, 210);
+    -unity-font-style: bold;
+    margin-bottom: 5px;
+}
+
+.subtitle-label {
+    font-size: 12px;
+    color: rgb(180, 180, 180);
+    -unity-font-style: italic;
+}
+
+/* Controls Section */
+.controls-container {
+    background-color: rgb(64, 64, 64);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.button-row {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.primary-button {
+    background-color: rgb(88, 166, 255);
+    color: white;
+    border-radius: 6px;
+    padding: 8px 16px;
+    border-width: 0;
+    font-size: 12px;
+    flex-grow: 1;
+    margin: 0 5px;
+    -unity-font-style: bold;
+}
+
+.primary-button:hover {
+    background-color: rgb(106, 180, 255);
+}
+
+.success-button {
+    background-color: rgb(76, 175, 80);
+    color: white;
+    border-radius: 6px;
+    padding: 8px 16px;
+    border-width: 0;
+    font-size: 12px;
+    flex-grow: 1;
+    margin: 0 5px;
+    -unity-font-style: bold;
+}
+
+.success-button:hover {
+    background-color: rgb(104, 191, 108);
+}
+
+.danger-button {
+    background-color: rgb(244, 67, 54);
+    color: white;
+    border-radius: 6px;
+    padding: 8px 16px;
+    border-width: 0;
+    font-size: 12px;
+    flex-grow: 1;
+    margin: 0 5px;
+    -unity-font-style: bold;
+}
+
+.danger-button:hover {
+    background-color: rgb(248, 98, 87);
+}
+
+.info-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-label {
+    color: rgb(210, 210, 210);
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+.status-label {
+    color: rgb(180, 180, 180);
+    font-size: 11px;
+    -unity-font-style: italic;
+}
+
+/* Data List */
+.data-scroll-view {
+    flex-grow: 1;
+    min-height: 300px;
+    background-color: rgb(48, 48, 48);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.data-container {
+    flex-grow: 1;
+}
+
+/* Data Entry */
+.data-entry {
+    background-color: rgb(64, 64, 64);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    padding: 0;
+    border-width: 1px;
+    border-color: rgb(80, 80, 80);
+}
+
+.data-entry:hover {
+    border-color: rgb(88, 166, 255);
+    background-color: rgb(70, 70, 70);
+}
+
+.data-entry-header {
+    background-color: rgb(72, 72, 72);
+    border-radius: 6px 6px 0 0;
+    padding: 10px 15px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(80, 80, 80);
+}
+
+.data-entry-title {
+    color: rgb(210, 210, 210);
+    font-size: 14px;
+    -unity-font-style: bold;
+    flex-grow: 1;
+}
+
+.data-entry-controls {
+    flex-direction: row;
+    align-items: center;
+}
+
+.small-button {
+    background-color: transparent;
+    border-width: 1px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-left: 5px;
+    font-size: 10px;
+    color: rgb(210, 210, 210);
+    border-color: rgb(120, 120, 120);
+}
+
+.load-button {
+    border-color: rgb(88, 166, 255);
+    color: rgb(88, 166, 255);
+}
+
+.load-button:hover {
+    background-color: rgb(88, 166, 255);
+    color: white;
+}
+
+.save-button {
+    border-color: rgb(76, 175, 80);
+    color: rgb(76, 175, 80);
+}
+
+.save-button:hover {
+    background-color: rgb(76, 175, 80);
+    color: white;
+}
+
+.data-entry-content {
+    padding: 15px;
+    background-color: rgb(60, 60, 60);
+    border-radius: 0 0 6px 6px;
+}
+
+/* Property Fields */
+.property-field {
+    margin-bottom: 8px;
+}
+
+.property-label {
+    color: rgb(200, 200, 200);
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+.property-value {
+    background-color: rgb(48, 48, 48);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgb(80, 80, 80);
+    padding: 6px 8px;
+    color: rgb(220, 220, 220);
+}
+
+.property-value:focus {
+    border-color: rgb(88, 166, 255);
+    background-color: rgb(52, 52, 52);
+}
+
+/* Foldout Styling */
+.unity-foldout__toggle {
+    background-color: transparent;
+    border-width: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.unity-foldout__text {
+    color: rgb(210, 210, 210);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.unity-foldout__checkmark {
+    background-image: resource("d_IN_foldout_act");
+    -unity-background-image-tint-color: rgb(180, 180, 180);
+}
+
+.unity-foldout--closed .unity-foldout__checkmark {
+    background-image: resource("d_IN_foldout");
+}
+
+/* Empty State */
+.empty-state {
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    min-height: 200px;
+}
+
+.empty-title {
+    font-size: 24px;
+    color: rgb(140, 140, 140);
+    margin-bottom: 10px;
+    -unity-font-style: bold;
+}
+
+.empty-description {
+    font-size: 14px;
+    color: rgb(120, 120, 120);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    max-width: 300px;
+}
+
+/* Animations */
+.fade-in {
+    transition-property: opacity;
+    transition-duration: 0.3s;
+}
+
+.slide-down {
+    transition-property: height;
+    transition-duration: 0.2s;
+}
+
+/* Status Indicators */
+.status-success {
+    color: rgb(76, 175, 80);
+}
+
+.status-error {
+    color: rgb(244, 67, 54);
+}
+
+.status-warning {
+    color: rgb(255, 193, 7);
+}
+
+.status-info {
+    color: rgb(88, 166, 255);
+}
+
+/* Expand Button */
+.expand-button {
+    background-color: transparent;
+    border-width: 1px;
+    border-radius: 3px;
+    border-color: rgb(120, 120, 120);
+    color: rgb(200, 200, 200);
+    font-size: 12px;
+    padding: 2px 8px;
+    margin: 0;
+    min-width: 30px;
+    max-width: 30px;
+    -unity-font-style: bold;
+}
+
+.expand-button:hover {
+    border-color: rgb(88, 166, 255);
+    color: rgb(88, 166, 255);
+    background-color: rgba(88, 166, 255, 0.1);
+}
