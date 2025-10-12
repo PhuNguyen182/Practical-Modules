@@ -266,12 +266,12 @@ namespace Foundations.DataFlow.Editor
                 }
                 
                 // Check common names
-                foreach (var name in commonNames)
+                foreach (var commonName in commonNames)
                 {
-                    if (PlayerPrefs.HasKey(name))
+                    if (PlayerPrefs.HasKey(commonName))
                     {
-                        keys.Add(name);
-                        Debug.Log($"🎯 Found key via common name: {name}");
+                        keys.Add(commonName);
+                        Debug.Log($"🎯 Found key via common name: {commonName}");
                     }
                 }
                 
@@ -691,6 +691,8 @@ namespace Foundations.DataFlow.Editor
                 var errorCount = 0;
                 var foundDataCount = 0;
                 
+                // Force UI refresh
+                this.RefreshUI();
                 Debug.Log($"📋 Attempting to load data for {this.dataEntries.Count} data types...");
                 
                 foreach (var entry in this.dataEntries)
@@ -718,8 +720,6 @@ namespace Foundations.DataFlow.Editor
                     }
                 }
                 
-                // Force UI refresh
-                this.RefreshUI();
                 this.UpdateDataCount();
                 
                 if (errorCount > 0)
