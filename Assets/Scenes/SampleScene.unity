@@ -286,6 +286,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eac40aa45a4c7584ea319a7de9fefdd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveCheck: 0
+  loadCheck: 0
 --- !u!4 &583901280
 Transform:
   m_ObjectHideFlags: 0
@@ -317,6 +319,8 @@ MonoBehaviour:
   positions: []
   fullValue: 0
   separate: 0
+  getComponentTime: 0
+  tryGetComponentTime: 0
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
