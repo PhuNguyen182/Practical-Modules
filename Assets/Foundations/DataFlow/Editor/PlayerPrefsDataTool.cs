@@ -30,7 +30,7 @@ namespace Foundations.DataFlow.Editor
         private readonly List<PlayerPrefsDataEntry> dataEntries = new();
         private readonly Dictionary<Type, PlayerPrefsDataEntry> entryMap = new();
         
-        [MenuItem("Tools/Foundations/PlayerPrefs Data Manager", false, 100)]
+        [MenuItem("Tools/Foundations/Local Data Editor/PlayerPref/PlayerPrefs Data Manager", false, 100)]
         public static void ShowWindow()
         {
             var window = GetWindow<PlayerPrefsDataTool>();
@@ -890,7 +890,7 @@ namespace Foundations.DataFlow.Editor
         /// <summary>
         /// Refreshes the tool by rescanning for data types
         /// </summary>
-        [MenuItem("Tools/Foundations/Refresh PlayerPrefs Data Manager", false, 101)]
+        [MenuItem("Tools/Foundations/Local Data Editor/PlayerPref/Refresh PlayerPrefs Data Manager", false, 101)]
         public static void RefreshTool()
         {
             var window = GetWindow<PlayerPrefsDataTool>(false, null, false);
@@ -903,7 +903,7 @@ namespace Foundations.DataFlow.Editor
         /// <summary>
         /// Opens PlayerPrefs in the system (Windows only)
         /// </summary>
-        [MenuItem("Tools/Foundations/Open PlayerPrefs Location", false, 102)]
+        [MenuItem("Tools/Foundations/Local Data Editor/PlayerPref/Open PlayerPrefs Location", false, 102)]
         public static void OpenPlayerPrefsLocation()
         {
             try
@@ -942,7 +942,7 @@ namespace Foundations.DataFlow.Editor
         /// <summary>
         /// Debug tool to scan and log all PlayerPrefs keys and content
         /// </summary>
-        [MenuItem("Tools/Foundations/Debug PlayerPrefs Scanner", false, 103)]
+        [MenuItem("Tools/Foundations/Local Data Editor/PlayerPref/Debug PlayerPrefs Scanner", false, 103)]
         public static void DebugPlayerPrefsScanner()
         {
             try

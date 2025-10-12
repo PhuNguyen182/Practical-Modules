@@ -101,7 +101,7 @@ graph TB
 #### 1️⃣ Open the Tool
 ```
 📁 Unity Menu Bar
-└── Tools → Foundations → PlayerPrefs Data Manager
+└── Tools → Foundations → Local Data Editor → PlayerPref → PlayerPrefs Data Manager
 ```
 
 #### 2️⃣ Your Data Classes
@@ -157,7 +157,7 @@ TestPlayerPrefsData → "Show Existing PlayerPrefs"
 ```
 
 **Step 3: Open Tool and Load**
-1. 🔧 `Tools → Foundations → PlayerPrefs Data Manager`
+1. 🔧 `Tools → Foundations → Local Data Editor → PlayerPref → PlayerPrefs Data Manager`
 2. 📥 Click "Load All Data"  
 3. 🎉 See your data loaded and ready to edit!
 
@@ -255,12 +255,12 @@ public class InventoryData : IGameData
 
 ### 📚 Menu Items Reference
 
-| Menu Item | Shortcut | Description |
-|----------|----------|-------------|
-| `Tools → Foundations → PlayerPrefs Data Manager` | - | Opens the main tool window |
-| `Tools → Foundations → Refresh PlayerPrefs Data Manager` | - | Rescans for new IGameData types and PlayerPrefs keys |
-| `Tools → Foundations → Open PlayerPrefs Location` | - | Shows where PlayerPrefs are stored on your system |
-| `Tools → Foundations → Debug PlayerPrefs Scanner` | - | **NEW!** Scans and logs all PlayerPrefs keys for debugging |
+| Menu Item                                                                                 | Shortcut | Description |
+|-------------------------------------------------------------------------------------------|----------|-------------|
+| `Tools → Foundations → Local Data Editor → PlayerPref → PlayerPrefs Data Manager`         | - | Opens the main tool window |
+| `Tools → Foundations → Local Data Editor → PlayerPref → Refresh PlayerPrefs Data Manager` | - | Rescans for new IGameData types and PlayerPrefs keys |
+| `Tools → Foundations → Local Data Editor → PlayerPref → Open PlayerPrefs Location`        | - | Shows where PlayerPrefs are stored on your system |
+| `Tools → Foundations → Local Data Editor → PlayerPref → Debug PlayerPrefs Scanner`                                        | - | **NEW!** Scans and logs all PlayerPrefs keys for debugging |
 
 ### 🔍 Debug Tools
 
@@ -269,7 +269,7 @@ public class InventoryData : IGameData
 > 🎯 **Perfect for troubleshooting** - shows exactly what's in PlayerPrefs
 
 ```
-🔧 Tools → Foundations → Debug PlayerPrefs Scanner
+🔧 Tools → Foundations → Local Data Editor → PlayerPref → Debug PlayerPrefs Scanner
 ```
 
 **What it does:**
@@ -651,7 +651,7 @@ public class PlayerData : IGameData
 
 ##### Step 2: Verify Assembly Loading
 - 🔍 Check Console for "ReflectionTypeLoadException" errors
-- 🔄 Try `Tools → Foundations → Refresh PlayerPrefs Data Manager`
+- 🔄 Try `Tools → Foundations → Local Data Editor → PlayerPref → Refresh PlayerPrefs Data Manager`
 - 🛠️ Rebuild your project (`Build → Clean Solution`)
 
 ---
@@ -745,8 +745,8 @@ if (PlayerPrefs.HasKey(key))
 ```
 
 #### Use Menu Helpers
-- 🔄 **Refresh Tool**: `Tools → Foundations → Refresh PlayerPrefs Data Manager`
-- 📂 **Check Location**: `Tools → Foundations → Open PlayerPrefs Location`
+- 🔄 **Refresh Tool**: `Tools → Foundations → Local Data Editor → PlayerPref → Refresh PlayerPrefs Data Manager`
+- 📂 **Check Location**: `Tools → Foundations → Local Data Editor → PlayerPref → Open PlayerPrefs Location`
 
 ---
 
