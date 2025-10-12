@@ -38,7 +38,7 @@ namespace Foundations.DataFlow.Editor
         {
             this.dataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
             this.typeName = dataType.Name;
-            this.playerPrefsKey = $"GameData_{this.typeName}";
+            this.playerPrefsKey = $"{this.typeName}";
             this.propertyFields = new Dictionary<string, VisualElement>();
         }
         
