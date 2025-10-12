@@ -7,7 +7,7 @@
     "com.cysharp.zlogger": "https://github.com/Cysharp/ZLogger.git?path=src/ZLogger.Unity/Assets/ZLogger.Unity",
     "com.cysharp.zstring": "2.6.0",
     "com.github-glitchenzo.nugetforunity": "4.5.0",
-    "com.gustavopsantos.reflex": "13.0.1",
+    "com.gustavopsantos.reflex": "13.0.2",
     "com.kyrylokuzyk.primetween": "file:../Assets/Plugins/PrimeTween/internal/com.kyrylokuzyk.primetween.tgz",
     "com.unity.addressables": "2.7.3",
     "com.unity.collab-proxy": "2.9.3",

@@ -50,7 +50,7 @@
       "url": "https://package.openupm.com"
     },
     "com.gustavopsantos.reflex": {
-      "version": "13.0.1",
+      "version": "13.0.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
