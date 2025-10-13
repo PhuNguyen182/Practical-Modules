@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 using Foundations.DataFlow.MicroData;
 using Newtonsoft.Json;
 
@@ -18,8 +20,10 @@ namespace Foundations.DataFlow.Editor
     public class PlayerPrefsDataTool : EditorWindow
     {
         private VisualElement root;
-        private ScrollView dataScrollView;
-        private VisualElement dataContainer;
+        private ScrollView playerPrefsScrollView;
+        private VisualElement playerPrefsContainer;
+        private ScrollView fileScrollView;
+        private VisualElement fileContainer;
         private VisualElement emptyState;
         private Button loadAllButton;
         private Button saveAllButton;
@@ -28,9 +32,18 @@ namespace Foundations.DataFlow.Editor
         private Label lastActionLabel;
         private TextField searchField;
         private Button clearSearchButton;
+        private TextField prefixField;
+        private Button refreshFilesButton;
+        private Label folderPathLabel;
+        private Label playerPrefsCountLabel;
+        private Label fileCountLabel;
         
-        private readonly List<PlayerPrefsDataEntry> dataEntries = new();
-        private readonly Dictionary<Type, PlayerPrefsDataEntry> entryMap = new();
+        private readonly List<PlayerPrefsDataEntry> playerPrefsEntries = new();
+        private readonly Dictionary<Type, PlayerPrefsDataEntry> playerPrefsEntryMap = new();
+        private readonly List<FileDataEntry> fileEntries = new();
+        private readonly Dictionary<Type, FileDataEntry> fileEntryMap = new();
+        
+        private string currentLocalDataPrefix = "GameData";
         
         [MenuItem("Tools/Foundations/Local Data Editor/PlayerPref/PlayerPrefs Data Manager", false, 100)]
         public static void ShowWindow()
@@ -71,16 +84,32 @@ namespace Foundations.DataFlow.Editor
         /// </summary>
         private void CacheUIElements()
         {
-            this.dataScrollView = this.root.Q<ScrollView>("data-scroll-view");
-            this.dataContainer = this.root.Q<VisualElement>("data-container");
+            // Dual scroll views and containers
+            this.playerPrefsScrollView = this.root.Q<ScrollView>("playerprefs-scroll-view");
+            this.playerPrefsContainer = this.root.Q<VisualElement>("playerprefs-container");
+            this.fileScrollView = this.root.Q<ScrollView>("file-scroll-view");
+            this.fileContainer = this.root.Q<VisualElement>("file-container");
+            
+            // General UI elements
             this.emptyState = this.root.Q<VisualElement>("empty-state");
             this.loadAllButton = this.root.Q<Button>("load-all-button");
             this.saveAllButton = this.root.Q<Button>("save-all-button");
             this.deleteAllButton = this.root.Q<Button>("delete-all-button");
             this.dataCountLabel = this.root.Q<Label>("data-count-label");
             this.lastActionLabel = this.root.Q<Label>("last-action-label");
+            
+            // Search functionality
             this.searchField = this.root.Q<TextField>("search-field");
             this.clearSearchButton = this.root.Q<Button>("clear-search-button");
+            
+            // Prefix configuration
+            this.prefixField = this.root.Q<TextField>("prefix-field");
+            this.refreshFilesButton = this.root.Q<Button>("refresh-files-button");
+            this.folderPathLabel = this.root.Q<Label>("folder-path-label");
+            
+            // Count labels
+            this.playerPrefsCountLabel = this.root.Q<Label>("playerprefs-count-label");
+            this.fileCountLabel = this.root.Q<Label>("file-count-label");
         }
         
         /// <summary>
@@ -96,8 +125,16 @@ namespace Foundations.DataFlow.Editor
             this.searchField?.RegisterValueChangedCallback(this.OnSearchChanged);
             this.clearSearchButton?.RegisterCallback<ClickEvent>(_ => this.ClearSearch());
             
+            // Prefix configuration
+            this.prefixField?.RegisterValueChangedCallback(this.OnPrefixChanged);
+            this.refreshFilesButton?.RegisterCallback<ClickEvent>(_ => this.RefreshFileData());
+            
             // Auto-scan for data types on first load
-            EditorApplication.delayCall += this.ScanForGameDataTypes;
+            EditorApplication.delayCall += () =>
+            {
+                this.ScanForGameDataTypes();
+                this.ScanForFileData();
+            };
         }
         
         /// <summary>
@@ -107,8 +144,8 @@ namespace Foundations.DataFlow.Editor
         {
             try
             {
-                this.dataEntries.Clear();
-                this.entryMap.Clear();
+                this.playerPrefsEntries.Clear();
+                this.playerPrefsEntryMap.Clear();
                 
                 // First, get all available IGameData types from assemblies
                 var availableGameDataTypes = this.GetAvailableGameDataTypes();
@@ -124,24 +161,119 @@ namespace Foundations.DataFlow.Editor
                 foreach (var type in availableGameDataTypes)
                 {
                     var entry = new PlayerPrefsDataEntry(type);
-                    entry.OnDataChanged += this.OnDataEntryChanged;
-                    entry.OnEntryDeleted += this.OnEntryDeleted;
-                    this.dataEntries.Add(entry);
-                    this.entryMap[type] = entry;
+                    entry.OnDataChanged += this.OnPlayerPrefsDataEntryChanged;
+                    entry.OnEntryDeleted += this.OnPlayerPrefsEntryDeleted;
+                    this.playerPrefsEntries.Add(entry);
+                    this.playerPrefsEntryMap[type] = entry;
                 }
                 
                 // Try to match JSON keys with types and auto-load data
                 this.AutoMatchAndLoadData(jsonKeys, availableGameDataTypes);
                 
                 this.UpdateUI();
-                this.UpdateLastAction($"🔍 Found {availableGameDataTypes.Count} data types, {jsonKeys.Count} JSON keys");
+                this.UpdateLastAction($"🔍 Found {availableGameDataTypes.Count} PlayerPrefs types, {jsonKeys.Count} JSON keys");
                 
-                Debug.Log($"✅ Scan completed: {availableGameDataTypes.Count} types, {jsonKeys.Count} JSON keys in PlayerPrefs");
+                Debug.Log($"✅ PlayerPrefs scan completed: {availableGameDataTypes.Count} types, {jsonKeys.Count} JSON keys");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"❌ Error scanning for game data: {ex.Message}");
-                this.UpdateLastAction("❌ Scan failed");
+                Debug.LogError($"❌ Error scanning PlayerPrefs data: {ex.Message}");
+                this.UpdateLastAction("❌ PlayerPrefs scan failed");
+            }
+        }
+        
+        /// <summary>
+        /// Scans for file data in the specified folder
+        /// </summary>
+        private void ScanForFileData()
+        {
+            try
+            {
+                Debug.Log($"📂 Scanning for file data with prefix: {this.currentLocalDataPrefix}");
+                
+                this.fileEntries.Clear();
+                this.fileEntryMap.Clear();
+                
+                var availableGameDataTypes = this.GetAvailableGameDataTypes();
+                var folderPath = Path.Combine(Application.persistentDataPath, this.currentLocalDataPrefix);
+                
+                this.UpdateFolderPathLabel();
+                
+                if (!Directory.Exists(folderPath))
+                {
+                    Debug.Log($"📂 Folder does not exist: {folderPath}");
+                }
+                else
+                {
+                    var jsonFiles = Directory.GetFiles(folderPath, "*.json");
+                    Debug.Log($"📄 Found {jsonFiles.Length} JSON files in {folderPath}");
+                }
+                
+                // Create file entries for all available types
+                foreach (var type in availableGameDataTypes)
+                {
+                    var entry = new FileDataEntry(type, this.currentLocalDataPrefix);
+                    entry.OnDataChanged += this.OnFileDataEntryChanged;
+                    entry.OnEntryDeleted += this.OnFileEntryDeleted;
+                    this.fileEntries.Add(entry);
+                    this.fileEntryMap[type] = entry;
+                }
+                
+                this.UpdateUI();
+                this.UpdateLastAction($"📂 Scanned file data: {this.fileEntries.Count} types available");
+                
+                Debug.Log($"✅ File data scan completed: {this.fileEntries.Count} entries");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error scanning file data: {ex.Message}");
+                this.UpdateLastAction("❌ File scan failed");
+            }
+        }
+        
+        /// <summary>
+        /// Called when prefix field value changes
+        /// </summary>
+        private void OnPrefixChanged(ChangeEvent<string> evt)
+        {
+            try
+            {
+                this.currentLocalDataPrefix = evt.newValue;
+                this.UpdateFolderPathLabel();
+                
+                Debug.Log($"📂 Prefix changed to: {this.currentLocalDataPrefix}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error changing prefix: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Refreshes file data scanning
+        /// </summary>
+        private void RefreshFileData()
+        {
+            try
+            {
+                Debug.Log("🔄 Refreshing file data...");
+                this.ScanForFileData();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error refreshing file data: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Updates the folder path label
+        /// </summary>
+        private void UpdateFolderPathLabel()
+        {
+            if (this.folderPathLabel != null)
+            {
+                var fullPath = Path.Combine(Application.persistentDataPath, this.currentLocalDataPrefix);
+                this.folderPathLabel.text = $"📁 Path: {fullPath}";
             }
         }
         
@@ -467,7 +599,7 @@ namespace Foundations.DataFlow.Editor
                     var jsonData = PlayerPrefs.GetString(key);
                     var matchedType = this.TryMatchJsonToType(jsonData, availableTypes, key);
                     
-                    if (matchedType != null && this.entryMap.ContainsKey(matchedType))
+                    if (matchedType != null && this.playerPrefsEntryMap.ContainsKey(matchedType))
                     {
                         Debug.Log($"✅ Auto-matched key '{key}' to type '{matchedType.Name}'");
                         // The PlayerPrefsDataEntry will handle loading when LoadData() is called
@@ -609,15 +741,17 @@ namespace Foundations.DataFlow.Editor
         /// </summary>
         private void UpdateUI()
         {
-            this.dataContainer?.Clear();
+            this.playerPrefsContainer?.Clear();
+            this.fileContainer?.Clear();
             
-            if (this.dataEntries.Count == 0)
+            var totalEntries = this.playerPrefsEntries.Count + this.fileEntries.Count;
+            if (totalEntries == 0)
             {
                 this.ShowEmptyState();
             }
             else
             {
-                this.ShowDataEntries();
+                this.ShowBothDataSections();
             }
             
             this.UpdateDataCount();
@@ -633,25 +767,35 @@ namespace Foundations.DataFlow.Editor
                 this.emptyState.style.display = DisplayStyle.Flex;
             }
             
-            if (this.dataScrollView != null)
+            if (this.playerPrefsScrollView != null)
             {
-                this.dataScrollView.style.display = DisplayStyle.None;
+                this.playerPrefsScrollView.style.display = DisplayStyle.None;
+            }
+            
+            if (this.fileScrollView != null)
+            {
+                this.fileScrollView.style.display = DisplayStyle.None;
             }
         }
         
         /// <summary>
-        /// Shows data entries in the scroll view
+        /// Shows both PlayerPrefs and File data sections
         /// </summary>
-        private void ShowDataEntries()
+        private void ShowBothDataSections()
         {
             if (this.emptyState != null)
             {
                 this.emptyState.style.display = DisplayStyle.None;
             }
             
-            if (this.dataScrollView != null)
+            if (this.playerPrefsScrollView != null)
             {
-                this.dataScrollView.style.display = DisplayStyle.Flex;
+                this.playerPrefsScrollView.style.display = DisplayStyle.Flex;
+            }
+            
+            if (this.fileScrollView != null)
+            {
+                this.fileScrollView.style.display = DisplayStyle.Flex;
             }
             
             // Use current search term to filter entries
@@ -660,14 +804,33 @@ namespace Foundations.DataFlow.Editor
         }
         
         /// <summary>
-        /// Updates the data count label
+        /// Updates the data count labels for both PlayerPrefs and File data
         /// </summary>
         private void UpdateDataCount()
         {
+            // Update main data count label
             if (this.dataCountLabel != null)
             {
-                var hasDataCount = this.dataEntries.Count(entry => entry.HasData);
-                this.dataCountLabel.text = $"📊 Found {this.dataEntries.Count} data types ({hasDataCount} with data)";
+                var playerPrefsWithData = this.playerPrefsEntries.Count(entry => entry.HasData);
+                var filesWithData = this.fileEntries.Count(entry => entry.HasData);
+                var totalTypes = this.playerPrefsEntries.Count + this.fileEntries.Count;
+                var totalWithData = playerPrefsWithData + filesWithData;
+                
+                this.dataCountLabel.text = $"📊 Found {totalTypes} data types ({totalWithData} with data)";
+            }
+            
+            // Update PlayerPrefs count label
+            if (this.playerPrefsCountLabel != null)
+            {
+                var playerPrefsWithData = this.playerPrefsEntries.Count(entry => entry.HasData);
+                this.playerPrefsCountLabel.text = $"{playerPrefsWithData}/{this.playerPrefsEntries.Count} entries";
+            }
+            
+            // Update File count label
+            if (this.fileCountLabel != null)
+            {
+                var filesWithData = this.fileEntries.Count(entry => entry.HasData);
+                this.fileCountLabel.text = $"{filesWithData}/{this.fileEntries.Count} entries";
             }
         }
         
@@ -683,66 +846,103 @@ namespace Foundations.DataFlow.Editor
         }
         
         /// <summary>
-        /// Loads all data from PlayerPrefs with enhanced scanning and loading
+        /// Loads all data from both PlayerPrefs and File sources
         /// </summary>
         private void LoadAllData()
         {
             try
             {
-                Debug.Log("🔄 Starting Load All Data operation...");
+                Debug.Log("🔄 Starting Load All Data operation for both PlayerPrefs and Files...");
                 
-                // First, rescan for any new data
+                // Rescan for both data sources
                 this.ScanForGameDataTypes();
+                this.ScanForFileData();
                 
-                var loadedCount = 0;
-                var errorCount = 0;
-                var foundDataCount = 0;
+                var playerPrefsLoadedCount = 0;
+                var fileLoadedCount = 0;
+                var playerPrefsErrorCount = 0;
+                var fileErrorCount = 0;
+                var playerPrefsFoundDataCount = 0;
+                var fileFoundDataCount = 0;
                 
                 // Force UI refresh
                 this.RefreshUI();
-                Debug.Log($"📋 Attempting to load data for {this.dataEntries.Count} data types...");
                 
-                foreach (var entry in this.dataEntries)
+                // Load PlayerPrefs data
+                Debug.Log($"📋 Loading PlayerPrefs data for {this.playerPrefsEntries.Count} types...");
+                foreach (var entry in this.playerPrefsEntries)
                 {
                     try
                     {
-                        Debug.Log($"🔍 Loading data for {entry.TypeName}...");
+                        Debug.Log($"🔍 Loading PlayerPrefs data for {entry.TypeName}...");
                         entry.LoadData();
                         
                         if (entry.HasData)
                         {
-                            loadedCount++;
-                            foundDataCount++;
-                            Debug.Log($"✅ Successfully loaded data for {entry.TypeName}");
+                            playerPrefsLoadedCount++;
+                            playerPrefsFoundDataCount++;
+                            Debug.Log($"✅ Successfully loaded PlayerPrefs data for {entry.TypeName}");
                         }
                         else
                         {
-                            Debug.Log($"⚠️ No data found for {entry.TypeName}");
+                            Debug.Log($"⚠️ No PlayerPrefs data found for {entry.TypeName}");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Debug.LogError($"❌ Error loading {entry.TypeName}: {ex.Message}");
-                        errorCount++;
+                        Debug.LogError($"❌ Error loading PlayerPrefs {entry.TypeName}: {ex.Message}");
+                        playerPrefsErrorCount++;
+                    }
+                }
+                
+                // Load File data
+                Debug.Log($"📂 Loading File data for {this.fileEntries.Count} types...");
+                foreach (var entry in this.fileEntries)
+                {
+                    try
+                    {
+                        Debug.Log($"🔍 Loading File data for {entry.TypeName}...");
+                        entry.LoadData();
+                        
+                        if (entry.HasData)
+                        {
+                            fileLoadedCount++;
+                            fileFoundDataCount++;
+                            Debug.Log($"✅ Successfully loaded File data for {entry.TypeName}");
+                        }
+                        else
+                        {
+                            Debug.Log($"⚠️ No File data found for {entry.TypeName}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"❌ Error loading File {entry.TypeName}: {ex.Message}");
+                        fileErrorCount++;
                     }
                 }
                 
                 this.UpdateDataCount();
                 
-                if (errorCount > 0)
+                // Update status based on results
+                var totalLoaded = playerPrefsLoadedCount + fileLoadedCount;
+                var totalErrors = playerPrefsErrorCount + fileErrorCount;
+                var totalFound = playerPrefsFoundDataCount + fileFoundDataCount;
+                
+                if (totalErrors > 0)
                 {
-                    this.UpdateLastAction($"⚠️ Loaded {loadedCount} entries with {errorCount} errors");
+                    this.UpdateLastAction($"⚠️ Loaded {totalLoaded} entries with {totalErrors} errors (PP: {playerPrefsLoadedCount}, Files: {fileLoadedCount})");
                 }
-                else if (foundDataCount > 0)
+                else if (totalFound > 0)
                 {
-                    this.UpdateLastAction($"✅ Loaded {loadedCount} data entries successfully");
+                    this.UpdateLastAction($"✅ Loaded {totalLoaded} entries successfully (PlayerPrefs: {playerPrefsLoadedCount}, Files: {fileLoadedCount})");
                 }
                 else
                 {
                     this.UpdateLastAction($"📭 No saved data found - all entries show defaults");
                 }
                 
-                Debug.Log($"✅ Load All Data completed: {loadedCount} loaded, {errorCount} errors, {foundDataCount} with actual data");
+                Debug.Log($"✅ Load All Data completed: PP({playerPrefsLoadedCount} loaded, {playerPrefsErrorCount} errors), Files({fileLoadedCount} loaded, {fileErrorCount} errors)");
             }
             catch (Exception ex)
             {
@@ -761,7 +961,7 @@ namespace Foundations.DataFlow.Editor
                 Debug.Log("🔄 Refreshing UI...");
                 
                 // Clear current UI
-                this.dataContainer?.Clear();
+                //this.dataContainer?.Clear();
                 
                 // Rebuild UI with current data entries
                 this.UpdateUI();
@@ -775,42 +975,71 @@ namespace Foundations.DataFlow.Editor
         }
         
         /// <summary>
-        /// Saves all data to PlayerPrefs
+        /// Saves all data to both PlayerPrefs and Files
         /// </summary>
         private void SaveAllData()
         {
             try
             {
-                var savedCount = 0;
-                var errorCount = 0;
+                var playerPrefsSavedCount = 0;
+                var fileSavedCount = 0;
+                var playerPrefsErrorCount = 0;
+                var fileErrorCount = 0;
                 
-                foreach (var entry in this.dataEntries)
+                // Save PlayerPrefs data
+                Debug.Log("💾 Saving PlayerPrefs data...");
+                foreach (var entry in this.playerPrefsEntries)
                 {
                     try
                     {
                         if (entry.HasData)
                         {
                             entry.SaveData();
-                            savedCount++;
+                            playerPrefsSavedCount++;
+                            Debug.Log($"✅ Saved PlayerPrefs data for {entry.TypeName}");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Debug.LogError($"❌ Error saving {entry.TypeName}: {ex.Message}");
-                        errorCount++;
+                        Debug.LogError($"❌ Error saving PlayerPrefs {entry.TypeName}: {ex.Message}");
+                        playerPrefsErrorCount++;
                     }
                 }
                 
-                if (errorCount > 0)
+                // Save File data
+                Debug.Log("💾 Saving File data...");
+                foreach (var entry in this.fileEntries)
                 {
-                    this.UpdateLastAction($"⚠️ Saved {savedCount} entries with {errorCount} errors");
+                    try
+                    {
+                        if (entry.HasData)
+                        {
+                            entry.SaveData();
+                            fileSavedCount++;
+                            Debug.Log($"✅ Saved File data for {entry.TypeName}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"❌ Error saving File {entry.TypeName}: {ex.Message}");
+                        fileErrorCount++;
+                    }
+                }
+                
+                // Update status
+                var totalSaved = playerPrefsSavedCount + fileSavedCount;
+                var totalErrors = playerPrefsErrorCount + fileErrorCount;
+                
+                if (totalErrors > 0)
+                {
+                    this.UpdateLastAction($"⚠️ Saved {totalSaved} entries with {totalErrors} errors (PP: {playerPrefsSavedCount}, Files: {fileSavedCount})");
                 }
                 else
                 {
-                    this.UpdateLastAction($"✅ Saved {savedCount} data entries successfully");
+                    this.UpdateLastAction($"✅ Saved {totalSaved} entries successfully (PlayerPrefs: {playerPrefsSavedCount}, Files: {fileSavedCount})");
                 }
                 
-                Debug.Log($"✅ Save All Data completed: {savedCount} saved, {errorCount} errors");
+                Debug.Log($"✅ Save All Data completed: PP({playerPrefsSavedCount} saved, {playerPrefsErrorCount} errors), Files({fileSavedCount} saved, {fileErrorCount} errors)");
             }
             catch (Exception ex)
             {
@@ -838,26 +1067,44 @@ namespace Foundations.DataFlow.Editor
         }
         
         /// <summary>
-        /// Deletes all PlayerPrefs data
+        /// Deletes all PlayerPrefs and File data
         /// </summary>
         private void DeleteAllData()
         {
             try
             {
-                var deletedCount = 0;
-                var errorCount = 0;
+                var playerPrefsDeletedCount = 0;
+                var fileDeletedCount = 0;
+                var playerPrefsErrorCount = 0;
+                var fileErrorCount = 0;
                 
-                foreach (var entry in this.dataEntries)
+                // Delete PlayerPrefs entries
+                foreach (var entry in this.playerPrefsEntries)
                 {
                     try
                     {
                         entry.DeleteData();
-                        deletedCount++;
+                        playerPrefsDeletedCount++;
                     }
                     catch (Exception ex)
                     {
-                        Debug.LogError($"❌ Error deleting {entry.TypeName}: {ex.Message}");
-                        errorCount++;
+                        Debug.LogError($"❌ Error deleting PlayerPrefs {entry.TypeName}: {ex.Message}");
+                        playerPrefsErrorCount++;
+                    }
+                }
+                
+                // Delete File entries
+                foreach (var entry in this.fileEntries)
+                {
+                    try
+                    {
+                        entry.DeleteFile();
+                        fileDeletedCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"❌ Error deleting File {entry.TypeName}: {ex.Message}");
+                        fileErrorCount++;
                     }
                 }
                 
@@ -867,16 +1114,19 @@ namespace Foundations.DataFlow.Editor
                 
                 this.UpdateDataCount();
                 
-                if (errorCount > 0)
+                var totalDeleted = playerPrefsDeletedCount + fileDeletedCount;
+                var totalErrors = playerPrefsErrorCount + fileErrorCount;
+                
+                if (totalErrors > 0)
                 {
-                    this.UpdateLastAction($"⚠️ Deleted {deletedCount} entries with {errorCount} errors");
+                    this.UpdateLastAction($"⚠️ Deleted {totalDeleted} entries with {totalErrors} errors (PP: {playerPrefsDeletedCount}, Files: {fileDeletedCount})");
                 }
                 else
                 {
-                    this.UpdateLastAction($"🗑️ All PlayerPrefs data cleared successfully");
+                    this.UpdateLastAction($"🗑️ All data cleared successfully (PlayerPrefs: {playerPrefsDeletedCount}, Files: {fileDeletedCount})");
                 }
                 
-                Debug.Log($"✅ Delete All Data completed: {deletedCount} deleted, {errorCount} errors");
+                Debug.Log($"✅ Delete All Data completed: PP({playerPrefsDeletedCount} deleted, {playerPrefsErrorCount} errors), Files({fileDeletedCount} deleted, {fileErrorCount} errors)");
             }
             catch (Exception ex)
             {
@@ -885,14 +1135,6 @@ namespace Foundations.DataFlow.Editor
             }
         }
         
-        /// <summary>
-        /// Called when a data entry is changed by the user
-        /// </summary>
-        private void OnDataEntryChanged(PlayerPrefsDataEntry entry)
-        {
-            this.UpdateDataCount();
-            this.UpdateLastAction($"✏️ Modified {entry.TypeName}");
-        }
         
         /// <summary>
         /// Refreshes the tool by rescanning for data types
@@ -904,6 +1146,7 @@ namespace Foundations.DataFlow.Editor
             if (window != null)
             {
                 window.ScanForGameDataTypes();
+                window.ScanForFileData();
             }
         }
         
@@ -1010,6 +1253,70 @@ namespace Foundations.DataFlow.Editor
         }
         
         /// <summary>
+        /// Called when a PlayerPrefs data entry is changed by the user
+        /// </summary>
+        private void OnPlayerPrefsDataEntryChanged(PlayerPrefsDataEntry entry)
+        {
+            this.UpdateDataCount();
+            this.UpdateLastAction($"✏️ Modified PlayerPrefs: {entry.TypeName}");
+        }
+        
+        /// <summary>
+        /// Called when a file data entry is changed by the user
+        /// </summary>
+        private void OnFileDataEntryChanged(FileDataEntry entry)
+        {
+            this.UpdateDataCount();
+            this.UpdateLastAction($"✏️ Modified File: {entry.TypeName}");
+        }
+        
+        /// <summary>
+        /// Called when a PlayerPrefs entry is deleted by user
+        /// </summary>
+        private void OnPlayerPrefsEntryDeleted(PlayerPrefsDataEntry deletedEntry)
+        {
+            try
+            {
+                this.playerPrefsEntries.Remove(deletedEntry);
+                this.playerPrefsEntryMap.Remove(deletedEntry.DataType);
+                
+                // Refresh UI to reflect the change
+                var currentSearchTerm = this.searchField?.value ?? string.Empty;
+                this.FilterDataEntries(currentSearchTerm);
+                
+                this.UpdateLastAction($"🗑️ Deleted PlayerPrefs entry: {deletedEntry.TypeName}");
+                Debug.Log($"✅ Successfully removed PlayerPrefs entry: {deletedEntry.TypeName}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error handling PlayerPrefs entry deletion: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Called when a file entry is deleted by user
+        /// </summary>
+        private void OnFileEntryDeleted(FileDataEntry deletedEntry)
+        {
+            try
+            {
+                this.fileEntries.Remove(deletedEntry);
+                this.fileEntryMap.Remove(deletedEntry.DataType);
+                
+                // Refresh UI to reflect the change
+                var currentSearchTerm = this.searchField?.value ?? string.Empty;
+                this.FilterDataEntries(currentSearchTerm);
+                
+                this.UpdateLastAction($"🗑️ Deleted file entry: {deletedEntry.TypeName}");
+                Debug.Log($"✅ Successfully removed file entry: {deletedEntry.TypeName}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error handling file entry deletion: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
         /// Called when search field value changes
         /// </summary>
         private void OnSearchChanged(ChangeEvent<string> evt)
@@ -1018,7 +1325,7 @@ namespace Foundations.DataFlow.Editor
         }
         
         /// <summary>
-        /// Filters data entries based on search term
+        /// Filters data entries based on search term for both PlayerPrefs and File data
         /// </summary>
         private void FilterDataEntries(string searchTerm)
         {
@@ -1026,20 +1333,30 @@ namespace Foundations.DataFlow.Editor
             {
                 Debug.Log($"🔍 Filtering entries with search term: '{searchTerm}'");
                 
-                this.dataContainer?.Clear();
+                // Clear both containers
+                this.playerPrefsContainer?.Clear();
+                this.fileContainer?.Clear();
                 
                 if (string.IsNullOrWhiteSpace(searchTerm))
                 {
                     // Show all entries when no search term
-                    this.ShowAllDataEntries();
-                    this.UpdateLastAction($"🔍 Showing all {this.dataEntries.Count} entries");
+                    this.ShowAllPlayerPrefsEntries();
+                    this.ShowAllFileEntries();
+                    
+                    var totalEntries = this.playerPrefsEntries.Count + this.fileEntries.Count;
+                    this.UpdateLastAction($"🔍 Showing all {totalEntries} entries");
                 }
                 else
                 {
                     // Filter entries by search term
-                    var filteredEntries = this.GetFilteredEntries(searchTerm);
-                    this.ShowFilteredDataEntries(filteredEntries);
-                    this.UpdateLastAction($"🔍 Found {filteredEntries.Count} entries matching '{searchTerm}'");
+                    var filteredPlayerPrefs = this.GetFilteredPlayerPrefsEntries(searchTerm);
+                    var filteredFiles = this.GetFilteredFileEntries(searchTerm);
+                    
+                    this.ShowFilteredPlayerPrefsEntries(filteredPlayerPrefs);
+                    this.ShowFilteredFileEntries(filteredFiles);
+                    
+                    var totalFiltered = filteredPlayerPrefs.Count + filteredFiles.Count;
+                    this.UpdateLastAction($"🔍 Found {totalFiltered} entries matching '{searchTerm}' ({filteredPlayerPrefs.Count} PlayerPrefs, {filteredFiles.Count} Files)");
                 }
                 
                 this.UpdateDataCount();
@@ -1051,13 +1368,13 @@ namespace Foundations.DataFlow.Editor
         }
         
         /// <summary>
-        /// Gets filtered entries based on search term
+        /// Gets filtered PlayerPrefs entries based on search term
         /// </summary>
-        private List<PlayerPrefsDataEntry> GetFilteredEntries(string searchTerm)
+        private List<PlayerPrefsDataEntry> GetFilteredPlayerPrefsEntries(string searchTerm)
         {
             var term = searchTerm.ToLowerInvariant();
             
-            return this.dataEntries
+            return this.playerPrefsEntries
                 .Where(entry => 
                     entry.TypeName.ToLowerInvariant().Contains(term) ||
                     entry.PlayerPrefsKey.ToLowerInvariant().Contains(term))
@@ -1065,14 +1382,64 @@ namespace Foundations.DataFlow.Editor
         }
         
         /// <summary>
-        /// Shows all data entries without filtering
+        /// Gets filtered File entries based on search term
         /// </summary>
-        private void ShowAllDataEntries()
+        private List<FileDataEntry> GetFilteredFileEntries(string searchTerm)
         {
-            foreach (var entry in this.dataEntries)
+            var term = searchTerm.ToLowerInvariant();
+            
+            return this.fileEntries
+                .Where(entry => 
+                    entry.TypeName.ToLowerInvariant().Contains(term) ||
+                    entry.FileName.ToLowerInvariant().Contains(term))
+                .ToList();
+        }
+        
+        /// <summary>
+        /// Shows all PlayerPrefs entries without filtering
+        /// </summary>
+        private void ShowAllPlayerPrefsEntries()
+        {
+            foreach (var entry in this.playerPrefsEntries)
             {
                 var entryUI = entry.CreateUI();
-                this.dataContainer?.Add(entryUI);
+                this.playerPrefsContainer?.Add(entryUI);
+            }
+        }
+        
+        /// <summary>
+        /// Shows all File entries without filtering
+        /// </summary>
+        private void ShowAllFileEntries()
+        {
+            foreach (var entry in this.fileEntries)
+            {
+                var entryUI = entry.CreateUI();
+                this.fileContainer?.Add(entryUI);
+            }
+        }
+        
+        /// <summary>
+        /// Shows filtered PlayerPrefs entries
+        /// </summary>
+        private void ShowFilteredPlayerPrefsEntries(List<PlayerPrefsDataEntry> filteredEntries)
+        {
+            foreach (var entry in filteredEntries)
+            {
+                var entryUI = entry.CreateUI();
+                this.playerPrefsContainer?.Add(entryUI);
+            }
+        }
+        
+        /// <summary>
+        /// Shows filtered File entries
+        /// </summary>
+        private void ShowFilteredFileEntries(List<FileDataEntry> filteredEntries)
+        {
+            foreach (var entry in filteredEntries)
+            {
+                var entryUI = entry.CreateUI();
+                this.fileContainer?.Add(entryUI);
             }
         }
         
@@ -1084,7 +1451,7 @@ namespace Foundations.DataFlow.Editor
             foreach (var entry in filteredEntries)
             {
                 var entryUI = entry.CreateUI();
-                this.dataContainer?.Add(entryUI);
+                //this.dataContainer?.Add(entryUI);
             }
         }
         
@@ -1109,36 +1476,21 @@ namespace Foundations.DataFlow.Editor
             }
         }
         
-        /// <summary>
-        /// Called when a data entry is deleted by user
-        /// </summary>
-        public void OnEntryDeleted(PlayerPrefsDataEntry deletedEntry)
-        {
-            try
-            {
-                this.dataEntries.Remove(deletedEntry);
-                this.entryMap.Remove(deletedEntry.DataType);
-                
-                // Refresh UI to reflect the change
-                var currentSearchTerm = this.searchField?.value ?? string.Empty;
-                this.FilterDataEntries(currentSearchTerm);
-                
-                this.UpdateLastAction($"🗑️ Deleted entry: {deletedEntry.TypeName}");
-                Debug.Log($"✅ Successfully removed entry: {deletedEntry.TypeName}");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"❌ Error handling entry deletion: {ex.Message}");
-            }
-        }
         
         private void OnDisable()
         {
-            // Clean up event handlers
-            foreach (var entry in this.dataEntries)
+            // Clean up PlayerPrefs event handlers
+            foreach (var entry in this.playerPrefsEntries)
             {
-                entry.OnDataChanged -= this.OnDataEntryChanged;
-                entry.OnEntryDeleted -= this.OnEntryDeleted;
+                entry.OnDataChanged -= this.OnPlayerPrefsDataEntryChanged;
+                entry.OnEntryDeleted -= this.OnPlayerPrefsEntryDeleted;
+            }
+            
+            // Clean up File event handlers
+            foreach (var entry in this.fileEntries)
+            {
+                entry.OnDataChanged -= this.OnFileDataEntryChanged;
+                entry.OnEntryDeleted -= this.OnFileEntryDeleted;
             }
         }
     }

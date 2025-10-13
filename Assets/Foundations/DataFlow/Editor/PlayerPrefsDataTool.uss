@@ -113,6 +113,85 @@
     background-color: rgb(200, 200, 200);
 }
 
+/* Prefix Configuration Section */
+.prefix-container {
+    background-color: rgb(56, 56, 56);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-left: 3px solid rgb(76, 175, 80);
+}
+
+.prefix-label {
+    color: rgb(220, 220, 220);
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-bottom: 8px;
+}
+
+.prefix-row {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.prefix-text-label {
+    color: rgb(200, 200, 200);
+    font-size: 12px;
+    margin-right: 8px;
+    min-width: 50px;
+}
+
+.prefix-field {
+    flex-grow: 1;
+    background-color: rgb(48, 48, 48);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgb(100, 100, 100);
+    padding: 2px 4px;
+    color: rgb(220, 220, 220);
+    font-size: 12px;
+    margin-right: 8px;
+    min-height: 24px;
+}
+
+.prefix-field:focus {
+    border-color: rgb(76, 175, 80);
+    background-color: rgb(52, 52, 52);
+}
+
+.prefix-field > .unity-text-field__input {
+    background-color: transparent;
+    border-width: 0;
+    color: rgb(255, 255, 255);
+    font-size: 12px;
+    padding: 0 0;
+    margin: 0;
+    -unity-text-align: middle-left;
+}
+
+.refresh-files-button {
+    background-color: rgb(76, 175, 80);
+    color: white;
+    border-radius: 4px;
+    border-width: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+    -unity-font-style: bold;
+    min-width: 120px;
+}
+
+.refresh-files-button:hover {
+    background-color: rgb(104, 191, 108);
+}
+
+.folder-path-label {
+    color: rgb(160, 160, 160);
+    font-size: 11px;
+    -unity-font-style: italic;
+    margin-top: 4px;
+}
+
 .button-row {
     flex-direction: row;
     justify-content: space-between;
@@ -185,13 +264,54 @@
     -unity-font-style: italic;
 }
 
+/* Dual Data Sections */
+.data-section {
+    margin-bottom: 15px;
+    background-color: rgb(48, 48, 48);
+    border-radius: 8px;
+    padding: 0;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+}
+
+.section-header {
+    background-color: rgb(64, 64, 64);
+    border-radius: 8px 8px 0 0;
+    padding: 12px 15px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(80, 80, 80);
+}
+
+.section-title {
+    color: rgb(220, 220, 220);
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.section-count {
+    color: rgb(150, 150, 150);
+    font-size: 11px;
+    -unity-font-style: italic;
+}
+
 /* Data List */
 .data-scroll-view {
     flex-grow: 1;
-    min-height: 300px;
+    min-height: 200px;
+    max-height: 400px;
     background-color: rgb(48, 48, 48);
-    border-radius: 8px;
+    border-radius: 0 0 8px 8px;
     padding: 10px;
+}
+
+.playerprefs-scroll-view {
+    border-left: 3px solid rgb(88, 166, 255);
+}
+
+.file-scroll-view {
+    border-left: 3px solid rgb(255, 193, 7);
 }
 
 .data-container {
@@ -221,6 +341,31 @@
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid rgb(80, 80, 80);
+}
+
+/* File Data Entry Specific Styling */
+.file-data-entry {
+    border-left: 2px solid rgb(255, 193, 7);
+}
+
+.file-data-entry:hover {
+    border-left-color: rgb(255, 215, 64);
+    border-color: rgb(255, 193, 7);
+}
+
+.file-data-header {
+    background-color: rgb(70, 70, 70);
+}
+
+.file-data-title {
+    color: rgb(255, 215, 64);
+}
+
+.file-path-label {
+    color: rgb(180, 180, 180);
+    font-size: 10px;
+    -unity-font-style: italic;
+    margin-top: 2px;
 }
 
 .data-entry-title {
@@ -400,4 +545,20 @@
     border-color: rgb(88, 166, 255);
     color: rgb(88, 166, 255);
     background-color: rgba(88, 166, 255, 0.1);
+}
+
+/* Additional File Data Styling */
+.file-data-entry .property-field {
+    border-left: 1px solid rgba(255, 193, 7, 0.3);
+    padding-left: 8px;
+}
+
+.file-data-entry .property-label {
+    color: rgb(255, 215, 64);
+}
+
+.file-data-entry .expand-button:hover {
+    border-color: rgb(255, 193, 7);
+    color: rgb(255, 193, 7);
+    background-color: rgba(255, 193, 7, 0.1);
 }
