@@ -5,6 +5,6 @@ namespace Foundations.DataFlow.MicroData
     public interface IGameData
     {
         [JsonIgnore] 
-        public int Version { get; }
+        public int Version { get; set; }
     }
 }

@@ -48,7 +48,7 @@ public class YourClass : IGameData
     public int number;
     public string text;
     public bool flag;
-    public int Version { get; }
+    public int Version { get; set; }
 }
 
 [Serializable]
@@ -57,7 +57,7 @@ public class YourClass2 : IGameData
     public int age;
     public string name;
     public float score;
-    public int Version { get; }
+    public int Version { get; set; }
 }
 
 public class MessageBrokerExample : MonoBehaviour
