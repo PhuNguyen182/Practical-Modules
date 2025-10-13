@@ -26,6 +26,8 @@ namespace Foundations.DataFlow.Editor
         private Button deleteAllButton;
         private Label dataCountLabel;
         private Label lastActionLabel;
+        private TextField searchField;
+        private Button clearSearchButton;
         
         private readonly List<PlayerPrefsDataEntry> dataEntries = new();
         private readonly Dictionary<Type, PlayerPrefsDataEntry> entryMap = new();
@@ -77,6 +79,8 @@ namespace Foundations.DataFlow.Editor
             this.deleteAllButton = this.root.Q<Button>("delete-all-button");
             this.dataCountLabel = this.root.Q<Label>("data-count-label");
             this.lastActionLabel = this.root.Q<Label>("last-action-label");
+            this.searchField = this.root.Q<TextField>("search-field");
+            this.clearSearchButton = this.root.Q<Button>("clear-search-button");
         }
         
         /// <summary>
@@ -87,6 +91,10 @@ namespace Foundations.DataFlow.Editor
             this.loadAllButton?.RegisterCallback<ClickEvent>(_ => this.LoadAllData());
             this.saveAllButton?.RegisterCallback<ClickEvent>(_ => this.SaveAllData());
             this.deleteAllButton?.RegisterCallback<ClickEvent>(_ => this.ShowDeleteAllConfirmation());
+            
+            // Search functionality
+            this.searchField?.RegisterValueChangedCallback(this.OnSearchChanged);
+            this.clearSearchButton?.RegisterCallback<ClickEvent>(_ => this.ClearSearch());
             
             // Auto-scan for data types on first load
             EditorApplication.delayCall += this.ScanForGameDataTypes;
@@ -117,6 +125,7 @@ namespace Foundations.DataFlow.Editor
                 {
                     var entry = new PlayerPrefsDataEntry(type);
                     entry.OnDataChanged += this.OnDataEntryChanged;
+                    entry.OnEntryDeleted += this.OnEntryDeleted;
                     this.dataEntries.Add(entry);
                     this.entryMap[type] = entry;
                 }
@@ -645,11 +654,9 @@ namespace Foundations.DataFlow.Editor
                 this.dataScrollView.style.display = DisplayStyle.Flex;
             }
             
-            foreach (var entry in this.dataEntries)
-            {
-                var entryUI = entry.CreateUI();
-                this.dataContainer?.Add(entryUI);
-            }
+            // Use current search term to filter entries
+            var currentSearchTerm = this.searchField?.value ?? string.Empty;
+            this.FilterDataEntries(currentSearchTerm);
         }
         
         /// <summary>
@@ -1002,12 +1009,136 @@ namespace Foundations.DataFlow.Editor
             }
         }
         
+        /// <summary>
+        /// Called when search field value changes
+        /// </summary>
+        private void OnSearchChanged(ChangeEvent<string> evt)
+        {
+            this.FilterDataEntries(evt.newValue);
+        }
+        
+        /// <summary>
+        /// Filters data entries based on search term
+        /// </summary>
+        private void FilterDataEntries(string searchTerm)
+        {
+            try
+            {
+                Debug.Log($"🔍 Filtering entries with search term: '{searchTerm}'");
+                
+                this.dataContainer?.Clear();
+                
+                if (string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    // Show all entries when no search term
+                    this.ShowAllDataEntries();
+                    this.UpdateLastAction($"🔍 Showing all {this.dataEntries.Count} entries");
+                }
+                else
+                {
+                    // Filter entries by search term
+                    var filteredEntries = this.GetFilteredEntries(searchTerm);
+                    this.ShowFilteredDataEntries(filteredEntries);
+                    this.UpdateLastAction($"🔍 Found {filteredEntries.Count} entries matching '{searchTerm}'");
+                }
+                
+                this.UpdateDataCount();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error filtering entries: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Gets filtered entries based on search term
+        /// </summary>
+        private List<PlayerPrefsDataEntry> GetFilteredEntries(string searchTerm)
+        {
+            var term = searchTerm.ToLowerInvariant();
+            
+            return this.dataEntries
+                .Where(entry => 
+                    entry.TypeName.ToLowerInvariant().Contains(term) ||
+                    entry.PlayerPrefsKey.ToLowerInvariant().Contains(term))
+                .ToList();
+        }
+        
+        /// <summary>
+        /// Shows all data entries without filtering
+        /// </summary>
+        private void ShowAllDataEntries()
+        {
+            foreach (var entry in this.dataEntries)
+            {
+                var entryUI = entry.CreateUI();
+                this.dataContainer?.Add(entryUI);
+            }
+        }
+        
+        /// <summary>
+        /// Shows filtered data entries
+        /// </summary>
+        private void ShowFilteredDataEntries(List<PlayerPrefsDataEntry> filteredEntries)
+        {
+            foreach (var entry in filteredEntries)
+            {
+                var entryUI = entry.CreateUI();
+                this.dataContainer?.Add(entryUI);
+            }
+        }
+        
+        /// <summary>
+        /// Clears the search field and shows all entries
+        /// </summary>
+        private void ClearSearch()
+        {
+            try
+            {
+                if (this.searchField != null)
+                {
+                    this.searchField.value = string.Empty;
+                }
+                
+                this.FilterDataEntries(string.Empty);
+                Debug.Log("🔍 Search cleared, showing all entries");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error clearing search: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Called when a data entry is deleted by user
+        /// </summary>
+        public void OnEntryDeleted(PlayerPrefsDataEntry deletedEntry)
+        {
+            try
+            {
+                this.dataEntries.Remove(deletedEntry);
+                this.entryMap.Remove(deletedEntry.DataType);
+                
+                // Refresh UI to reflect the change
+                var currentSearchTerm = this.searchField?.value ?? string.Empty;
+                this.FilterDataEntries(currentSearchTerm);
+                
+                this.UpdateLastAction($"🗑️ Deleted entry: {deletedEntry.TypeName}");
+                Debug.Log($"✅ Successfully removed entry: {deletedEntry.TypeName}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error handling entry deletion: {ex.Message}");
+            }
+        }
+        
         private void OnDisable()
         {
             // Clean up event handlers
             foreach (var entry in this.dataEntries)
             {
                 entry.OnDataChanged -= this.OnDataEntryChanged;
+                entry.OnEntryDeleted -= this.OnEntryDeleted;
             }
         }
     }

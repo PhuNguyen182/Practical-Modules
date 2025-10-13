@@ -33,6 +33,7 @@ namespace Foundations.DataFlow.Editor
         public bool HasData => this.currentData != null;
         
         public event System.Action<PlayerPrefsDataEntry> OnDataChanged;
+        public event System.Action<PlayerPrefsDataEntry> OnEntryDeleted;
         
         public PlayerPrefsDataEntry(Type dataType)
         {
@@ -150,8 +151,17 @@ namespace Foundations.DataFlow.Editor
             saveButton.AddToClassList("small-button");
             saveButton.AddToClassList("save-button");
             
+            // Delete button
+            var deleteButton = new Button(() => this.ShowDeleteConfirmation())
+            {
+                text = "🗑️ Delete"
+            };
+            deleteButton.AddToClassList("small-button");
+            deleteButton.AddToClassList("delete-button");
+            
             buttonContainer.Add(loadButton);
             buttonContainer.Add(saveButton);
+            buttonContainer.Add(deleteButton);
             
             controlsRow.Add(this.statusLabel);
             controlsRow.Add(buttonContainer);
@@ -1092,6 +1102,53 @@ namespace Foundations.DataFlow.Editor
         }
         
         /// <summary>
+        /// Shows confirmation dialog before deleting this entry
+        /// </summary>
+        private void ShowDeleteConfirmation()
+        {
+            try
+            {
+                var result = EditorUtility.DisplayDialog(
+                    $"🗑️ Delete {this.typeName}",
+                    $"Are you sure you want to delete the PlayerPrefs data for '{this.typeName}'?\n\nThis action cannot be undone!",
+                    "Delete",
+                    "Cancel"
+                );
+                
+                if (result)
+                {
+                    this.DeleteEntry();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error showing delete confirmation for {this.typeName}: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Deletes this entire data entry and notifies parent
+        /// </summary>
+        private void DeleteEntry()
+        {
+            try
+            {
+                // Delete from PlayerPrefs
+                this.DeleteData();
+                
+                // Notify parent tool that this entry was deleted
+                this.OnEntryDeleted?.Invoke(this);
+                
+                Debug.Log($"✅ Successfully deleted entry: {this.typeName}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error deleting entry {this.typeName}: {ex.Message}");
+                this.UpdateStatus("❌ Delete failed", "status-error");
+            }
+        }
+        
+        /// <summary>
         /// Deletes this data entry from PlayerPrefs
         /// </summary>
         public void DeleteData()
@@ -1103,15 +1160,17 @@ namespace Foundations.DataFlow.Editor
                     PlayerPrefs.DeleteKey(this.playerPrefsKey);
                     PlayerPrefs.Save();
                     this.UpdateStatus("🗑️ Deleted", "status-info");
+                    Debug.Log($"✅ Deleted PlayerPrefs key: {this.playerPrefsKey}");
                 }
                 else
                 {
                     this.UpdateStatus("⚠️ No data to delete", "status-warning");
+                    Debug.Log($"⚠️ No PlayerPrefs key found: {this.playerPrefsKey}");
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Error deleting data for {this.typeName}: {ex.Message}");
+                Debug.LogError($"❌ Error deleting data for {this.typeName}: {ex.Message}");
                 this.UpdateStatus("❌ Delete failed", "status-error");
             }
         }

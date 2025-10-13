@@ -9,6 +9,15 @@
     
     <!-- Main Controls -->
     <ui:VisualElement class="controls-container">
+        <!-- Search Section -->
+        <ui:VisualElement class="search-container">
+            <ui:Label text="🔍 Search Data Entries" class="search-label" />
+            <ui:VisualElement class="search-row">
+                <ui:TextField name="search-field" placeholder-text="Enter key name to search..." class="search-field" />
+                <ui:Button name="clear-search-button" text="✖" class="clear-search-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
         <ui:VisualElement class="button-row">
             <ui:Button name="load-all-button" text="📥 Load All Data" class="primary-button" />
             <ui:Button name="save-all-button" text="💾 Save All Data" class="success-button" />
