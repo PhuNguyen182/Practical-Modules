@@ -34,6 +34,7 @@ namespace Foundations.DataFlow.Editor
         private Button clearSearchButton;
         private TextField prefixField;
         private Button refreshFilesButton;
+        private Button openFolderButton;
         private Label folderPathLabel;
         private Label playerPrefsCountLabel;
         private Label fileCountLabel;
@@ -105,6 +106,7 @@ namespace Foundations.DataFlow.Editor
             // Prefix configuration
             this.prefixField = this.root.Q<TextField>("prefix-field");
             this.refreshFilesButton = this.root.Q<Button>("refresh-files-button");
+            this.openFolderButton = this.root.Q<Button>("open-folder-button");
             this.folderPathLabel = this.root.Q<Label>("folder-path-label");
             
             // Count labels
@@ -128,6 +130,7 @@ namespace Foundations.DataFlow.Editor
             // Prefix configuration
             this.prefixField?.RegisterValueChangedCallback(this.OnPrefixChanged);
             this.refreshFilesButton?.RegisterCallback<ClickEvent>(_ => this.RefreshFileData());
+            this.openFolderButton?.RegisterCallback<ClickEvent>(_ => this.OpenDataFolder());
             
             // Auto-scan for data types on first load
             EditorApplication.delayCall += () =>
@@ -344,6 +347,33 @@ namespace Foundations.DataFlow.Editor
             catch (Exception ex)
             {
                 Debug.LogError($"❌ Error refreshing file data: {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Opens the data folder in the file explorer
+        /// </summary>
+        private void OpenDataFolder()
+        {
+            try
+            {
+                string dataPath = Path.Combine(Application.persistentDataPath, this.currentLocalDataPrefix);
+                
+                // Create folder if it doesn't exist
+                if (!Directory.Exists(dataPath))
+                {
+                    Directory.CreateDirectory(dataPath);
+                }
+                
+                // Open folder in file explorer
+                EditorUtility.RevealInFinder(dataPath);
+                
+                Debug.Log($"[PlayerPrefsDataTool] Opened folder: {dataPath}");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[PlayerPrefsDataTool] Failed to open folder: {ex.Message}");
+                EditorUtility.DisplayDialog("Error", $"Failed to open folder:\n{ex.Message}", "OK");
             }
         }
         

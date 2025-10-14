@@ -185,6 +185,21 @@
     background-color: rgb(104, 191, 108);
 }
 
+.open-folder-button {
+    background-color: rgb(255, 193, 7);
+    color: rgb(64, 64, 64);
+    border-radius: 4px;
+    border-width: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+    -unity-font-style: bold;
+    min-width: 120px;
+}
+
+.open-folder-button:hover {
+    background-color: rgb(255, 215, 64);
+}
+
 .folder-path-label {
     color: rgb(160, 160, 160);
     font-size: 11px;

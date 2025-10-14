@@ -12,6 +12,7 @@
                 <ui:Label text="Folder:" class="prefix-text-label" />
                 <ui:TextField name="prefix-field" value="GameData" placeholder-text="Enter folder prefix..." class="prefix-field" />
                 <ui:Button name="refresh-files-button" text="🔄 Refresh Files" class="refresh-files-button" />
+                <ui:Button name="open-folder-button" text="📂 Open Folder" class="open-folder-button" />
             </ui:VisualElement>
             <ui:Label name="folder-path-label" text="📁 Path: [Application.persistentDataPath]/GameData" class="folder-path-label" />
         </ui:VisualElement>
