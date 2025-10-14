@@ -17,9 +17,11 @@ namespace Foundations.DataFlow.Editor
     /// A powerful Unity Editor tool for managing game data stored in PlayerPrefs
     /// Supports all [Serializable] classes that implement IGameData interface
     /// </summary>
-    public class PlayerPrefsDataTool : EditorWindow
+    public class LocalDataTool : EditorWindow
     {
         private VisualElement root;
+        private ScrollView mainScrollView;
+        private VisualElement mainDataContainer;
         private ScrollView playerPrefsScrollView;
         private VisualElement playerPrefsContainer;
         private ScrollView fileScrollView;
@@ -46,12 +48,12 @@ namespace Foundations.DataFlow.Editor
         
         private string currentLocalDataPrefix = "GameData";
         
-        [MenuItem("Tools/Foundations/Local Data Editor/PlayerPref/PlayerPrefs Data Manager", false, 100)]
+        [MenuItem("Tools/Foundations/Local Data Editor/Local Data Manager", false, 100)]
         public static void ShowWindow()
         {
-            var window = GetWindow<PlayerPrefsDataTool>();
-            window.titleContent = new GUIContent("🎮 PlayerPrefs Data Manager");
-            window.minSize = new Vector2(500, 400);
+            var window = GetWindow<LocalDataTool>();
+            window.titleContent = new GUIContent("🎮 Local Data Manager");
+            window.minSize = new Vector2(900, 500);
             window.Show();
         }
         
@@ -85,6 +87,10 @@ namespace Foundations.DataFlow.Editor
         /// </summary>
         private void CacheUIElements()
         {
+            // Main scroll view and container
+            this.mainScrollView = this.root.Q<ScrollView>("main-scroll-view");
+            this.mainDataContainer = this.root.Q<VisualElement>("main-data-container");
+            
             // Dual scroll views and containers
             this.playerPrefsScrollView = this.root.Q<ScrollView>("playerprefs-scroll-view");
             this.playerPrefsContainer = this.root.Q<VisualElement>("playerprefs-container");
@@ -879,14 +885,9 @@ namespace Foundations.DataFlow.Editor
                 this.emptyState.style.display = DisplayStyle.Flex;
             }
             
-            if (this.playerPrefsScrollView != null)
+            if (this.mainScrollView != null)
             {
-                this.playerPrefsScrollView.style.display = DisplayStyle.None;
-            }
-            
-            if (this.fileScrollView != null)
-            {
-                this.fileScrollView.style.display = DisplayStyle.None;
+                this.mainScrollView.style.display = DisplayStyle.None;
             }
         }
         
@@ -900,14 +901,9 @@ namespace Foundations.DataFlow.Editor
                 this.emptyState.style.display = DisplayStyle.None;
             }
             
-            if (this.playerPrefsScrollView != null)
+            if (this.mainScrollView != null)
             {
-                this.playerPrefsScrollView.style.display = DisplayStyle.Flex;
-            }
-            
-            if (this.fileScrollView != null)
-            {
-                this.fileScrollView.style.display = DisplayStyle.Flex;
+                this.mainScrollView.style.display = DisplayStyle.Flex;
             }
             
             // Use current search term to filter entries
@@ -1251,10 +1247,10 @@ namespace Foundations.DataFlow.Editor
         /// <summary>
         /// Refreshes the tool by rescanning for data types
         /// </summary>
-        [MenuItem("Tools/Foundations/Local Data Editor/PlayerPref/Refresh PlayerPrefs Data Manager", false, 101)]
+        [MenuItem("Tools/Foundations/Local Data Editor/Refresh Local Data Manager", false, 101)]
         public static void RefreshTool()
         {
-            var window = GetWindow<PlayerPrefsDataTool>(false, null, false);
+            var window = GetWindow<LocalDataTool>(false, null, false);
             if (window != null)
             {
                 window.ScanForGameDataTypes();
@@ -1265,7 +1261,7 @@ namespace Foundations.DataFlow.Editor
         /// <summary>
         /// Opens PlayerPrefs in the system (Windows only)
         /// </summary>
-        [MenuItem("Tools/Foundations/Local Data Editor/PlayerPref/Open PlayerPrefs Location", false, 102)]
+        [MenuItem("Tools/Foundations/Local Data Editor/Open PlayerPrefs Location", false, 102)]
         public static void OpenPlayerPrefsLocation()
         {
             try
@@ -1304,14 +1300,14 @@ namespace Foundations.DataFlow.Editor
         /// <summary>
         /// Debug tool to scan and log all PlayerPrefs keys and content
         /// </summary>
-        [MenuItem("Tools/Foundations/Local Data Editor/PlayerPref/Debug PlayerPrefs Scanner", false, 103)]
+        [MenuItem("Tools/Foundations/Local Data Editor/Debug PlayerPrefs Scanner", false, 103)]
         public static void DebugPlayerPrefsScanner()
         {
             try
             {
                 Debug.Log("🔍 === DEBUG PLAYERPREFS SCANNER ===");
                 
-                var tool = new PlayerPrefsDataTool();
+                var tool = new LocalDataTool();
                 
                 // Scan for types
                 var types = tool.GetAvailableGameDataTypes();
