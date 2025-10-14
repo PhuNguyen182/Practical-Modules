@@ -183,7 +183,7 @@ namespace Foundations.DataFlow.Editor
         }
         
         /// <summary>
-        /// Scans for file data in the specified folder
+        /// Scans for file data in the specified folder - only creates entries for existing JSON files
         /// </summary>
         private void ScanForFileData()
         {
@@ -202,32 +202,114 @@ namespace Foundations.DataFlow.Editor
                 if (!Directory.Exists(folderPath))
                 {
                     Debug.Log($"📂 Folder does not exist: {folderPath}");
-                }
-                else
-                {
-                    var jsonFiles = Directory.GetFiles(folderPath, "*.json");
-                    Debug.Log($"📄 Found {jsonFiles.Length} JSON files in {folderPath}");
+                    this.UpdateUI();
+                    this.UpdateLastAction($"📂 Folder does not exist - no file entries");
+                    return;
                 }
                 
-                // Create file entries for all available types
-                foreach (var type in availableGameDataTypes)
+                var jsonFiles = Directory.GetFiles(folderPath, "*.json");
+                Debug.Log($"📄 Found {jsonFiles.Length} JSON files in {folderPath}");
+                
+                if (jsonFiles.Length == 0)
                 {
-                    var entry = new FileDataEntry(type, this.currentLocalDataPrefix);
-                    entry.OnDataChanged += this.OnFileDataEntryChanged;
-                    entry.OnEntryDeleted += this.OnFileEntryDeleted;
-                    this.fileEntries.Add(entry);
-                    this.fileEntryMap[type] = entry;
+                    Debug.Log($"📂 No JSON files found in folder: {folderPath}");
+                    this.UpdateUI();
+                    this.UpdateLastAction($"📂 No JSON files found in folder");
+                    return;
+                }
+                
+                // Only create file entries for types that have corresponding JSON files
+                var createdEntries = 0;
+                foreach (var jsonFilePath in jsonFiles)
+                {
+                    var fileName = Path.GetFileNameWithoutExtension(jsonFilePath);
+                    Debug.Log($"🔍 Processing JSON file: {fileName}.json");
+                    
+                    // Try to match file name with available types
+                    var matchingType = this.FindTypeForFileName(fileName, availableGameDataTypes);
+                    
+                    if (matchingType != null)
+                    {
+                        // Create entry only if file exists and type matches
+                        var entry = new FileDataEntry(matchingType, this.currentLocalDataPrefix);
+                        entry.OnDataChanged += this.OnFileDataEntryChanged;
+                        entry.OnEntryDeleted += this.OnFileEntryDeleted;
+                        this.fileEntries.Add(entry);
+                        this.fileEntryMap[matchingType] = entry;
+                        createdEntries++;
+                        
+                        Debug.Log($"✅ Created file entry for existing file: {matchingType.Name} → {fileName}.json");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"⚠️ Could not match JSON file '{fileName}.json' to any IGameData type");
+                    }
                 }
                 
                 this.UpdateUI();
-                this.UpdateLastAction($"📂 Scanned file data: {this.fileEntries.Count} types available");
+                this.UpdateLastAction($"📂 Found {createdEntries} file entries with existing JSON files");
                 
-                Debug.Log($"✅ File data scan completed: {this.fileEntries.Count} entries");
+                Debug.Log($"✅ File data scan completed: {createdEntries} entries created from {jsonFiles.Length} JSON files");
             }
             catch (Exception ex)
             {
                 Debug.LogError($"❌ Error scanning file data: {ex.Message}");
                 this.UpdateLastAction("❌ File scan failed");
+            }
+        }
+        
+        /// <summary>
+        /// Finds the matching IGameData type for a given file name
+        /// </summary>
+        private Type FindTypeForFileName(string fileName, List<Type> availableTypes)
+        {
+            try
+            {
+                // Direct match: fileName == typeName
+                var directMatch = availableTypes.FirstOrDefault(type => 
+                    string.Equals(type.Name, fileName, StringComparison.OrdinalIgnoreCase));
+                
+                if (directMatch != null)
+                {
+                    Debug.Log($"✅ Direct match: {fileName} → {directMatch.Name}");
+                    return directMatch;
+                }
+                
+                // Try variations: TypeNameData, TypeNameConfig, etc.
+                var suffixesToTry = new[] { "Data", "Config", "Settings", "Info", "State", "Save", "Profile" };
+                foreach (var suffix in suffixesToTry)
+                {
+                    var typeWithSuffix = availableTypes.FirstOrDefault(type => 
+                        string.Equals(type.Name, $"{fileName}{suffix}", StringComparison.OrdinalIgnoreCase));
+                    
+                    if (typeWithSuffix != null)
+                    {
+                        Debug.Log($"✅ Suffix match: {fileName} → {typeWithSuffix.Name}");
+                        return typeWithSuffix;
+                    }
+                    
+                    // Try removing suffix from fileName
+                    if (fileName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var baseFileName = fileName.Substring(0, fileName.Length - suffix.Length);
+                        var baseMatch = availableTypes.FirstOrDefault(type => 
+                            string.Equals(type.Name, baseFileName, StringComparison.OrdinalIgnoreCase));
+                        
+                        if (baseMatch != null)
+                        {
+                            Debug.Log($"✅ Base match: {fileName} → {baseMatch.Name}");
+                            return baseMatch;
+                        }
+                    }
+                }
+                
+                Debug.LogWarning($"❌ No matching type found for file: {fileName}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"❌ Error finding type for fileName '{fileName}': {ex.Message}");
+                return null;
             }
         }
         
