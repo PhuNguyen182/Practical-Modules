@@ -1,111 +1,113 @@
-# 🎮 PlayerPrefs Data Manager
+# 🎮 Local Data Manager
 
-> 💡 **A powerful Unity Editor tool for managing game data stored in PlayerPrefs with a beautiful UI Toolkit interface**
-
----
-
-## 📖 Overview
-
-This tool provides **complete control over your PlayerPrefs data** with an intuitive visual interface. It automatically discovers all your `[Serializable]` classes that implement `IGameData` and lets you **edit them like Unity Inspector fields**.
-
-### ⭐ Key Features
-- 🔍 **Smart JSON Detection**: Automatically scans PlayerPrefs for existing JSON data
-- ✨ **Auto-Discovery**: Finds all `IGameData` implementations and matches with saved data
-- 🎨 **Beautiful UI**: Modern UI Toolkit interface with dark theme
-- 📝 **Live Editing**: Edit data values like Unity Inspector fields
-- 💾 **Granular Control**: Load/save individual data types or all at once
-- 🔧 **Flexible Key Matching**: Finds data using multiple naming patterns
-- 📄 **Enhanced JSON Handling**: Robust serialization/deserialization with error handling
-- 🔒 **Safe Operations**: Validation and confirmation dialogs for all operations
-- 🚀 **Cross-Platform**: Works on Windows, Mac, and Linux with platform-specific optimizations
-
-### 🎯 Use Cases
-- 📱 **Debug player progress** during development
-- 🎮 **Test different game states** without playing through content
-- 🌟 **Reset specific data** without losing everything
-- 🔧 **Modify save data** for testing edge cases
-
-### 📋 Prerequisites
-- 🔧 Unity version: `2022.3+` (for UI Toolkit support)
-- 📦 Required packages: `Newtonsoft.Json` (for serialization)
-- ⚙️ Dependencies: Classes must implement [`IGameData`](./MicroData/IGameData.cs)
+> 💡 **Công cụ Unity Editor mạnh mẽ để quản lý dữ liệu game lưu trong PlayerPrefs và file JSON với giao diện UI Toolkit đẹp mắt**
 
 ---
 
-> 💡 **Quick Start**: Open the tool via `Tools → Foundations → PlayerPrefs Data Manager`
+## 📖 Tổng Quan
+
+Công cụ này cung cấp **quyền kiểm soát hoàn toàn dữ liệu PlayerPrefs và file JSON** của bạn thông qua giao diện trực quan trực quan. Nó tự động phát hiện tất cả các class `[Serializable]` của bạn implement `IGameData` và cho phép bạn **chỉnh sửa chúng giống như các trường trong Unity Inspector**.
+
+### ⭐ Tính Năng Chính
+- 🔍 **Phát Hiện JSON Thông Minh**: Tự động quét PlayerPrefs và file JSON để tìm dữ liệu có sẵn
+- ✨ **Tự Động Khám Phá**: Tìm tất cả các implementation `IGameData` và ghép nối với dữ liệu đã lưu
+- 🎨 **Giao Diện Đẹp Mắt**: Giao diện UI Toolkit hiện đại với theme tối
+- 📝 **Chỉnh Sửa Trực Tiếp**: Chỉnh sửa giá trị dữ liệu giống như các trường Unity Inspector
+- 💾 **Kiểm Soát Chi Tiết**: Load/save từng loại dữ liệu riêng lẻ hoặc tất cả cùng lúc
+- 🔧 **Ghép Nối Key Linh Hoạt**: Tìm dữ liệu sử dụng nhiều mẫu đặt tên khác nhau
+- 📄 **Xử Lý JSON Nâng Cao**: Serialization/deserialization mạnh mẽ với xử lý lỗi
+- 🔒 **Thao Tác An Toàn**: Validation và dialog xác nhận cho tất cả các thao tác
+- 🚀 **Đa Nền Tảng**: Hoạt động trên Windows, Mac, và Linux với tối ưu hóa cụ thể cho từng nền tảng
+
+### 🎯 Trường Hợp Sử Dụng
+- 📱 **Debug tiến trình người chơi** trong quá trình phát triển
+- 🎮 **Test các trạng thái game khác nhau** mà không cần chơi qua nội dung
+- 🌟 **Reset dữ liệu cụ thể** mà không mất mọi thứ
+- 🔧 **Chỉnh sửa dữ liệu lưu** để test các trường hợp biên
+
+### 📋 Yêu Cầu Hệ Thống
+- 🔧 Unity version: `2022.3+` (để hỗ trợ UI Toolkit)
+- 📦 Required packages: `Newtonsoft.Json` (cho serialization)
+- ⚙️ Dependencies: Classes phải implement [`IGameData`](./MicroData/IGameData.cs)
 
 ---
 
-## 🏗️ Feature Components
+> 💡 **Bắt Đầu Nhanh**: Mở công cụ qua `Tools → Foundations → Local Data Editor → PlayerPref → PlayerPrefs Data Manager`
 
-> 🎨 This tool follows **modern Unity Editor patterns** with UI Toolkit
+---
 
-### 📂 Folder Structure
+## 🏗️ Các Thành Phần Của Tool
+
+> 🎨 Tool này tuân theo **các pattern Unity Editor hiện đại** với UI Toolkit
+
+### 📂 Cấu Trúc Thư Mục
 
 ```
 DataFlow/
-├── 📦 MicroData/               # Core interfaces
-│   └── IGameData.cs           # Base interface for game data
-├── 📁 Editor/                 # Tool implementation
-│   ├── PlayerPrefsDataTool.cs        # Main editor window
-│   ├── PlayerPrefsDataEntry.cs       # Data entry management
-│   ├── PlayerPrefsDataTool.uxml      # UI layout
+├── 📦 MicroData/               # Giao diện cốt lõi
+│   └── IGameData.cs           # Giao diện cơ sở cho dữ liệu game
+├── 📁 Editor/                 # Triển khai tool
+│   ├── PlayerPrefsDataTool.cs        # Cửa sổ editor chính
+│   ├── PlayerPrefsDataEntry.cs       # Quản lý data entry
+│   ├── FileDataEntry.cs             # Quản lý file data entry
+│   ├── PlayerPrefsDataTool.uxml      # Layout UI
 │   └── PlayerPrefsDataTool.uss       # Styling
-└── 📚 README.md               # This documentation
+└── 📚 README.md               # Tài liệu này
 ```
 
 ---
 
-### 🔧 Core Components
+### 🔧 Thành Phần Cốt Lõi
 
 #### 📦 MicroData/
-> 🎯 **Core interface definitions for game data**
+> 🎯 **Định nghĩa giao diện cốt lõi cho dữ liệu game**
 
-- 📄 **[`IGameData.cs`](./MicroData/IGameData.cs)**: Base interface that all game data must implement
+- 📄 **[`IGameData.cs`](./MicroData/IGameData.cs)**: Giao diện cơ sở mà tất cả dữ liệu game phải implement
 
 #### 📁 Editor/
-> 🎯 **Complete tool implementation with UI Toolkit**
+> 🎯 **Triển khai tool hoàn chỉnh với UI Toolkit**
 
-- 📄 **[`PlayerPrefsDataTool.cs`](./Editor/PlayerPrefsDataTool.cs)**: Main editor window with reflection-based discovery
-- 📄 **[`PlayerPrefsDataEntry.cs`](./Editor/PlayerPrefsDataEntry.cs)**: Individual data entry with UI generation
-- 📄 **[`PlayerPrefsDataTool.uxml`](./Editor/PlayerPrefsDataTool.uxml)**: Modern UI layout with responsive design
-- 📄 **[`PlayerPrefsDataTool.uss`](./Editor/PlayerPrefsDataTool.uss)**: Beautiful dark theme styling
+- 📄 **[`PlayerPrefsDataTool.cs`](./Editor/PlayerPrefsDataTool.cs)**: Cửa sổ editor chính với hệ thống discovery dựa trên reflection
+- 📄 **[`PlayerPrefsDataEntry.cs`](./Editor/PlayerPrefsDataEntry.cs)**: Data entry riêng lẻ với tạo UI động
+- 📄 **[`FileDataEntry.cs`](./Editor/FileDataEntry.cs)**: Quản lý dữ liệu file JSON với UI động
+- 📄 **[`PlayerPrefsDataTool.uxml`](./Editor/PlayerPrefsDataTool.uxml)**: Layout UI hiện đại với thiết kế responsive
+- 📄 **[`PlayerPrefsDataTool.uss`](./Editor/PlayerPrefsDataTool.uss)**: Styling theme tối đẹp mắt
 
 ---
 
-### 📊 Architecture Flow
+### 📊 Luồng Kiến Trúc
 
 ```mermaid
 graph TB
-    A[Unity Editor] --> B[PlayerPrefs Data Tool]
-    B --> C[Auto-Discovery System]
-    C --> D[IGameData Implementations]
-    B --> E[UI Toolkit Interface]
-    E --> F[Data Entry Components]
-    F --> G[PlayerPrefs Storage]
+    A[Unity Editor] --> B[Local Data Manager Tool]
+    B --> C[Hệ Thống Tự Động Khám Phá]
+    C --> D[Các Implementation IGameData]
+    B --> E[Giao Diện UI Toolkit]
+    E --> F[Các Thành Phần Data Entry]
+    F --> G[Lưu Trữ PlayerPrefs & File JSON]
     G --> F
     F --> E
     E --> B
 ```
 
-> 💡 **How it works**: The tool scans all assemblies for `[Serializable]` classes implementing `IGameData`, then creates dynamic UI for each one
+> 💡 **Cách hoạt động**: Tool quét tất cả assemblies để tìm các class `[Serializable]` implement `IGameData`, sau đó tạo UI động cho từng class
 
 ---
 
-## 📖 Usage Instructions
+## 📖 Hướng Dẫn Sử Dụng
 
-### 🚀 Quick Start
+### 🚀 Bắt Đầu Nhanh
 
-> ⏱️ **Setup time**: ~2 minutes
+> ⏱️ **Thời gian setup**: ~2 phút
 
-#### 1️⃣ Open the Tool
+#### 1️⃣ Mở Tool
 ```
 📁 Unity Menu Bar
 └── Tools → Foundations → Local Data Editor → PlayerPref → PlayerPrefs Data Manager
 ```
 
-#### 2️⃣ Your Data Classes
-Make sure your data classes follow this pattern:
+#### 2️⃣ Các Class Dữ Liệu Của Bạn
+Đảm bảo các class dữ liệu của bạn tuân theo pattern này:
 ```csharp
 [Serializable]
 public class PlayerProgressData : IGameData
@@ -120,71 +122,71 @@ public class PlayerProgressData : IGameData
 }
 ```
 
-#### 3️⃣ Load and Edit
-- 🔍 Tool **automatically scans PlayerPrefs** for existing JSON data on startup
-- 🎮 Click **"📥 Load All Data"** to load discovered data into the UI
-- ✏️ Expand any data entry to edit values in real-time
-- 💾 Click **"💾 Save All Data"** or use individual save buttons
-- 🔧 Tool matches JSON data with your `IGameData` types automatically
+#### 3️⃣ Load và Chỉnh Sửa
+- 🔍 Tool **tự động quét PlayerPrefs và file JSON** để tìm dữ liệu có sẵn khi khởi động
+- 🎮 Click **"📥 Load All Data"** để load dữ liệu đã phát hiện vào UI
+- ✏️ Mở rộng bất kỳ data entry nào để chỉnh sửa giá trị theo thời gian thực
+- 💾 Click **"💾 Save All Data"** hoặc sử dụng các nút save riêng lẻ
+- 🔧 Tool tự động ghép nối dữ liệu JSON với các type `IGameData` của bạn
 
-> 💡 **Smart Detection**: Tool finds data using multiple key patterns like `GameData_TypeName`, `TypeName`, `Data_TypeName`, etc.
+> 💡 **Phát Hiện Thông Minh**: Tool tìm dữ liệu sử dụng nhiều pattern key như `GameData_TypeName`, `TypeName`, `Data_TypeName`, v.v.
 
 ---
 
-### 🧪 Testing with Example Data
+### 🧪 Test Với Dữ Liệu Mẫu
 
-#### Quick Test Setup with JsonPlayerPrefsExample
+#### Setup Test Nhanh Với JsonPlayerPrefsExample
 
-> ⏱️ **Test setup time**: ~1 minute
+> ⏱️ **Thời gian setup test**: ~1 phút
 
-Want to see the tool in action immediately? Use the provided example script:
+Muốn xem tool hoạt động ngay lập tức? Sử dụng script mẫu được cung cấp:
 
-**Step 1: Add Test Script**
-1. 📁 Find [`TestPlayerPrefsData.cs`](./Examples/TestPlayerPrefsData.cs) in the Examples folder
-2. 🎮 Add it to any GameObject in your scene  
-3. ✅ Make sure example data classes are in your project (they're included!)
+**Bước 1: Thêm Script Test**
+1. 📁 Tìm [`TestPlayerPrefsData.cs`](./Examples/TestPlayerPrefsData.cs) trong thư mục Examples
+2. 🎮 Thêm nó vào bất kỳ GameObject nào trong scene của bạn  
+3. ✅ Đảm bảo các class dữ liệu mẫu có trong project của bạn (chúng đã được bao gồm!)
 
-**Step 2: Generate Test Data**
+**Bước 2: Tạo Dữ Liệu Test**
 ```csharp
-// In Inspector or via Context Menu
+// Trong Inspector hoặc qua Context Menu
 TestPlayerPrefsData → "Create Sample PlayerPrefs Data"
 ```
 
-**Alternative: Check Existing Data**
+**Thay thế: Kiểm Tra Dữ Liệu Có Sẵn**
 ```csharp
-// See what's already saved
+// Xem những gì đã được lưu
 TestPlayerPrefsData → "Show Existing PlayerPrefs"
 ```
 
-**Step 3: Open Tool and Load**
+**Bước 3: Mở Tool và Load**
 1. 🔧 `Tools → Foundations → Local Data Editor → PlayerPref → PlayerPrefs Data Manager`
 2. 📥 Click "Load All Data"  
-3. 🎉 See your data loaded and ready to edit!
+3. 🎉 Xem dữ liệu của bạn được load và sẵn sàng để chỉnh sửa!
 
-**What Gets Created:**
-- 📊 `PlayerProgressData` - Player level, XP, stats
-- 💰 `InventoryData` - Gold, items, equipment  
+**Những Gì Được Tạo:**
+- 📊 `PlayerProgressData` - Level người chơi, XP, stats
+- 💰 `InventoryData` - Vàng, items, equipment  
 - ⚙️ `GameSettings` - Audio, graphics, controls
-- 🏆 `AchievementData` - Unlocked achievements  
-- 🎮 `GameConfiguration` - Difficulty, world settings
+- 🏆 `AchievementData` - Achievement đã mở khóa  
+- 🎮 `GameConfiguration` - Độ khó, cài đặt world
 
-> 💡 **Pro Tip**: Use different key formats to test the tool's smart detection:
+> 💡 **Mẹo Pro**: Sử dụng các format key khác nhau để test khả năng phát hiện thông minh của tool:
 > ```csharp
-> PlayerPrefs.SetString("GameData_PlayerProgressData", json);  // Standard
-> PlayerPrefs.SetString("PlayerData", json);                   // Short
-> PlayerPrefs.SetString("Save_PlayerProgress", json);          // Prefixed
+> PlayerPrefs.SetString("GameData_PlayerProgressData", json);  // Chuẩn
+> PlayerPrefs.SetString("PlayerData", json);                   // Ngắn gọn
+> PlayerPrefs.SetString("Save_PlayerProgress", json);          // Có prefix
 > ```
 
 ---
 
-### 💻 Basic Usage
+### 💻 Sử Dụng Cơ Bản
 
-#### 🎮 Working with Individual Data Entries
+#### 🎮 Làm Việc Với Các Data Entry Riêng Lẻ
 
-> 📄 **Each data type gets its own expandable section**
+> 📄 **Mỗi loại dữ liệu có phần có thể mở rộng riêng**
 
 ```csharp
-// Your data class automatically appears in the tool
+// Class dữ liệu của bạn tự động xuất hiện trong tool
 [Serializable]
 public class InventoryData : IGameData
 {
@@ -197,125 +199,125 @@ public class InventoryData : IGameData
 }
 ```
 
-**Steps to manage this data:**
-1. 📦 **Find the entry** - Look for "📦 InventoryData" in the tool
-2. 🖱️ **Click to expand** - Click the header to show/hide fields
-3. ✏️ **Edit values** - Modify `goldCoins`, `hasRareItem`, etc.
-4. 💾 **Save changes** - Use individual "💾 Save" button or "Save All"
+**Các bước để quản lý dữ liệu này:**
+1. 📦 **Tìm entry** - Tìm "📦 InventoryData" trong tool
+2. 🖱️ **Click để mở rộng** - Click header để hiện/ẩn các trường
+3. ✏️ **Chỉnh sửa giá trị** - Sửa đổi `goldCoins`, `hasRareItem`, v.v.
+4. 💾 **Lưu thay đổi** - Sử dụng nút "💾 Save" riêng lẻ hoặc "Save All"
 
-#### 🚀 Advanced Operations
+#### 🚀 Thao Tác Nâng Cao
 
-> 📄 **Bulk operations for efficiency**
+> 📄 **Thao tác hàng loạt để hiệu quả**
 
 ```csharp
-// The tool handles multiple data types seamlessly
+// Tool xử lý nhiều loại dữ liệu một cách mượt mà
 [Serializable] public class PlayerStats : IGameData { /* ... */ }
 [Serializable] public class GameSettings : IGameData { /* ... */ }
 [Serializable] public class AchievementData : IGameData { /* ... */ }
 
-// All three appear automatically in the tool!
+// Cả ba sẽ tự động xuất hiện trong tool!
 ```
 
-**Bulk operations:**
-- 📥 **Load All** - Loads all discovered data types from PlayerPrefs
-- 💾 **Save All** - Saves all modified data back to PlayerPrefs  
-- 🗑️ **Clear All** - Deletes ALL PlayerPrefs data (with confirmation)
+**Thao tác hàng loạt:**
+- 📥 **Load All** - Load tất cả loại dữ liệu đã phát hiện từ PlayerPrefs và file JSON
+- 💾 **Save All** - Lưu tất cả dữ liệu đã sửa đổi về PlayerPrefs và file JSON  
+- 🗑️ **Clear All** - Xóa TẤT CẢ dữ liệu PlayerPrefs và file JSON (có xác nhận)
 
 ---
 
-### 🎯 Common Use Cases
+### 🎯 Các Trường Hợp Sử Dụng Phổ Biến
 
-#### Use Case 1: Testing Different Player Levels
-> 📄 **Quickly test high-level content without grinding**
+#### Trường Hợp 1: Test Các Level Người Chơi Khác Nhau
+> 📄 **Test nhanh nội dung level cao mà không cần grind**
 
-1. 📥 Load your `PlayerProgressData`
-2. ✏️ Change `currentLevel` to `50`
-3. ✏️ Set `experiencePoints` to `999999`
-4. 💾 Save the data
-5. ▶️ Play your game - you're now level 50!
+1. 📥 Load `PlayerProgressData` của bạn
+2. ✏️ Thay đổi `currentLevel` thành `50`
+3. ✏️ Đặt `experiencePoints` thành `999999`
+4. 💾 Lưu dữ liệu
+5. ▶️ Chơi game của bạn - bây giờ bạn đã level 50!
 
-#### Use Case 2: Debugging Save System Issues
-> 📄 **Inspect exact data being saved**
+#### Trường Hợp 2: Debug Các Vấn Đề Hệ Thống Save
+> 📄 **Kiểm tra chính xác dữ liệu đang được lưu**
 
-1. 🎮 Play your game and save normally
-2. 📥 Open the tool and load all data
-3. 🔍 Inspect all values to verify they're correct
-4. ✏️ Manually fix any incorrect values
-5. 💾 Save back to PlayerPrefs
+1. 🎮 Chơi game và save bình thường
+2. 📥 Mở tool và load tất cả dữ liệu
+3. 🔍 Kiểm tra tất cả giá trị để xác minh chúng đúng
+4. ✏️ Sửa thủ công bất kỳ giá trị nào không đúng
+5. 💾 Lưu lại vào PlayerPrefs
 
-#### Use Case 3: Resetting Specific Data
-> 📄 **Clear only certain data without losing everything**
+#### Trường Hợp 3: Reset Dữ Liệu Cụ Thể
+> 📄 **Xóa chỉ một số dữ liệu nhất định mà không mất mọi thứ**
 
-1. 📦 Find the specific data entry you want to reset
-2. ✏️ Expand it and reset values to defaults
-3. 💾 Save just that entry
-4. 🎮 Other data remains untouched
+1. 📦 Tìm data entry cụ thể bạn muốn reset
+2. ✏️ Mở rộng nó và reset các giá trị về mặc định
+3. 💾 Lưu chỉ entry đó
+4. 🎮 Các dữ liệu khác vẫn không bị ảnh hưởng
 
 ---
 
-### 📚 Menu Items Reference
+### 📚 Tham Khảo Menu Items
 
-| Menu Item                                                                                 | Shortcut | Description |
+| Menu Item                                                                                 | Shortcut | Mô Tả |
 |-------------------------------------------------------------------------------------------|----------|-------------|
-| `Tools → Foundations → Local Data Editor → PlayerPref → PlayerPrefs Data Manager`         | - | Opens the main tool window |
-| `Tools → Foundations → Local Data Editor → PlayerPref → Refresh PlayerPrefs Data Manager` | - | Rescans for new IGameData types and PlayerPrefs keys |
-| `Tools → Foundations → Local Data Editor → PlayerPref → Open PlayerPrefs Location`        | - | Shows where PlayerPrefs are stored on your system |
-| `Tools → Foundations → Local Data Editor → PlayerPref → Debug PlayerPrefs Scanner`                                        | - | **NEW!** Scans and logs all PlayerPrefs keys for debugging |
+| `Tools → Foundations → Local Data Editor → PlayerPref → PlayerPrefs Data Manager`         | - | Mở cửa sổ tool chính |
+| `Tools → Foundations → Local Data Editor → PlayerPref → Refresh PlayerPrefs Data Manager` | - | Quét lại để tìm các type IGameData mới và PlayerPrefs keys |
+| `Tools → Foundations → Local Data Editor → PlayerPref → Open PlayerPrefs Location`        | - | Hiển thị nơi PlayerPrefs được lưu trữ trên hệ thống của bạn |
+| `Tools → Foundations → Local Data Editor → PlayerPref → Debug PlayerPrefs Scanner`                                        | - | **MỚI!** Quét và ghi log tất cả PlayerPrefs keys để debug |
 
-### 🔍 Debug Tools
+### 🔍 Công Cụ Debug
 
 #### Debug PlayerPrefs Scanner
 
-> 🎯 **Perfect for troubleshooting** - shows exactly what's in PlayerPrefs
+> 🎯 **Hoàn hảo để troubleshoot** - hiển thị chính xác những gì có trong PlayerPrefs
 
 ```
 🔧 Tools → Foundations → Local Data Editor → PlayerPref → Debug PlayerPrefs Scanner
 ```
 
-**What it does:**
-- 📋 Lists ALL PlayerPrefs keys found
-- 📄 Shows which keys contain valid JSON
-- 🎯 Attempts to match JSON data with your IGameData types
-- 📊 Provides detailed Console output for diagnosis
+**Những gì nó làm:**
+- 📋 Liệt kê TẤT CẢ PlayerPrefs keys được tìm thấy
+- 📄 Hiển thị key nào chứa JSON hợp lệ
+- 🎯 Cố gắng ghép nối dữ liệu JSON với các type IGameData của bạn
+- 📊 Cung cấp output Console chi tiết để chẩn đoán
 
-**Sample Output:**
+**Output Mẫu:**
 ```
-📦 Found 3 IGameData types: PlayerProgressData, InventoryData, GameSettings
-🔑 Found 5 total PlayerPrefs keys  
+📦 Tìm thấy 3 IGameData types: PlayerProgressData, InventoryData, GameSettings
+🔑 Tìm thấy tổng cộng 5 PlayerPrefs keys  
 📄 Key: 'GameData_PlayerProgressData' | JSON: True | Length: 247
-✅ Successfully matched 'GameData_PlayerProgressData' → PlayerProgressData
+✅ Ghép nối thành công 'GameData_PlayerProgressData' → PlayerProgressData
 📄 Key: 'SomeOtherKey' | JSON: False | Length: 12
 ```
 
 ---
 
-## 🎮 Unity GameObject Setup
+## 🎮 Setup Unity GameObject
 
-> ⚠️ **Note**: This tool is **editor-only** and doesn't require any GameObjects in your scenes
+> ⚠️ **Lưu ý**: Tool này chỉ dành cho **editor** và không yêu cầu bất kỳ GameObjects nào trong scenes của bạn
 
-### 📦 No GameObject Setup Required!
+### 📦 Không Cần Setup GameObject!
 
-This is a pure **Unity Editor tool** that works entirely through the Editor interface. You don't need to:
-- ❌ Add any GameObjects to scenes
-- ❌ Attach any components
-- ❌ Configure any prefabs
+Đây là một **Unity Editor tool** thuần túy hoạt động hoàn toàn thông qua giao diện Editor. Bạn không cần:
+- ❌ Thêm bất kỳ GameObjects nào vào scenes
+- ❌ Gắn bất kỳ components nào
+- ❌ Cấu hình bất kỳ prefabs nào
 
-### ⚙️ Data Class Requirements
+### ⚙️ Yêu Cầu Data Class
 
-Instead, just make sure your data classes follow this pattern:
+Thay vào đó, chỉ cần đảm bảo các data class của bạn tuân theo pattern này:
 
 ```csharp
 using System;
 using Newtonsoft.Json;
 using Foundations.DataFlow.MicroData;
 
-[Serializable]  // ✅ Must be serializable
-public class YourGameData : IGameData  // ✅ Must implement IGameData
+[Serializable]  // ✅ Phải có serializable
+public class YourGameData : IGameData  // ✅ Phải implement IGameData
 {
-    [JsonIgnore]  // ✅ Required for Version property
+    [JsonIgnore]  // ✅ Bắt buộc cho Version property
     public int Version => 1;
     
-    // ✅ Your actual data fields
+    // ✅ Các trường dữ liệu thực tế của bạn
     public string playerName = "";
     public int level = 1;
     public float health = 100f;
@@ -323,33 +325,33 @@ public class YourGameData : IGameData  // ✅ Must implement IGameData
 }
 ```
 
-**Requirements:**
-- ✅ **Must have `[Serializable]` attribute**
-- ✅ **Must implement `IGameData` interface**
-- ✅ **Version property must have `[JsonIgnore]`**
-- ✅ **Fields should be public for UI editing**
+**Yêu cầu:**
+- ✅ **Phải có attribute `[Serializable]`**
+- ✅ **Phải implement interface `IGameData`**
+- ✅ **Version property phải có `[JsonIgnore]`**
+- ✅ **Các fields nên là public để chỉnh sửa trong UI**
 
 ---
 
-## 📚 API Reference
+## 📚 Tham Khảo API
 
-> 📄 **Main classes and their public APIs**
+> 📄 **Các class chính và API công khai của chúng**
 
 ---
 
 ### 🎮 PlayerPrefsDataTool Class
 
-> 📄 **Source**: [`Editor/PlayerPrefsDataTool.cs`](./Editor/PlayerPrefsDataTool.cs)
+> 📄 **Nguồn**: [`Editor/PlayerPrefsDataTool.cs`](./Editor/PlayerPrefsDataTool.cs)
 
 #### 🔧 Static Methods
 
 ##### `ShowWindow()`
 
-> 🎯 **Purpose**: Opens the PlayerPrefs Data Manager window
+> 🎯 **Mục đích**: Mở cửa sổ PlayerPrefs Data Manager
 
-**Usage:**
+**Cách sử dụng:**
 ```csharp
-// Open programmatically
+// Mở bằng code
 PlayerPrefsDataTool.ShowWindow();
 ```
 
@@ -357,11 +359,11 @@ PlayerPrefsDataTool.ShowWindow();
 
 ##### `RefreshTool()`
 
-> 🎯 **Purpose**: Rescans assemblies for new IGameData implementations
+> 🎯 **Mục đích**: Quét lại assemblies để tìm các implementation IGameData mới
 
-**Usage:**
+**Cách sử dụng:**
 ```csharp
-// Refresh after adding new data classes
+// Refresh sau khi thêm data class mới
 PlayerPrefsDataTool.RefreshTool();
 ```
 
@@ -369,46 +371,46 @@ PlayerPrefsDataTool.RefreshTool();
 
 ##### `OpenPlayerPrefsLocation()`
 
-> 🎯 **Purpose**: Shows where PlayerPrefs are stored on the current platform
+> 🎯 **Mục đích**: Hiển thị nơi PlayerPrefs được lưu trữ trên nền tảng hiện tại
 
-**Platforms:**
-- 🪟 **Windows**: Registry location
-- 🍎 **Mac**: .plist file location  
-- 🐧 **Linux**: Platform-specific info
+**Các nền tảng:**
+- 🪟 **Windows**: Vị trí Registry
+- 🍎 **Mac**: Vị trí file .plist  
+- 🐧 **Linux**: Thông tin cụ thể nền tảng
 
 ---
 
 ### 🎮 PlayerPrefsDataEntry Class
 
-> 📄 **Source**: [`Editor/PlayerPrefsDataEntry.cs`](./Editor/PlayerPrefsDataEntry.cs)
+> 📄 **Nguồn**: [`Editor/PlayerPrefsDataEntry.cs`](./Editor/PlayerPrefsDataEntry.cs)
 
 #### 📊 Public Properties
 
 ##### `DataType`
 
-> 🎯 **Purpose**: Gets the Type of the managed data class
+> 🎯 **Mục đích**: Lấy Type của data class được quản lý
 
 **Type:** `Type`
 
-**Usage:**
+**Cách sử dụng:**
 ```csharp
 var entry = new PlayerPrefsDataEntry(typeof(PlayerData));
-Debug.Log($"Managing: {entry.DataType.Name}");
+Debug.Log($"Đang quản lý: {entry.DataType.Name}");
 ```
 
 ---
 
 ##### `HasData`
 
-> 🎯 **Purpose**: Checks if this entry currently has loaded data
+> 🎯 **Mục đích**: Kiểm tra xem entry này hiện có dữ liệu đã load hay không
 
 **Type:** `bool`
 
-**Usage:**
+**Cách sử dụng:**
 ```csharp
 if (entry.HasData)
 {
-    Debug.Log("Data is loaded and ready for editing");
+    Debug.Log("Dữ liệu đã được load và sẵn sàng để chỉnh sửa");
 }
 ```
 
@@ -418,17 +420,17 @@ if (entry.HasData)
 
 ##### `LoadData()`
 
-> 🎯 **Purpose**: Loads data from PlayerPrefs for this specific type
+> 🎯 **Mục đích**: Load dữ liệu từ PlayerPrefs cho type cụ thể này
 
-**Example:**
+**Ví dụ:**
 ```csharp
-// Load just this data type
+// Load chỉ data type này
 entry.LoadData();
 
-// Check if successful
+// Kiểm tra xem có thành công không
 if (entry.HasData)
 {
-    Debug.Log("✅ Data loaded successfully");
+    Debug.Log("✅ Dữ liệu đã được load thành công");
 }
 ```
 
@@ -436,11 +438,11 @@ if (entry.HasData)
 
 ##### `SaveData()`
 
-> 🎯 **Purpose**: Saves current data to PlayerPrefs for this specific type
+> 🎯 **Mục đích**: Lưu dữ liệu hiện tại vào PlayerPrefs cho type cụ thể này
 
-**Example:**
+**Ví dụ:**
 ```csharp
-// Save just this data type
+// Lưu chỉ data type này
 entry.SaveData();
 ```
 
@@ -448,11 +450,11 @@ entry.SaveData();
 
 ##### `DeleteData()`
 
-> 🎯 **Purpose**: Deletes this data type from PlayerPrefs
+> 🎯 **Mục đích**: Xóa data type này khỏi PlayerPrefs
 
-**Example:**
+**Ví dụ:**
 ```csharp
-// Remove this specific data type
+// Xóa data type cụ thể này
 entry.DeleteData();
 ```
 
@@ -462,27 +464,27 @@ entry.DeleteData();
 
 #### `OnDataChanged`
 
-> 🎯 **Purpose**: Fired when user modifies data in the UI
+> 🎯 **Mục đích**: Được kích hoạt khi người dùng chỉnh sửa dữ liệu trong UI
 
 **Event Type:** `Action<PlayerPrefsDataEntry>`
 
-**Usage:**
+**Cách sử dụng:**
 ```csharp
 entry.OnDataChanged += (modifiedEntry) =>
 {
-    Debug.Log($"User modified {modifiedEntry.TypeName}");
+    Debug.Log($"Người dùng đã chỉnh sửa {modifiedEntry.TypeName}");
 };
 ```
 
 ---
 
-## ⚙️ Configuration Options
+## ⚙️ Tùy Chọn Cấu Hình
 
-### 🎨 Supported Data Types
+### 🎨 Các Loại Dữ Liệu Được Hỗ Trợ
 
-The tool automatically creates appropriate UI fields for these data types:
+Tool tự động tạo các trường UI phù hợp cho các loại dữ liệu này:
 
-| C# Type | UI Element | Example Value |
+| C# Type | UI Element | Ví Dụ Giá Trị |
 |---------|------------|---------------|
 | `int` | Integer Field | `42` |
 | `float` | Float Field | `3.14f` |
@@ -495,119 +497,119 @@ The tool automatically creates appropriate UI fields for these data types:
 
 ---
 
-### 🔧 Serialization Settings
+### 🔧 Cài Đặt Serialization
 
-#### JSON Serialization Configuration
+#### Cấu Hình JSON Serialization
 
-The tool uses **Newtonsoft.Json** for serialization with these settings:
+Tool sử dụng **Newtonsoft.Json** cho serialization với các cài đặt này:
 
 ```csharp
-// Automatic formatting for readable PlayerPrefs
+// Tự động format để PlayerPrefs dễ đọc
 var jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
 
-// Respects [JsonIgnore] attributes
+// Tôn trọng các attribute [JsonIgnore]
 [JsonIgnore]
-public int Version => 1;  // This won't be saved to PlayerPrefs
+public int Version => 1;  // Điều này sẽ không được lưu vào PlayerPrefs
 ```
 
-**Benefits:**
-- ✅ **Human-readable** JSON in PlayerPrefs
-- ✅ **Proper handling** of Unity types (Vector3, Color, etc.)
-- ✅ **Attribute support** ([JsonIgnore], [JsonProperty])
+**Lợi ích:**
+- ✅ **JSON dễ đọc** trong PlayerPrefs
+- ✅ **Xử lý đúng** các Unity types (Vector3, Color, v.v.)
+- ✅ **Hỗ trợ attributes** ([JsonIgnore], [JsonProperty])
 
 ---
 
-### 📁 Data Storage Pattern
+### 📁 Pattern Lưu Trữ Dữ Liệu
 
-#### PlayerPrefs Key Detection
+#### Phát Hiện PlayerPrefs Key
 
-The tool intelligently scans for JSON data using **multiple key patterns**:
+Tool thông minh quét dữ liệu JSON sử dụng **nhiều pattern key**:
 
-**Primary Pattern:**
+**Pattern Chính:**
 ```
 GameData_{TypeName}
 ```
 
-**Alternative Patterns Detected:**
-- `TypeName` (e.g., `PlayerProgressData`)
-- `Data_TypeName` (e.g., `Data_PlayerProgressData`)
-- `Save_TypeName` (e.g., `Save_PlayerProgressData`)
-- `Player_TypeName` (e.g., `Player_PlayerProgressData`)
-- `TypeNameData` (e.g., `PlayerProgressData`)
-- `TypeNameConfig` (e.g., `PlayerProgressConfig`)
+**Các Pattern Thay Thế Được Phát Hiện:**
+- `TypeName` (ví dụ: `PlayerProgressData`)
+- `Data_TypeName` (ví dụ: `Data_PlayerProgressData`)
+- `Save_TypeName` (ví dụ: `Save_PlayerProgressData`)
+- `Player_TypeName` (ví dụ: `Player_PlayerProgressData`)
+- `TypeNameData` (ví dụ: `PlayerProgressData`)
+- `TypeNameConfig` (ví dụ: `PlayerProgressConfig`)
 
-**Smart Matching:**
-- ✅ **JSON Validation**: Only processes keys containing valid JSON
-- ✅ **Type Compatibility**: Attempts deserialization to ensure data matches
-- ✅ **Fallback Scanning**: Scans all PlayerPrefs keys as last resort
-- ✅ **Cross-Platform**: Works on Windows (Registry), Mac (plist), Linux
+**Ghép Nối Thông Minh:**
+- ✅ **Validation JSON**: Chỉ xử lý các key chứa JSON hợp lệ
+- ✅ **Tương Thích Type**: Cố gắng deserialization để đảm bảo dữ liệu khớp
+- ✅ **Quét Fallback**: Quét tất cả PlayerPrefs keys như phương án cuối
+- ✅ **Đa Nền Tảng**: Hoạt động trên Windows (Registry), Mac (plist), Linux
 
-**Examples:**
+**Ví dụ:**
 ```csharp
-// All these keys would be detected for PlayerProgressData:
-PlayerPrefs.SetString("GameData_PlayerProgressData", json);  // ✅ Primary
-PlayerPrefs.SetString("PlayerProgressData", json);           // ✅ Direct
-PlayerPrefs.SetString("Data_PlayerProgressData", json);      // ✅ Prefixed
-PlayerPrefs.SetString("PlayerProgress", json);               // ✅ Shortened
+// Tất cả các key này sẽ được phát hiện cho PlayerProgressData:
+PlayerPrefs.SetString("GameData_PlayerProgressData", json);  // ✅ Chính
+PlayerPrefs.SetString("PlayerProgressData", json);           // ✅ Trực tiếp
+PlayerPrefs.SetString("Data_PlayerProgressData", json);      // ✅ Có prefix
+PlayerPrefs.SetString("PlayerProgress", json);               // ✅ Rút gọn
 ```
 
-This flexible approach works with **any existing save system** without requiring code changes!
+Cách tiếp cận linh hoạt này hoạt động với **bất kỳ hệ thống save hiện có nào** mà không cần thay đổi code!
 
 ---
 
-### 🎨 UI Customization
+### 🎨 Tùy Chỉnh UI
 
-#### CSS Classes for Styling
+#### CSS Classes Để Styling
 
-You can modify [`PlayerPrefsDataTool.uss`](./Editor/PlayerPrefsDataTool.uss) to customize the appearance:
+Bạn có thể sửa đổi [`PlayerPrefsDataTool.uss`](./Editor/PlayerPrefsDataTool.uss) để tùy chỉnh giao diện:
 
 ```css
-/* Main button styling */
+/* Styling button chính */
 .primary-button {
-    background-color: rgb(88, 166, 255);  /* Blue theme */
+    background-color: rgb(88, 166, 255);  /* Theme xanh */
     border-radius: 6px;
     padding: 8px 16px;
 }
 
-/* Data entry styling */
+/* Styling data entry */
 .data-entry {
-    background-color: rgb(64, 64, 64);    /* Dark theme */
+    background-color: rgb(64, 64, 64);    /* Theme tối */
     border-radius: 6px;
     margin-bottom: 8px;
 }
 ```
 
-**Key classes you can modify:**
-- `.primary-button`, `.success-button`, `.danger-button` - Button colors
-- `.data-entry`, `.data-entry-header` - Data entry appearance
-- `.property-field`, `.property-value` - Field styling
+**Các class chính bạn có thể sửa đổi:**
+- `.primary-button`, `.success-button`, `.danger-button` - Màu button
+- `.data-entry`, `.data-entry-header` - Giao diện data entry
+- `.property-field`, `.property-value` - Styling trường
 
 ---
 
-## 🔧 Troubleshooting
+## 🔧 Xử Lý Sự Cố
 
-### 🐛 Common Issues
+### 🐛 Các Vấn Đề Thường Gặp
 
-#### ❌ Issue #1: "Tool not showing saved data"
+#### ❌ Vấn Đề #1: "Tool không hiển thị dữ liệu đã lưu"
 
-> 🔍 **Symptoms**: Tool opens but doesn't show existing PlayerPrefs data
+> 🔍 **Triệu chứng**: Tool mở nhưng không hiển thị dữ liệu PlayerPrefs có sẵn
 
-**✅ Solutions:**
+**✅ Giải pháp:**
 
-##### Step 1: Use Debug Scanner
+##### Bước 1: Sử Dụng Debug Scanner
 ```
 🔧 Tools → Foundations → Debug PlayerPrefs Scanner
 ```
-This will scan and log ALL PlayerPrefs keys and show which ones contain JSON data.
+Điều này sẽ quét và ghi log TẤT CẢ PlayerPrefs keys và hiển thị key nào chứa dữ liệu JSON.
 
-##### Step 2: Check Console Output
-Look for these debug messages:
-- `🔍 Found X total PlayerPrefs keys`
-- `📄 Found JSON key: 'YourKey' (1234 chars)`
-- `✅ Successfully matched 'YourKey' → YourType`
+##### Bước 2: Kiểm Tra Console Output
+Tìm các thông báo debug này:
+- `🔍 Tìm thấy X tổng cộng PlayerPrefs keys`
+- `📄 Tìm thấy JSON key: 'YourKey' (1234 chars)`
+- `✅ Ghép nối thành công 'YourKey' → YourType`
 
-##### Step 3: Verify Data Format
-Your PlayerPrefs JSON should look like this:
+##### Bước 3: Xác Minh Format Dữ Liệu
+PlayerPrefs JSON của bạn nên trông như thế này:
 ```json
 {
   "playerName": "TestPlayer",
@@ -616,202 +618,202 @@ Your PlayerPrefs JSON should look like this:
 }
 ```
 
-##### Step 4: Try Manual Load
-1. 📥 Click **"Load All Data"** button
-2. 🔄 If still nothing, click **"Refresh PlayerPrefs Data Manager"**
-3. 📋 Expand individual data entries to see if they loaded
+##### Bước 4: Thử Load Thủ Công
+1. 📥 Click nút **"Load All Data"**
+2. 🔄 Nếu vẫn không có gì, click **"Refresh PlayerPrefs Data Manager"**
+3. 📋 Mở rộng các data entry riêng lẻ để xem chúng đã load chưa
 
 ---
 
-#### ❌ Issue #2: "No data types found"
+#### ❌ Vấn Đề #2: "Không tìm thấy data types"
 
-> 🔍 **Symptoms**: Tool shows "📁 No Data Found" message
+> 🔍 **Triệu chứng**: Tool hiển thị thông báo "📁 No Data Found"
 
-**✅ Solutions:**
+**✅ Giải pháp:**
 
-##### Step 1: Check Your Data Classes
+##### Bước 1: Kiểm Tra Data Classes Của Bạn
 ```csharp
-// ❌ Missing requirements
-public class PlayerData : IGameData  // Missing [Serializable]!
+// ❌ Thiếu yêu cầu
+public class PlayerData : IGameData  // Thiếu [Serializable]!
 {
-    public int Version => 1;  // Missing [JsonIgnore]!
+    public int Version => 1;  // Thiếu [JsonIgnore]!
     public int level = 1;
 }
 
-// ✅ Correct implementation
-[Serializable]  // Must have this!
+// ✅ Implementation đúng
+[Serializable]  // Phải có cái này!
 public class PlayerData : IGameData
 {
-    [JsonIgnore]  // Must have this!
+    [JsonIgnore]  // Phải có cái này!
     public int Version => 1;
     
     public int level = 1;
 }
 ```
 
-##### Step 2: Verify Assembly Loading
-- 🔍 Check Console for "ReflectionTypeLoadException" errors
-- 🔄 Try `Tools → Foundations → Local Data Editor → PlayerPref → Refresh PlayerPrefs Data Manager`
-- 🛠️ Rebuild your project (`Build → Clean Solution`)
+##### Bước 2: Xác Minh Assembly Loading
+- 🔍 Kiểm tra Console cho lỗi "ReflectionTypeLoadException"
+- 🔄 Thử `Tools → Foundations → Local Data Editor → PlayerPref → Refresh PlayerPrefs Data Manager`
+- 🛠️ Rebuild project của bạn (`Build → Clean Solution`)
 
 ---
 
-#### ❌ Issue #2: "Data not saving properly"
+#### ❌ Vấn Đề #3: "Dữ liệu không lưu đúng"
 
-> 🔍 **Symptoms**: Changes made in tool don't persist in game
+> 🔍 **Triệu chứng**: Thay đổi trong tool không được lưu trong game
 
-**✅ Solutions:**
+**✅ Giải pháp:**
 
-##### Step 1: Check PlayerPrefs Keys
+##### Bước 1: Kiểm Tra PlayerPrefs Keys
 ```csharp
-// Verify your game loads data the same way
-var key = "GameData_PlayerProgressData";  // Same format as tool
+// Xác minh game của bạn load dữ liệu theo cách tương tự
+var key = "GameData_PlayerProgressData";  // Cùng format với tool
 var jsonData = PlayerPrefs.GetString(key);
 var data = JsonConvert.DeserializeObject<PlayerProgressData>(jsonData);
 ```
 
-##### Step 2: Verify Serialization Compatibility  
-- ✅ Use **Newtonsoft.Json** in your game code too
-- ✅ Keep same field names and types
-- ✅ Test with simple data first
+##### Bước 2: Xác Minh Tương Thích Serialization  
+- ✅ Sử dụng **Newtonsoft.Json** trong game code của bạn cũng vậy
+- ✅ Giữ cùng tên field và types
+- ✅ Test với dữ liệu đơn giản trước
 
 ---
 
-#### ❌ Issue #3: "UI fields not updating"
+#### ❌ Vấn Đề #4: "UI fields không cập nhật"
 
-> 🔍 **Symptoms**: Changing values in tool doesn't reflect in UI
+> 🔍 **Triệu chứng**: Thay đổi giá trị trong tool không phản ánh trong UI
 
-**✅ Solutions:**
+**✅ Giải pháp:**
 
-##### Step 1: Check Data Binding
-- 📥 Try **"Load All Data"** to refresh UI
-- 🔄 Close and reopen the tool window
-- 🎯 Make sure you're editing the expanded data entry
+##### Bước 1: Kiểm Tra Data Binding
+- 📥 Thử **"Load All Data"** để refresh UI
+- 🔄 Đóng và mở lại cửa sổ tool
+- 🎯 Đảm bảo bạn đang chỉnh sửa data entry đã mở rộng
 
-##### Step 2: Verify Field Types
+##### Bước 2: Xác Minh Field Types
 ```csharp
-// ✅ Supported types
-public int intValue = 0;        // Creates IntegerField
-public string textValue = "";   // Creates TextField  
-public bool boolValue = false;  // Creates Toggle
+// ✅ Các types được hỗ trợ
+public int intValue = 0;        // Tạo IntegerField
+public string textValue = "";   // Tạo TextField  
+public bool boolValue = false;  // Tạo Toggle
 
-// ❌ Unsupported types (fallback to TextField)
-public Dictionary<string, int> complexType;  // Not directly supported
-public CustomClass customObject;             // Not directly supported
+// ❌ Types không được hỗ trợ (fallback về TextField)
+public Dictionary<string, int> complexType;  // Không được hỗ trợ trực tiếp
+public CustomClass customObject;             // Không được hỗ trợ trực tiếp
 ```
 
 ---
 
-#### ❌ Issue #4: "Tool window is blank"
+#### ❌ Vấn Đề #5: "Cửa sổ tool trống"
 
-> 🔍 **Error**: Window opens but shows no content
+> 🔍 **Lỗi**: Cửa sổ mở nhưng không hiển thị nội dung
 
-**✅ Solutions:**
+**✅ Giải pháp:**
 
-##### Step 1: Check UXML File Location
+##### Bước 1: Kiểm Tra Vị Trí File UXML
 ```
-📁 Project Structure
+📁 Cấu Trúc Project
 └── Assets/Foundations/DataFlow/Editor/
-    ├── PlayerPrefsDataTool.uxml     ✅ Must be here
-    ├── PlayerPrefsDataTool.uss      ✅ Must be here  
-    └── PlayerPrefsDataTool.cs       ✅ Must be here
+    ├── PlayerPrefsDataTool.uxml     ✅ Phải ở đây
+    ├── PlayerPrefsDataTool.uss      ✅ Phải ở đây  
+    └── PlayerPrefsDataTool.cs       ✅ Phải ở đây
 ```
 
-##### Step 2: Verify Package Dependencies
-- 📦 Check **Package Manager** → `Newtonsoft.Json` installed
-- 🔧 Unity version `2022.3+` for full UI Toolkit support
+##### Bước 2: Xác Minh Package Dependencies
+- 📦 Kiểm tra **Package Manager** → `Newtonsoft.Json` đã cài đặt
+- 🔧 Unity version `2022.3+` để hỗ trợ UI Toolkit đầy đủ
 
 ---
 
-### 🔍 Debug Tips
+### 🔍 Mẹo Debug
 
-#### Enable Detailed Logging
-The tool automatically logs detailed information to Console:
+#### Bật Detailed Logging
+Tool tự động ghi log thông tin chi tiết vào Console:
 ```
-✅ PlayerPrefs Data Manager initialized successfully
-🔍 Found 3 data types: PlayerData, InventoryData, SettingsData
-✅ Load All Data completed: 2 loaded, 0 errors
+✅ PlayerPrefs Data Manager khởi tạo thành công
+🔍 Tìm thấy 3 data types: PlayerData, InventoryData, SettingsData
+✅ Load All Data hoàn thành: 2 loaded, 0 errors
 ```
 
-#### Check PlayerPrefs Manually
+#### Kiểm Tra PlayerPrefs Thủ Công
 ```csharp
-// Verify data exists in PlayerPrefs
+// Xác minh dữ liệu tồn tại trong PlayerPrefs
 var key = "GameData_YourDataType";
 if (PlayerPrefs.HasKey(key))
 {
     var json = PlayerPrefs.GetString(key);
-    Debug.Log($"Stored JSON: {json}");
+    Debug.Log($"JSON đã lưu: {json}");
 }
 ```
 
-#### Use Menu Helpers
+#### Sử Dụng Menu Helpers
 - 🔄 **Refresh Tool**: `Tools → Foundations → Local Data Editor → PlayerPref → Refresh PlayerPrefs Data Manager`
 - 📂 **Check Location**: `Tools → Foundations → Local Data Editor → PlayerPref → Open PlayerPrefs Location`
 
 ---
 
-### 📖 Error Messages Reference
+### 📖 Tham Khảo Error Messages
 
-| Error Message | Cause | Solution |
+| Error Message | Nguyên Nhân | Giải Pháp |
 |---------------|-------|----------|
-| `Could not load PlayerPrefsDataTool.uxml` | UXML file missing | Check file location and reimport |
-| `ReflectionTypeLoadException` | Assembly loading issue | Rebuild project, check dependencies |
-| `JsonSerializationException` | Data format error | Clear PlayerPrefs and start fresh |
-| `No data types found` | No IGameData implementations | Add [Serializable] and implement IGameData |
+| `Could not load PlayerPrefsDataTool.uxml` | File UXML bị thiếu | Kiểm tra vị trí file và reimport |
+| `ReflectionTypeLoadException` | Vấn đề loading assembly | Rebuild project, kiểm tra dependencies |
+| `JsonSerializationException` | Lỗi format dữ liệu | Xóa PlayerPrefs và bắt đầu lại |
+| `No data types found` | Không có implementation IGameData | Thêm [Serializable] và implement IGameData |
 
 ---
 
-### 💬 Get Help
+### 💬 Nhận Trợ Giúp
 
-#### 🆘 Still having issues?
+#### 🆘 Vẫn gặp vấn đề?
 
-- 📖 **Check Console**: Look for detailed error messages with JSON scanning info
-- 🔄 **Try refresh**: Use refresh menu item to rescan PlayerPrefs keys
-- 🧹 **Clean slate**: Delete all PlayerPrefs and start fresh
-- 🧪 **Test with examples**: Use [`JsonPlayerPrefsExample.cs`](./Examples/JsonPlayerPrefsExample.cs) to generate test data
-- 📧 **Report bugs**: Include Unity version, error messages, and steps to reproduce
+- 📖 **Kiểm tra Console**: Tìm thông báo lỗi chi tiết với thông tin quét JSON
+- 🔄 **Thử refresh**: Sử dụng menu item refresh để quét lại PlayerPrefs keys
+- 🧹 **Bắt đầu sạch**: Xóa tất cả PlayerPrefs và bắt đầu lại
+- 🧪 **Test với examples**: Sử dụng [`JsonPlayerPrefsExample.cs`](./Examples/JsonPlayerPrefsExample.cs) để tạo dữ liệu test
+- 📧 **Báo cáo bugs**: Bao gồm Unity version, thông báo lỗi, và các bước để reproduce
 
-#### 📝 When reporting issues, include:
-- ✅ Unity version (e.g., `2022.3.12f1`)
-- ✅ Tool version and file locations
-- ✅ Your data class code
+#### 📝 Khi báo cáo vấn đề, bao gồm:
+- ✅ Unity version (ví dụ: `2022.3.12f1`)
+- ✅ Tool version và vị trí files
+- ✅ Code data class của bạn
 - ✅ Console error messages
-- ✅ Screenshots of the issue
+- ✅ Screenshots của vấn đề
 
-> 🔗 **More help**: Check Unity Console for detailed error messages and stack traces
-
----
-
-## 🎉 Summary
-
-### ✅ What You Get:
-1. 🎮 **Beautiful tool** for managing PlayerPrefs data
-2. 🔍 **Smart detection** - finds existing JSON data automatically
-3. ✏️ **Live editing** with Inspector-like interface
-4. 💾 **Granular control** - save individual or all data types
-5. 🛡️ **Safe operations** with validation and confirmation dialogs
-6. 🎨 **Modern UI** built with Unity's UI Toolkit
-7. 🔧 **Debug tools** - comprehensive troubleshooting utilities
-8. 🧪 **Test helpers** - ready-to-use example scripts for testing
-
-### 🎯 Perfect For:
-- 👨‍💻 **Developers** testing different game states
-- 🎮 **Game designers** balancing progression systems  
-- 🐛 **QA testers** reproducing specific scenarios
-- 📱 **Anyone** who needs to manage game save data
-
-### 💡 Key Benefits:
-- ⚡ **No setup required** - just implement IGameData
-- 🔄 **Works with existing code** - no changes needed
-- 🎨 **Beautiful interface** - modern and intuitive
-- 🚀 **Blazingly fast** - efficient reflection and UI updates
+> 🔗 **Thêm trợ giúp**: Kiểm tra Unity Console để xem thông báo lỗi chi tiết và stack traces
 
 ---
 
-> 🎊 **Enjoy managing your game data with ease!** This tool will save you hours of debugging and testing time.
+## 🎉 Tóm Tắt
 
-> 📧 **Questions or suggestions?** Feel free to reach out or contribute improvements!
+### ✅ Những Gì Bạn Nhận Được:
+1. 🎮 **Tool đẹp mắt** để quản lý dữ liệu PlayerPrefs và file JSON
+2. 🔍 **Phát hiện thông minh** - tự động tìm dữ liệu JSON có sẵn
+3. ✏️ **Chỉnh sửa trực tiếp** với giao diện giống Unity Inspector
+4. 💾 **Kiểm soát chi tiết** - lưu từng loại dữ liệu riêng lẻ hoặc tất cả
+5. 🛡️ **Thao tác an toàn** với validation và dialog xác nhận
+6. 🎨 **UI hiện đại** được xây dựng với Unity's UI Toolkit
+7. 🔧 **Công cụ debug** - tiện ích troubleshooting toàn diện
+8. 🧪 **Helper test** - script mẫu sẵn sàng sử dụng để testing
+
+### 🎯 Hoàn Hảo Cho:
+- 👨‍💻 **Developers** test các trạng thái game khác nhau
+- 🎮 **Game designers** cân bằng hệ thống progression  
+- 🐛 **QA testers** tái tạo các scenario cụ thể
+- 📱 **Bất kỳ ai** cần quản lý dữ liệu save game
+
+### 💡 Lợi Ích Chính:
+- ⚡ **Không cần setup** - chỉ cần implement IGameData
+- 🔄 **Hoạt động với code hiện có** - không cần thay đổi gì
+- 🎨 **Giao diện đẹp mắt** - hiện đại và trực quan
+- 🚀 **Cực kỳ nhanh** - reflection và UI updates hiệu quả
 
 ---
 
-**Made with ❤️ for the Unity community**
+> 🎊 **Tận hưởng việc quản lý dữ liệu game một cách dễ dàng!** Tool này sẽ tiết kiệm cho bạn hàng giờ debug và test.
+
+> 📧 **Câu hỏi hoặc gợi ý?** Hãy liên hệ hoặc đóng góp cải tiến!
+
+---
+
+**Được tạo với ❤️ cho cộng đồng Unity**
