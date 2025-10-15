@@ -8,13 +8,13 @@ namespace Foundations.SaveSystem.CustomDataSaverService
     /// Use this class to save data to PlayerPrefs.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PlayerPrefDataSaveService<T> : IDataSaveService<T> 
+    public class PlayerPrefDataSaveService<T> : IDataSaveService<T>
     {
-        public IDataSerializer<T> DataSerializer { get; }
+        private readonly IDataSerializer<T> _dataSerializer;
 
         public PlayerPrefDataSaveService(IDataSerializer<T> dataSerializer)
         {
-            DataSerializer = dataSerializer;
+            _dataSerializer = dataSerializer;
         }
 
         public async UniTask<T> LoadData(string name)
@@ -24,20 +24,20 @@ namespace Foundations.SaveSystem.CustomDataSaverService
 
             await UniTask.CompletedTask;
             string serializedData = PlayerPrefs.GetString(name);
-            T data = DataSerializer.Deserialize(serializedData);
+            T data = _dataSerializer.Deserialize(serializedData);
             return data;
         }
 
         public UniTask SaveDataAsync(string name, T data)
         {
-            string serializedData = DataSerializer.Serialize(data);
+            string serializedData = _dataSerializer.Serialize(data);
             PlayerPrefs.SetString(name, serializedData);
             return UniTask.CompletedTask;
         }
 
         public void SaveData(string name, T data)
         {
-            string serializedData = DataSerializer.Serialize(data);
+            string serializedData = _dataSerializer.Serialize(data);
             PlayerPrefs.SetString(name, serializedData);
         }
 

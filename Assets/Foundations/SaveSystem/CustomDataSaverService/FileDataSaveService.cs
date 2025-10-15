@@ -11,8 +11,7 @@ namespace Foundations.SaveSystem.CustomDataSaverService
     /// <typeparam name="T"></typeparam>
     public class FileDataSaveService<T> : IDataSaveService<T>
     {
-        // "PD" is standing for "PlayerData"
-        private const string LocalDataPrefix = "PD";
+        private const string LocalDataPrefix = "GameData";
         
         private readonly IDataSerializer<T> _dataSerializer;
         private readonly string _filePath;
@@ -62,7 +61,7 @@ namespace Foundations.SaveSystem.CustomDataSaverService
 
             string serializedData = _dataSerializer.Serialize(data);
             using FileStream fileStream = new(dataPath, FileMode.Create, FileAccess.Write, FileShare.None,
-                bufferSize: 4096, useAsync: true);
+                bufferSize: 4096, useAsync: false);
             using StreamWriter writer = new(fileStream);
             writer.WriteLineAsync(serializedData);
         }
