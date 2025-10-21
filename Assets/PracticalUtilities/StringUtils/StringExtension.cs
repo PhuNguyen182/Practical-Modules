@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using UnityEngine;
 
 namespace PracticalUtilities.StringUtils
@@ -112,6 +114,30 @@ namespace PracticalUtilities.StringUtils
                 currentIndex += currentSubLength;
             }
             
+            return result;
+        }
+
+        /// <summary>
+        /// Parse URL parameters to a dictionary of parameters.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string>? ParseUrlParameters(this string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return null;
+
+            // Try to parse as URI
+            if (!Uri.TryCreate(input, UriKind.Absolute, out Uri uri))
+                return null;
+
+            // Check if it has a valid scheme (http, https, ftp, etc.)
+            if (string.IsNullOrEmpty(uri.Scheme))
+                return null;
+
+            // Parse query parameters
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            Dictionary<string, string> result = query.AllKeys.ToDictionary(key => key, key => query[key]);
             return result;
         }
     }
