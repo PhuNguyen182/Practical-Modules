@@ -4,7 +4,7 @@ using PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.Data;
 namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.TimeSchedulerComponent
 {
     /// <summary>
-    /// Interface cho bộ đếm thời gian theo thời gian thực với khả năng lưu trữ
+    /// Interface cho bộ đếm thời gian theo thời gian thực với khả năng lưu trữ và hệ thống tier
     /// </summary>
     public interface ICountdownTimer : IDisposable
     {
@@ -27,6 +27,16 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.T
         /// Tổng thời gian ban đầu (seconds)
         /// </summary>
         public float TotalDuration { get; }
+        
+        /// <summary>
+        /// Số lượng tier tối đa của bộ đếm
+        /// </summary>
+        public int TierCount { get; }
+        
+        /// <summary>
+        /// Số tier hiện tại còn lại
+        /// </summary>
+        public int CurrentTier { get; }
         
         /// <summary>
         /// Kiểm tra bộ đếm có đang hoạt động không
@@ -52,6 +62,11 @@ namespace PracticalModules.PlayerLoopServices.TimeServices.TimeScheduleService.T
         /// Sự kiện khi bộ đếm kết thúc
         /// </summary>
         public event Action OnComplete;
+        
+        /// <summary>
+        /// Sự kiện khi tier thay đổi (truyền vào current tier còn lại)
+        /// </summary>
+        public event Action<int> OnTierChanged;
         
         /// <summary>
         /// Cập nhật trạng thái bộ đếm theo thời gian thực
