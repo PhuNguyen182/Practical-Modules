@@ -7,6 +7,7 @@ namespace Foundations.UIModules.FlyingRewardSystem.Components
     public abstract class BaseUIFlyingObject : MonoBehaviour, IUIFlyingObject
     {
         [SerializeField] protected string key = "";
+        [SerializeField] protected UIFlyingObjectMovement flyingObjectMovement;
         
         private IUIFlyingRewardManager _flyingRewardManager;
         public string Key => this.key;
@@ -16,7 +17,7 @@ namespace Foundations.UIModules.FlyingRewardSystem.Components
             this._flyingRewardManager = manager;
         }
 
-        public abstract UniTask MoveToTarget(Vector3 targetPosition);
+        public UniTask MoveToTarget(Vector3 targetPosition) => this.flyingObjectMovement.MoveToTarget(targetPosition);
         
         public IUITargetObject FindTargetObject()
         {
