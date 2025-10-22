@@ -6,7 +6,7 @@ namespace Foundations.UIModules.FlyingRewardSystem.Components
 {
     public abstract class BaseUIFlyingObject : MonoBehaviour, IUIFlyingObject
     {
-        [SerializeField] protected string key;
+        [SerializeField] protected string key = "";
         
         private IUIFlyingRewardManager _flyingRewardManager;
         public string Key => this.key;
