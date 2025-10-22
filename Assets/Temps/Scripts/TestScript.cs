@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using PracticalUtilities.CalculationExtensions;
 using UnityEngine;
 using UnityEngine.Serialization;

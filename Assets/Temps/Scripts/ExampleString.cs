@@ -2,9 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Text;
-using Microsoft.Extensions.Logging;
-using ZLogger;
-using ZLogger.Unity;
 
 namespace PracticalModules.Temps.Scripts
 {
@@ -33,18 +30,7 @@ namespace PracticalModules.Temps.Scripts
 
         private void TestLogger()
         {
-            var loggerFactory = LoggerFactory.Create(logging =>
-            {
-                logging.SetMinimumLevel(LogLevel.Trace);
-                logging.AddZLoggerUnityDebug(); // log to UnityDebug
-            });
-
-            var x = loggerFactory.CreateLogger("");
-            var logger = loggerFactory.CreateLogger<YourClass>();
-            //logger.ZLogDebug("Hello, World!");
-
-            var name = "foo";
-            //logger.ZLogInformation($"Hello, {name}!");
+            
         }
     }
 }
