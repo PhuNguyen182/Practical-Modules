@@ -32,6 +32,8 @@ namespace Foundations.DataFlow.MicroData.DynamicDataControllers
         /// </summary>
         public TData ExposedSourceData => SourceData;
 
+        public abstract void Initialize();
+
         public async UniTask Load() => SourceData = await DataSaveService.LoadData(DataType.Name);
         
         public UniTask SaveAsync() => DataSaveService.SaveDataAsync(DataType.Name, SourceData);

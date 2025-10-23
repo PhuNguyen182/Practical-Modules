@@ -33,6 +33,7 @@ namespace Foundations.DataFlow.MasterDataController
                     continue;
                 
                 await dataHandler.Load();
+                dataHandler.Initialize();
                 _dynamicDataHandlers.Add(dataHandlerType, dataHandler);
             }
             
