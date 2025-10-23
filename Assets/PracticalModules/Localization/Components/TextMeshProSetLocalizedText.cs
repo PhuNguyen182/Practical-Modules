@@ -1,25 +1,38 @@
-using System.Collections.Generic;
-using UnityEngine;
-using Sirenix.OdinInspector;
 using I2.Loc;
+using UnityEngine;
+using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using TMPro;
 
 namespace PracticalModules.Localization.Components
 {
     [RequireComponent(typeof(TMP_Text))]
-    public class TextMeshSetLocalizeLanguage : MonoBehaviour
+    public class TextMeshProSetLocalizedText : MonoBehaviour
     {
         [ValueDropdown("GetTermsList")]
         [SerializeField] public string termKey;
         [SerializeField] private TMP_Text targetText;
-        
+
+        private void OnEnable()
+        {
+            LocalizationManager.OnLocalizeEvent += SetTranslatedText;
+            SetTranslatedText();
+        }
+
+        private void OnDisable()
+        {
+            LocalizationManager.OnLocalizeEvent -= SetTranslatedText;
+        }
+
         private List<string> GetTermsList() => LocalizationManager.GetTermsList();
+        
+        private void SetTranslatedText() => this.targetText.text = LocalizationManager.GetTranslation(termKey);
         
         #if UNITY_EDITOR
         private void OnValidate()
         {
             targetText ??= GetComponent<TMP_Text>();
-            targetText.text = LocalizationManager.GetTranslation(termKey);
+            this.SetTranslatedText();
         }
         #endif
     }
