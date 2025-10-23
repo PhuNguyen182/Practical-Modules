@@ -23,7 +23,11 @@ namespace PrimeTweenDemo {
                 SetCurrentHighlighted(null);
                 return;
             }
-            var ray = mainCamera.ScreenPointToRay(InputController.screenPosition);
+            var screenPosition = InputController.screenPosition;
+            if (!new Rect(0f, 0f, Screen.width, Screen.height).Contains(screenPosition)) {
+                return;
+            }
+            var ray = mainCamera.ScreenPointToRay(screenPosition);
             var highlightableElement = RaycastHighlightableElement(ray);
             SetCurrentHighlighted(highlightableElement);
 

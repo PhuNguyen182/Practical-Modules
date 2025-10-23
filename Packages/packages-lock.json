@@ -28,13 +28,6 @@
       "dependencies": {},
       "hash": "f59785046a36605378e18678af15ee66549aa26b"
     },
-    "com.cysharp.zlogger": {
-      "version": "https://github.com/Cysharp/ZLogger.git?path=src/ZLogger.Unity/Assets/ZLogger.Unity",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "828a051ed81e561387c3db56ef3368d1716893b2"
-    },
     "com.cysharp.zstring": {
       "version": "2.6.0",
       "depth": 0,
@@ -50,7 +43,7 @@
       "url": "https://package.openupm.com"
     },
     "com.gustavopsantos.reflex": {
-      "version": "13.0.2",
+      "version": "13.0.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {},

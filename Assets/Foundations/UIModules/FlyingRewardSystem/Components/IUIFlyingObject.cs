@@ -8,8 +8,8 @@ namespace Foundations.UIModules.FlyingRewardSystem.Components
     {
         public string Key { get; }
 
+        public UniTask MoveToTarget();
         public void InjectManager(IUIFlyingRewardManager manager);
-        public UniTask MoveToTarget(Vector3 targetPosition);
         public IUITargetObject FindTargetObject();
     }
 }

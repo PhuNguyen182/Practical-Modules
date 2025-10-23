@@ -17,8 +17,16 @@ namespace Foundations.UIModules.FlyingRewardSystem.Components
             this._flyingRewardManager = manager;
         }
 
-        public UniTask MoveToTarget(Vector3 targetPosition) => this.flyingObjectMovement.MoveToTarget(targetPosition);
-        
+        public async UniTask MoveToTarget()
+        {
+            var targetObject = this.FindTargetObject();
+            var targetPosition = targetObject.Transform.position;
+            
+            await this.flyingObjectMovement.PreMoveToTarget();
+            await this.flyingObjectMovement.MoveToTarget(targetPosition);
+            await this.flyingObjectMovement.PostMoveToTarget();
+        }
+
         public IUITargetObject FindTargetObject()
         {
             return this._flyingRewardManager.GetRewardTargetObject(this.key);
