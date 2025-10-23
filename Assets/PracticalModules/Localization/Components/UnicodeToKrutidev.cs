@@ -6,7 +6,7 @@ using System.Text;
 
 public class UnicodeToKrutidev
 {
-	private static string[] array_one = new string[]
+	private static readonly string[] array_one = new string[]
 	{
 		"‘", "’", "“", "”", "(", ")", "{", "}", "=", "।", "?", "-", "µ", "॰", ",", ".", "् ",
 		"०", "१", "२", "३", "४", "५", "६", "७", "८", "९", "x",
@@ -35,7 +35,7 @@ public class UnicodeToKrutidev
 		"ं", "ँ", "ः", "ॅ", "ऽ", "् ", "्"
 	};
 
-	private static string[] array_two = new string[]
+	private static readonly string[] array_two = new string[]
 	{
 		"^", "*", "Þ", "ß", "¼", "½", "¿", "À", "¾", "A", "\\", "&", "&", "Œ", "]", "-", "~ ",
 		"å", "ƒ", "„", "…", "†", "‡", "ˆ", "‰", "Š", "‹", "Û",
