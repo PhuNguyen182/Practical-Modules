@@ -31,8 +31,11 @@ namespace PracticalModules.Localization.Components
         #if UNITY_EDITOR
         private void OnValidate()
         {
-            targetText ??= GetComponent<TMP_Text>();
-            this.SetTranslatedText();
+            if (!Application.isPlaying)
+            {
+                targetText ??= GetComponent<TMP_Text>();
+                this.SetTranslatedText();
+            }
         }
         #endif
     }

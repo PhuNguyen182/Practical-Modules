@@ -35,9 +35,12 @@ namespace PracticalModules.Localization.Components
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            inputField ??= GetComponent<TMP_InputField>();
-            placeHolderText = inputField.placeholder as TMP_Text;
-            this.SetTranslatedText();
+            if (!Application.isPlaying)
+            {
+                inputField ??= GetComponent<TMP_InputField>();
+                placeHolderText = inputField.placeholder as TMP_Text;
+                this.SetTranslatedText();
+            }
         }
 #endif
     }
