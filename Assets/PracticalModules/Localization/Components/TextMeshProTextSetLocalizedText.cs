@@ -7,7 +7,7 @@ using TMPro;
 namespace PracticalModules.Localization.Components
 {
     [RequireComponent(typeof(TMP_Text))]
-    public class TextMeshProSetLocalizedText : MonoBehaviour
+    public class TextMeshProTextSetLocalizedText : MonoBehaviour
     {
         [ValueDropdown("GetTermsList")]
         [SerializeField] public string termKey;
