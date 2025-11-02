@@ -9,7 +9,7 @@ using UnityEngine.Rendering;
 namespace PracticalSystems.InventorySystem.Models.Manager
 {
     [Serializable]
-    [CreateAssetMenu(fileName = "InventoryCategoryItemDatabase", menuName = "Scriptable Objects/ConfigData/Inventory/InventoryCategoryItemDatabase")]
+    [CreateAssetMenu(fileName = "InventoryCategoryItemDatabase", menuName = "Scriptable Objects/Inventory/ConfigData/InventoryCategoryItemDatabase")]
     public class InventoryCategoryItemDatabase : ScriptableObject
     {
         [SerializeField] public ItemDataDictionary itemData = new();

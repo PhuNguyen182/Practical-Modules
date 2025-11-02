@@ -8,7 +8,7 @@ namespace PracticalSystems.InventorySystem.Models.Manager
 {
     [Serializable]
     [GameData(nameof(InventoryConfigData))]
-    [CreateAssetMenu(fileName = "InventoryConfigData", menuName = "Scriptable Objects/ConfigData/Inventory/InventoryConfigData")]
+    [CreateAssetMenu(fileName = "InventoryConfigData", menuName = "Scriptable Objects/Inventory/ConfigData/InventoryConfigData")]
     public class InventoryConfigData : ScriptableObject, IGameData
     {
         public int Version { get; set; }

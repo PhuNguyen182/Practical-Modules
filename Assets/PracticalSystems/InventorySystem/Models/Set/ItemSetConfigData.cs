@@ -7,7 +7,7 @@ namespace PracticalSystems.InventorySystem.Models.Set
 {
     [Serializable]
     [GameData(nameof(ItemSetConfigData))]
-    [CreateAssetMenu(fileName = "ItemSetConfigData", menuName = "Scriptable Objects/ConfigData/Inventory/ItemSetConfigData")]
+    [CreateAssetMenu(fileName = "ItemSetConfigData", menuName = "Scriptable Objects/Inventory/ConfigData/ItemSetConfigData")]
     public class ItemSetConfigData : ScriptableObject, IGameData
     {
         public int Version { get; set; }
