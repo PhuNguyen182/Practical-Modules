@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PracticalSystems.GameResourceSystem.Manager;
 using PracticalSystems.InventorySystem.Models.Items;
 using PracticalSystems.InventorySystem.Models.Manager;
 
@@ -8,12 +9,21 @@ namespace PracticalSystems.InventorySystem.Manager
     {
         private readonly InventoryConfigDataController _inventoryConfigDataController;
         private readonly InventoryProgressionDataController _inventoryProgressionDataController;
+        private readonly GameResourceProgressDataController _gameResourceProgressDataController;
         
         public InventoryManager(InventoryConfigDataController inventoryConfigDataController,
-            InventoryProgressionDataController inventoryProgressionDataController)
+            InventoryProgressionDataController inventoryProgressionDataController,
+            GameResourceProgressDataController gameResourceProgressDataController)
         {
             this._inventoryConfigDataController = inventoryConfigDataController;
             this._inventoryProgressionDataController = inventoryProgressionDataController;
+            this._gameResourceProgressDataController = gameResourceProgressDataController;
+        }
+
+        public bool CanBuyItem(ItemData itemData)
+        {
+            var spendResources = itemData.buyPricing;
+            return this._gameResourceProgressDataController.CanSpendResourcesByGroup(spendResources);
         }
         
         public void AddItem(InventoryItem item)
