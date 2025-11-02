@@ -23,6 +23,16 @@ namespace PracticalSystems.InventorySystem.Manager
                 .ToDictionary(key => key.setId, value => value);
         }
 
+        public List<ItemSetData> GetAllItemSetData()
+        {
+            return this.SourceData.itemSetData;
+        }
+
+        public ItemSetData GetItemSetConfigData(string setId)
+        {
+            return this._itemSetData[setId];
+        }
+
         public bool IsValidItemSet(List<ItemData> itemSetData)
         {
             string setName = this.GetSetNameFromItemCollection(itemSetData);

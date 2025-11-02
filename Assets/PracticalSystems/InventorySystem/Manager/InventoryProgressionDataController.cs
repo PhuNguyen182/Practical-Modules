@@ -23,10 +23,7 @@ namespace PracticalSystems.InventorySystem.Manager
         public event Action<InventoryItem> OnItemAdded;
         public event Action<string, int, bool> OnItemRemoved;
         
-        public override void Initialize()
-        {
-            
-        }
+        public override void Initialize() { }
 
         public bool HasItem(string itemId)
         {
@@ -44,6 +41,20 @@ namespace PracticalSystems.InventorySystem.Manager
             }
             
             return null;
+        }
+
+        public List<InventoryItem> GetAllInventoryItemData()
+        {
+            List<InventoryItem> itemDataList = new();
+
+            foreach (var categoryItemData in this.SourceData.InventoryCategoryItemData)
+            {
+                var categoryData = categoryItemData.Value;
+                var itemData = categoryData.ItemData;
+                itemDataList.AddRange(itemData.Values);
+            }
+            
+            return itemDataList;
         }
 
         public List<InventoryItem> GetInventoryItemDataByCategory(ItemCategory category)

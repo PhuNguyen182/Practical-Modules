@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PracticalSystems.InventorySystem.Models.Items;
 using PracticalSystems.InventorySystem.Models.Manager;
 
@@ -33,6 +34,11 @@ namespace PracticalSystems.InventorySystem.Manager
         public InventoryItem GetInventoryItem(string itemId)
         {
             return this._inventoryProgressionDataController.GetSingleInventoryItemData(itemId);
+        }
+
+        public List<InventoryItem> GetAllInventoryItemData()
+        {
+            return this._inventoryProgressionDataController.GetAllInventoryItemData();
         }
 
         public ItemData GetItemDataInfo(InventoryItem inventoryItem)
