@@ -1,6 +1,6 @@
-using PracticalModules.GameResourceSystem.Models;
+using PracticalSystems.GameResourceSystem.Models;
 
-namespace PracticalModules.GameResourceSystem.Handlers
+namespace PracticalSystems.GameResourceSystem.Handlers
 {
     public abstract class BaseGameResourceHandler
     {

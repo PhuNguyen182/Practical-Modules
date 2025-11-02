@@ -51,7 +51,7 @@ namespace Foundations.DataFlow.MicroData.StaticDataControllers
         /// Get the data key from the GameDataAttribute. If not found, use the type name.
         /// </summary>
         /// <returns>Return the data key</returns>
-        protected static string GetDataKey()
+        protected string GetDataKey()
         {
             GameDataAttribute attribute = GetAttribute<TData>();
             return attribute?.DataKey ?? typeof(TData).Name;

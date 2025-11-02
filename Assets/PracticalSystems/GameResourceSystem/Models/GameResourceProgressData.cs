@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Foundations.DataFlow.MicroData;
 
-namespace PracticalModules.GameResourceSystem.Models
+namespace PracticalSystems.GameResourceSystem.Models
 {
     [Serializable]
     [GameData(nameof(GameResourceProgressData))]

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PracticalModules.GameResourceSystem.Models
+namespace PracticalSystems.GameResourceSystem.Models
 {
     [Serializable]
     public class ResourceData

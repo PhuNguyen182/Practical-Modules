@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Foundations.DataFlow.MicroData.DynamicDataControllers;
 using Foundations.SaveSystem;
 using Foundations.SaveSystem.CustomDataSaverService;
 using Foundations.SaveSystem.CustomDataSerializerServices;
-using Foundations.DataFlow.MicroData.DynamicDataControllers;
-using PracticalModules.GameResourceSystem.Handlers;
-using PracticalModules.GameResourceSystem.Models;
+using PracticalSystems.GameResourceSystem.Handlers;
+using PracticalSystems.GameResourceSystem.Models;
 
-namespace PracticalModules.GameResourceSystem.Manager
+namespace PracticalSystems.GameResourceSystem.Manager
 {
     public class GameResourceProgressDataController : DynamicGameDataHandler<GameResourceProgressData>
     {
@@ -67,24 +67,47 @@ namespace PracticalModules.GameResourceSystem.Manager
             return this._gameResourceHandlers.TryGetValue(resourceType, out var handler) &&
                    handler.CanSpendResources(amount);
         }
-        
+
+        public bool CanSpendResourcesByGroup(ResourceData[] resourceData)
+        {
+            for (int i = 0; i < resourceData.Length; i++)
+            {
+                if (!this.CanSpendResourcesByType(resourceData[i].resourceType, resourceData[i].amount))
+                    return false;
+            }
+            
+            return true;
+        }
+
         public void SpendResourcesByType(GameResourceType resourceType, int amount)
         {
-            if (!this._gameResourceHandlers.TryGetValue(resourceType, out var handler))
+            if (!this.CanSpendResourcesByType(resourceType, amount))
             {
-                Debug.Log($"This resource type ({resourceType}) does not exist.");
+                Debug.LogError($"Cannot spend {resourceType}!");
                 return;
             }
 
-            if (handler.CanSpendResources(amount))
+            BaseGameResourceHandler handler = this._gameResourceHandlers[resourceType];
+            handler.SpendResources(amount);
+            this.Save();
+        }
+
+        public void SpendResourcesByGroup(ResourceData[] resourceData)
+        {
+            if (!this.CanSpendResourcesByGroup(resourceData))
             {
-                handler.SpendResources(amount);
-                this.Save();
+                Debug.Log("Do not enough resource to spend!");
+                return;
+            }
+
+            for (int i = 0; i < resourceData.Length; i++)
+            {
+                ResourceData resourceDataItem = resourceData[i];
+                BaseGameResourceHandler handler = this._gameResourceHandlers[resourceDataItem.resourceType];
+                handler.SpendResources(resourceDataItem.amount);
             }
             
-            int currentAmount = handler.GetResourceAmount();
-            int needMoreAmountToSpent = amount - currentAmount;
-            Debug.Log($"Do not enough resource! You need more {needMoreAmountToSpent} {resourceType} to spend!");
+            this.Save();
         }
     }
 }
