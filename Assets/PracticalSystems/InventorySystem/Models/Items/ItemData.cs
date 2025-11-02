@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PracticalSystems.GameResourceSystem.Models;
 using UnityEngine;
 
@@ -15,5 +16,6 @@ namespace PracticalSystems.InventorySystem.Models.Items
         [SerializeField] public ItemCategory itemCategory;
         [SerializeField] public ResourceData[] buyPricing;
         [SerializeField] public ResourceData[] sellPricing;
+        [SerializeField] public List<string> tags = new();
     }
 }

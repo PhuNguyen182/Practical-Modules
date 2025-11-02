@@ -6,6 +6,7 @@ using Foundations.SaveSystem.CustomDataSaverService;
 using Foundations.SaveSystem.CustomDataSerializerServices;
 using PracticalSystems.InventorySystem.Models.Items;
 using PracticalSystems.InventorySystem.Models.Manager;
+using UnityEngine.Pool;
 using ZLinq;
 
 namespace PracticalSystems.InventorySystem.Manager
@@ -20,10 +21,19 @@ namespace PracticalSystems.InventorySystem.Manager
         protected override IDataSaveService<InventoryProgressionData> DataSaveService =>
             new FileDataSaveService<InventoryProgressionData>(this.DataSerializer);
         
+        private readonly Dictionary<string, HashSet<string>> _itemTagMap = new();
+        
         public event Action<InventoryItem> OnItemAdded;
         public event Action<string, int, bool> OnItemRemoved;
-        
-        public override void Initialize() { }
+
+        public override void Initialize()
+        {
+            var allItemData = this.GetAllInventoryItemData();
+            foreach (var inventoryItem in allItemData)
+            {
+                this.AddItemToTagMap(inventoryItem);
+            }
+        }
 
         public bool HasItem(string itemId)
         {
@@ -57,6 +67,41 @@ namespace PracticalSystems.InventorySystem.Manager
             return itemDataList;
         }
 
+        public List<string> GetItemIdsByTags(List<string> queryTags)
+        {
+            if (queryTags is not { Count: > 0 })
+                return null;
+            
+            using var smallestSet = HashSetPool<string>.Get(out var minimumSetOfItemIds);
+            using var checkingSet = HashSetPool<string>.Get(out var currentSet);
+            using var resultSet = HashSetPool<string>.Get(out var results);
+            
+            string minimumTag = "";
+            foreach (var tag in queryTags)
+            {
+                if (!_itemTagMap.ContainsKey(tag))
+                    return null;
+                
+                currentSet = this._itemTagMap[tag];
+                if (currentSet.Count < minimumSetOfItemIds.Count)
+                {
+                    minimumTag = tag;
+                    minimumSetOfItemIds = currentSet;
+                }
+            }
+
+            results = new HashSet<string>(minimumSetOfItemIds);
+            foreach (var tag in queryTags)
+            {
+                if (string.CompareOrdinal(tag, minimumTag) == 0) 
+                    continue;
+                
+                results.IntersectWith(this._itemTagMap[tag]);
+            }
+
+            return results.AsValueEnumerable().ToList();
+        }
+
         public List<InventoryItem> GetInventoryItemDataByCategory(ItemCategory category)
         {
             var categoryItemData = this.SourceData.InventoryCategoryItemData[category];
@@ -85,6 +130,8 @@ namespace PracticalSystems.InventorySystem.Manager
                 {
                     ItemData = itemData,
                 });
+
+                this.AddItemToTagMap(item);
             }
             
             this.Save();
@@ -96,15 +143,51 @@ namespace PracticalSystems.InventorySystem.Manager
             foreach (var categoryItemData in this.SourceData.InventoryCategoryItemData)
             {
                 var categoryData = categoryItemData.Value;
-                if (categoryData.RemoveItem(itemId, quantity, forceRemove))
+                var removeStatus = categoryData.RemoveItem(itemId, quantity, forceRemove);
+                if (removeStatus != ItemRemoveStatus.NotRemove)
                 {
                     this.Save();
                     this.OnItemRemoved?.Invoke(itemId, quantity, forceRemove);
-                    return true;
                 }
+
+                if (removeStatus == ItemRemoveStatus.Removed)
+                    this.RemoveItemFromTagMap(itemId);
+
+                return true;
             }
             
             return false;
+        }
+
+        private void AddItemToTagMap(InventoryItem item)
+        {
+            if (item.tags.Count > 0)
+            {
+                foreach (var tag in item.tags)
+                {
+                    if (!_itemTagMap.ContainsKey(tag))
+                        _itemTagMap.Add(tag, new HashSet<string>());
+
+                    _itemTagMap[tag].Add(item.itemId);
+                }
+            }
+        }
+        
+        private void RemoveItemFromTagMap(string itemId)
+        {
+            var inventoryItem = this.GetSingleInventoryItemData(itemId);
+            if (inventoryItem == null || inventoryItem.tags.Count <= 0)
+                return;
+            
+            foreach (var tag in inventoryItem.tags)
+            {
+                if (!_itemTagMap.TryGetValue(tag, out var tagMap)) 
+                    continue;
+                        
+                tagMap.Remove(itemId);
+                if (tagMap.Count <= 0)
+                    _itemTagMap.Remove(tag);
+            }
         }
     }
 }

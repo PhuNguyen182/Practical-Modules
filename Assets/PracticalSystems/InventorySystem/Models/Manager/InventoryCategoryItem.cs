@@ -3,6 +3,13 @@ using System.Collections.Generic;
 
 namespace PracticalSystems.InventorySystem.Models.Manager
 {
+    public enum ItemRemoveStatus
+    {
+        NotRemove = 0,
+        StillHasItem = 1,
+        Removed = 2,
+    }
+    
     [Serializable]
     public class InventoryCategoryItem
     {
@@ -19,15 +26,15 @@ namespace PracticalSystems.InventorySystem.Models.Manager
             this.ItemData[itemId] = existingItem;
         }
         
-        public bool RemoveItem(string itemId, int quantity = 1, bool forceRemove = false)
+        public ItemRemoveStatus RemoveItem(string itemId, int quantity = 1, bool forceRemove = false)
         {
             if (!this.ItemData.TryGetValue(itemId, out InventoryItem item))
-                return false;
+                return ItemRemoveStatus.NotRemove;
 
             if (forceRemove)
             {
                 this.ItemData.Remove(itemId);
-                return true;
+                return ItemRemoveStatus.Removed;
             }
             
             int currentQuantity = item.quantity;
@@ -37,13 +44,13 @@ namespace PracticalSystems.InventorySystem.Models.Manager
             {
                 item.quantity = offset;
                 this.ItemData[itemId] = item;
+                return ItemRemoveStatus.StillHasItem;
             }
             else
             {
                 this.ItemData.Remove(itemId);
+                return ItemRemoveStatus.Removed;
             }
-            
-            return true;
         }
     }
 }

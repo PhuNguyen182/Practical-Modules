@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using PracticalSystems.InventorySystem.Models.Items;
 
 namespace PracticalSystems.InventorySystem.Models.Manager
@@ -9,6 +10,6 @@ namespace PracticalSystems.InventorySystem.Models.Manager
         public string itemId;
         public int quantity;
         public ItemCategory itemCategory;
-        public DateTime AcquiredDate = DateTime.Now;
+        public List<string> tags = new();
     }
 }
