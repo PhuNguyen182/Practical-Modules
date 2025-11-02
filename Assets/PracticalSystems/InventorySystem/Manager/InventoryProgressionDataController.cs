@@ -161,15 +161,15 @@ namespace PracticalSystems.InventorySystem.Manager
 
         private void AddItemToTagMap(InventoryItem item)
         {
-            if (item.tags.Count > 0)
+            if (item.tags.Count <= 0) 
+                return;
+            
+            foreach (var tag in item.tags)
             {
-                foreach (var tag in item.tags)
-                {
-                    if (!_itemTagMap.ContainsKey(tag))
-                        _itemTagMap.Add(tag, new HashSet<string>());
+                if (!_itemTagMap.ContainsKey(tag))
+                    _itemTagMap.Add(tag, new HashSet<string>());
 
-                    _itemTagMap[tag].Add(item.itemId);
-                }
+                _itemTagMap[tag].Add(item.itemId);
             }
         }
 
