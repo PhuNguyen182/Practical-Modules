@@ -20,9 +20,9 @@ namespace PracticalSystems.InventorySystem.Manager
             this._inventoryProgressionDataController.AddItem(item);
         }
 
-        public void RemoveItem(string itemId, int quantity = 1, bool forceRemove = false)
+        public bool RemoveItem(string itemId, int quantity = 1, bool forceRemove = false)
         {
-            this._inventoryProgressionDataController.RemoveItem(itemId, quantity, forceRemove);
+            return this._inventoryProgressionDataController.RemoveItem(itemId, quantity, forceRemove);
         }
 
         public InventoryItem GetInventoryItem(string itemId)
