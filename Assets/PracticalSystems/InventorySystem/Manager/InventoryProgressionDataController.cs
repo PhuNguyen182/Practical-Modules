@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Foundations.SaveSystem;
 using Foundations.DataFlow.MicroData.DynamicDataControllers;
@@ -19,9 +20,18 @@ namespace PracticalSystems.InventorySystem.Manager
         protected override IDataSaveService<InventoryProgressionData> DataSaveService =>
             new FileDataSaveService<InventoryProgressionData>(this.DataSerializer);
         
+        public event Action<InventoryItem> OnItemAdded;
+        public event Action<string, int, bool> OnItemRemoved;
+        
         public override void Initialize()
         {
             
+        }
+
+        public bool HasItem(string itemId)
+        {
+            var itemData = this.GetSingleInventoryItemData(itemId);
+            return itemData != null;
         }
         
         public InventoryItem GetSingleInventoryItemData(string itemId)
@@ -65,6 +75,9 @@ namespace PracticalSystems.InventorySystem.Manager
                     ItemData = itemData,
                 });
             }
+            
+            this.Save();
+            this.OnItemAdded?.Invoke(item);
         }
         
         public bool RemoveItem(string itemId, int quantity = 1, bool forceRemove = false)
@@ -73,7 +86,11 @@ namespace PracticalSystems.InventorySystem.Manager
             {
                 var categoryData = categoryItemData.Value;
                 if (categoryData.RemoveItem(itemId, quantity, forceRemove))
+                {
+                    this.Save();
+                    this.OnItemRemoved?.Invoke(itemId, quantity, forceRemove);
                     return true;
+                }
             }
             
             return false;

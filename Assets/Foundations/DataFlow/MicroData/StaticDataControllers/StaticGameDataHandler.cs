@@ -45,7 +45,11 @@ namespace Foundations.DataFlow.MicroData.StaticDataControllers
             await _dataSequenceProcessor.Execute();
             if (_dataSequenceProcessor.LatestProcessSequence is IProcessSequenceData processSequenceData)
                 SourceData = processSequenceData.GameData as TData;
+            
+            this.OnDataInitialized();
         }
+        
+        protected abstract void OnDataInitialized();
 
         /// <summary>
         /// Get the data key from the GameDataAttribute. If not found, use the type name.

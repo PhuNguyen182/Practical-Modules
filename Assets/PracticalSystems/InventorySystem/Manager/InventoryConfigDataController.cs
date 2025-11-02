@@ -16,6 +16,11 @@ namespace PracticalSystems.InventorySystem.Manager
             new DataProcessSequence(this.GetDataKey(), DataProcessorType.ScriptableObjects)
         };
 
+        protected override void OnDataInitialized()
+        {
+            
+        }
+
         public ItemData GetItemData(InventoryItem inventoryItem)
         {
             var itemCategory = inventoryItem.itemCategory;

@@ -24,6 +24,11 @@ namespace PracticalSystems.InventorySystem.Manager
         {
             return this._inventoryProgressionDataController.RemoveItem(itemId, quantity, forceRemove);
         }
+        
+        public bool HasItem(string itemId)
+        {
+            return this._inventoryProgressionDataController.HasItem(itemId);
+        }
 
         public InventoryItem GetInventoryItem(string itemId)
         {
