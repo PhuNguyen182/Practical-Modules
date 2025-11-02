@@ -20,9 +20,9 @@ namespace PracticalSystems.InventorySystem.Manager
 
         protected override IDataSaveService<InventoryProgressionData> DataSaveService =>
             new FileDataSaveService<InventoryProgressionData>(this.DataSerializer);
-        
+
         private readonly Dictionary<string, HashSet<string>> _itemTagMap = new();
-        
+
         public event Action<InventoryItem> OnItemAdded;
         public event Action<string, int, bool> OnItemRemoved;
 
@@ -40,7 +40,7 @@ namespace PracticalSystems.InventorySystem.Manager
             var itemData = this.GetSingleInventoryItemData(itemId);
             return itemData != null;
         }
-        
+
         public InventoryItem GetSingleInventoryItemData(string itemId)
         {
             foreach (var categoryItemData in this.SourceData.InventoryCategoryItemData)
@@ -49,7 +49,7 @@ namespace PracticalSystems.InventorySystem.Manager
                 if (categoryData.ItemData.TryGetValue(itemId, out InventoryItem itemData))
                     return itemData;
             }
-            
+
             return null;
         }
 
@@ -63,7 +63,7 @@ namespace PracticalSystems.InventorySystem.Manager
                 var itemData = categoryData.ItemData;
                 itemDataList.AddRange(itemData.Values);
             }
-            
+
             return itemDataList;
         }
 
@@ -71,17 +71,17 @@ namespace PracticalSystems.InventorySystem.Manager
         {
             if (queryTags is not { Count: > 0 })
                 return null;
-            
+
             using var smallestSet = HashSetPool<string>.Get(out var minimumSetOfItemIds);
             using var checkingSet = HashSetPool<string>.Get(out var currentSet);
             using var resultSet = HashSetPool<string>.Get(out var results);
-            
+
             string minimumTag = "";
             foreach (var tag in queryTags)
             {
                 if (!_itemTagMap.ContainsKey(tag))
                     return null;
-                
+
                 currentSet = this._itemTagMap[tag];
                 if (currentSet.Count < minimumSetOfItemIds.Count)
                 {
@@ -93,9 +93,9 @@ namespace PracticalSystems.InventorySystem.Manager
             results = new HashSet<string>(minimumSetOfItemIds);
             foreach (var tag in queryTags)
             {
-                if (string.CompareOrdinal(tag, minimumTag) == 0) 
+                if (string.CompareOrdinal(tag, minimumTag) == 0)
                     continue;
-                
+
                 results.IntersectWith(this._itemTagMap[tag]);
             }
 
@@ -125,7 +125,7 @@ namespace PracticalSystems.InventorySystem.Manager
                 {
                     { item.itemId, item }
                 };
-                
+
                 this.SourceData.InventoryCategoryItemData.Add(category, new InventoryCategoryItem()
                 {
                     ItemData = itemData,
@@ -133,11 +133,11 @@ namespace PracticalSystems.InventorySystem.Manager
 
                 this.AddItemToTagMap(item);
             }
-            
+
             this.Save();
             this.OnItemAdded?.Invoke(item);
         }
-        
+
         public bool RemoveItem(string itemId, int quantity = 1, bool forceRemove = false)
         {
             foreach (var categoryItemData in this.SourceData.InventoryCategoryItemData)
@@ -155,7 +155,7 @@ namespace PracticalSystems.InventorySystem.Manager
 
                 return true;
             }
-            
+
             return false;
         }
 
@@ -172,18 +172,18 @@ namespace PracticalSystems.InventorySystem.Manager
                 }
             }
         }
-        
+
         private void RemoveItemFromTagMap(string itemId)
         {
             var inventoryItem = this.GetSingleInventoryItemData(itemId);
             if (inventoryItem == null || inventoryItem.tags.Count <= 0)
                 return;
-            
+
             foreach (var tag in inventoryItem.tags)
             {
-                if (!_itemTagMap.TryGetValue(tag, out var tagMap)) 
+                if (!_itemTagMap.TryGetValue(tag, out var tagMap))
                     continue;
-                        
+
                 tagMap.Remove(itemId);
                 if (tagMap.Count <= 0)
                     _itemTagMap.Remove(tag);
