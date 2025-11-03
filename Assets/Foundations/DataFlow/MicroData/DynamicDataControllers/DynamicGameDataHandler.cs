@@ -1,5 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
+using Foundations.DataFlow.MasterDataController;
 using Foundations.SaveSystem;
 
 namespace Foundations.DataFlow.MicroData.DynamicDataControllers
@@ -33,6 +34,8 @@ namespace Foundations.DataFlow.MicroData.DynamicDataControllers
         public TData ExposedSourceData => SourceData;
 
         public abstract void Initialize();
+
+        public abstract void InjectDataManager(IMainDataManager mainDataManager);
 
         public async UniTask Load() => SourceData = await DataSaveService.LoadData(DataType.Name);
         

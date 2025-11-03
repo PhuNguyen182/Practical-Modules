@@ -14,11 +14,11 @@ namespace Foundations.DataFlow.MasterDataController
         {
             // Initialize static data first
             _staticCustomDataManager = new StaticCustomDataManager();
-            await _staticCustomDataManager.InitializeDataHandlers();
+            await _staticCustomDataManager.InitializeDataHandlers(this);
             
             // Then initialize dynamic data later
             _dynamicCustomDataManager = new DynamicCustomDataManager();
-            await _dynamicCustomDataManager.InitializeDataHandlers();
+            await _dynamicCustomDataManager.InitializeDataHandlers(this);
         }
 
         public TStaticGameDataHandler GetStaticDataHandler<TStaticGameDataHandler>()

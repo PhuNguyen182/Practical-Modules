@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Foundations.DataFlow.MasterDataController;
 using Foundations.DataFlow.MicroData.DynamicDataControllers;
 using Foundations.SaveSystem;
 using Foundations.SaveSystem.CustomDataSaverService;
@@ -34,6 +35,11 @@ namespace PracticalSystems.GameResourceSystem.Manager
 
             this._gameResourceHandlers.TryAdd(GameResourceType.Coin,
                 new CoinResourceHandler(this.SourceData.GameResourceData[GameResourceType.Coin]));
+        }
+
+        public override void InjectDataManager(IMainDataManager mainDataManager)
+        {
+            
         }
 
         public int GetResourceAmountByType(GameResourceType resourceType)

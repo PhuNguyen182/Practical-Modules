@@ -14,7 +14,7 @@ namespace Foundations.DataFlow.MasterDataController
         private bool _isDisposed;
         private readonly Dictionary<Type, IStaticGameDataHandler> _dynamicDataHandlers = new();
         
-        public async UniTask InitializeDataHandlers()
+        public async UniTask InitializeDataHandlers(IMainDataManager mainDataManager)
         {
             Type interfaceType = typeof(IStaticGameDataHandler);
             var allDataHandlerTypes = AppDomain.CurrentDomain
@@ -29,7 +29,7 @@ namespace Foundations.DataFlow.MasterDataController
             {
                 if (TypeFactory.Create(dataHandlerType) is not IStaticGameDataHandler dataHandler)
                     continue;
-
+                
                 await dataHandler.Initialize();
                 _dynamicDataHandlers.Add(dataHandlerType, dataHandler);
             }

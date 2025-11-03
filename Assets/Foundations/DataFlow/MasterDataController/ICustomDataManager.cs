@@ -5,6 +5,6 @@ namespace Foundations.DataFlow.MasterDataController
 {
     public interface ICustomDataManager : IDisposable
     {
-        public UniTask InitializeDataHandlers();
+        public UniTask InitializeDataHandlers(IMainDataManager mainDataManager);
     }
 }

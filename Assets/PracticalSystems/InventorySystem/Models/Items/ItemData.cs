@@ -9,6 +9,8 @@ namespace PracticalSystems.InventorySystem.Models.Items
     {
         [SerializeField] public int itemId;
         [SerializeField] public string itemName;
+        
+        [Multiline(6)] 
         [SerializeField] public string itemDescription;
         [SerializeField] public string iconName;
         [SerializeField] public string prefabName;

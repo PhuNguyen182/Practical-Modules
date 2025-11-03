@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Foundations.DataFlow.ProcessingSequence;
 using Foundations.DataFlow.ProcessingSequence.CustomDataProcessor;
 using Cysharp.Threading.Tasks;
+using Foundations.DataFlow.MasterDataController;
 
 namespace Foundations.DataFlow.MicroData.StaticDataControllers
 {
@@ -48,6 +49,8 @@ namespace Foundations.DataFlow.MicroData.StaticDataControllers
             
             this.OnDataInitialized();
         }
+        
+        public abstract void InjectDataManager(IMainDataManager mainDataManager);
         
         protected abstract void OnDataInitialized();
 

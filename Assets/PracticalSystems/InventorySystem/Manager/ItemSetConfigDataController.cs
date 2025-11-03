@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Foundations.DataFlow.MasterDataController;
 using Foundations.DataFlow.MicroData.StaticDataControllers;
 using Foundations.DataFlow.ProcessingSequence;
 using PracticalSystems.InventorySystem.Models.Items;
@@ -16,6 +17,11 @@ namespace PracticalSystems.InventorySystem.Manager
         };
         
         private Dictionary<string, ItemSetData> _itemSetData = new();
+
+        public override void InjectDataManager(IMainDataManager mainDataManager)
+        {
+            
+        }
 
         protected override void OnDataInitialized()
         {

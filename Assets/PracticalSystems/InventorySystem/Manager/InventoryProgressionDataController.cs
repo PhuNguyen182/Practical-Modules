@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Foundations.DataFlow.MasterDataController;
 using Foundations.SaveSystem;
 using Foundations.DataFlow.MicroData.DynamicDataControllers;
 using Foundations.SaveSystem.CustomDataSaverService;
@@ -22,17 +23,28 @@ namespace PracticalSystems.InventorySystem.Manager
             new FileDataSaveService<InventoryProgressionData>(this.DataSerializer);
 
         private readonly Dictionary<string, HashSet<int>> _itemTagMap = new();
+        private InventoryConfigDataController _inventoryConfigDataController;
 
         public event Action<InventoryItem> OnItemAdded;
         public event Action<int, int, bool> OnItemRemoved;
+        
+        public override void InjectDataManager(IMainDataManager mainDataManager)
+        {
+            this._inventoryConfigDataController = mainDataManager.GetStaticDataHandler<InventoryConfigDataController>();
+        }
 
         public override void Initialize()
         {
             var allItemData = this.GetAllInventoryItemData();
-            foreach (var inventoryItem in allItemData)
+            for (int i = 0; i < allItemData.Count; i++)
             {
-                this.AddItemToTagMap(inventoryItem);
+                ItemData itemDataConfig = this._inventoryConfigDataController.GetItemData(allItemData[i]);
+                allItemData[i].tags = itemDataConfig.tags;
+                this.AddItemToTagMap(allItemData[i]);
+                this.UpdateItem(allItemData[i]);
             }
+            
+            this.Save();
         }
 
         public bool HasItem(int itemId)
@@ -140,6 +152,13 @@ namespace PracticalSystems.InventorySystem.Manager
             this.OnItemAdded?.Invoke(item);
         }
 
+        public void UpdateItem(InventoryItem item, bool forceUpdate = false)
+        {
+            this.SourceData.InventoryCategoryItemData[item.itemCategory].ItemData[item.itemId] = item;
+            if (forceUpdate)
+                this.Save();
+        }
+
         public bool RemoveItem(int itemId, int quantity = 1, bool forceRemove = false)
         {
             foreach (var categoryItemData in this.SourceData.InventoryCategoryItemData)
@@ -166,12 +185,12 @@ namespace PracticalSystems.InventorySystem.Manager
             if (item.tags.Count <= 0) 
                 return;
             
-            foreach (var tag in item.tags)
+            for (int i = 0; i < item.tags.Count; i++)
             {
-                if (!_itemTagMap.ContainsKey(tag))
-                    _itemTagMap.Add(tag, new HashSet<int>());
+                if (!_itemTagMap.ContainsKey(item.tags[i]))
+                    _itemTagMap.Add(item.tags[i], new HashSet<int>());
 
-                _itemTagMap[tag].Add(item.itemId);
+                _itemTagMap[item.tags[i]].Add(item.itemId);
             }
         }
 
@@ -181,14 +200,14 @@ namespace PracticalSystems.InventorySystem.Manager
             if (inventoryItem == null || inventoryItem.tags.Count <= 0)
                 return;
 
-            foreach (var tag in inventoryItem.tags)
+            for (int i = 0; i < inventoryItem.tags.Count; i++)
             {
-                if (!_itemTagMap.TryGetValue(tag, out var tagMap))
+                if (!_itemTagMap.TryGetValue(inventoryItem.tags[i], out var tagMap))
                     continue;
 
                 tagMap.Remove(itemId);
                 if (tagMap.Count <= 0)
-                    _itemTagMap.Remove(tag);
+                    _itemTagMap.Remove(inventoryItem.tags[i]);
             }
         }
     }

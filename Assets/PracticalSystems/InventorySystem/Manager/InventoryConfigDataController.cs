@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Foundations.DataFlow.MasterDataController;
 using Foundations.DataFlow.MicroData.StaticDataControllers;
 using PracticalSystems.InventorySystem.Models.Manager;
 using Foundations.DataFlow.ProcessingSequence;
@@ -15,6 +16,11 @@ namespace PracticalSystems.InventorySystem.Manager
         {
             new DataProcessSequence(this.GetDataKey(), DataProcessorType.ScriptableObjects)
         };
+
+        public override void InjectDataManager(IMainDataManager mainDataManager)
+        {
+            
+        }
 
         protected override void OnDataInitialized()
         {
