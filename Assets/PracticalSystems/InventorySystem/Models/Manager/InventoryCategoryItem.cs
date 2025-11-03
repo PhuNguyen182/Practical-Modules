@@ -13,11 +13,11 @@ namespace PracticalSystems.InventorySystem.Models.Manager
     [Serializable]
     public class InventoryCategoryItem
     {
-        public Dictionary<string, InventoryItem> ItemData = new();
+        public Dictionary<int, InventoryItem> ItemData = new();
 
         public void AddItem(InventoryItem item)
         {
-            string itemId = item.itemId;
+            int itemId = item.itemId;
             if (this.ItemData.TryAdd(itemId, item)) 
                 return;
             
@@ -26,7 +26,7 @@ namespace PracticalSystems.InventorySystem.Models.Manager
             this.ItemData[itemId] = existingItem;
         }
         
-        public ItemRemoveStatus RemoveItem(string itemId, int quantity = 1, bool forceRemove = false)
+        public ItemRemoveStatus RemoveItem(int itemId, int quantity = 1, bool forceRemove = false)
         {
             if (!this.ItemData.TryGetValue(itemId, out InventoryItem item))
                 return ItemRemoveStatus.NotRemove;

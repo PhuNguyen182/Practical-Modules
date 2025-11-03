@@ -6,7 +6,7 @@ namespace PracticalSystems.InventorySystem.Models.Manager
     {
         public int Compare(InventoryItem x, InventoryItem y)
         {
-            int idComparison = string.CompareOrdinal(x.itemId, y.itemId);
+            int idComparison = x.itemId.CompareTo(y.itemId);
             if (idComparison != 0)
                 return idComparison;
 

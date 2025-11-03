@@ -21,10 +21,10 @@ namespace PracticalSystems.InventorySystem.Manager
         protected override IDataSaveService<InventoryProgressionData> DataSaveService =>
             new FileDataSaveService<InventoryProgressionData>(this.DataSerializer);
 
-        private readonly Dictionary<string, HashSet<string>> _itemTagMap = new();
+        private readonly Dictionary<string, HashSet<int>> _itemTagMap = new();
 
         public event Action<InventoryItem> OnItemAdded;
-        public event Action<string, int, bool> OnItemRemoved;
+        public event Action<int, int, bool> OnItemRemoved;
 
         public override void Initialize()
         {
@@ -35,13 +35,13 @@ namespace PracticalSystems.InventorySystem.Manager
             }
         }
 
-        public bool HasItem(string itemId)
+        public bool HasItem(int itemId)
         {
             var itemData = this.GetSingleInventoryItemData(itemId);
             return itemData != null;
         }
 
-        public InventoryItem GetSingleInventoryItemData(string itemId)
+        public InventoryItem GetSingleInventoryItemData(int itemId)
         {
             foreach (var categoryItemData in this.SourceData.InventoryCategoryItemData)
             {
@@ -67,14 +67,14 @@ namespace PracticalSystems.InventorySystem.Manager
             return itemDataList;
         }
 
-        public List<string> GetItemIdsByTags(params string[] queryTags)
+        public List<int> GetItemIdsByTags(params string[] queryTags)
         {
             if (queryTags is not { Length: > 0 })
                 return null;
 
-            using var smallestSet = HashSetPool<string>.Get(out var minimumSetOfItemIds);
-            using var checkingSet = HashSetPool<string>.Get(out var currentSet);
-            using var resultSet = HashSetPool<string>.Get(out var results);
+            using var smallestSet = HashSetPool<int>.Get(out var minimumSetOfItemIds);
+            using var checkingSet = HashSetPool<int>.Get(out var currentSet);
+            using var resultSet = HashSetPool<int>.Get(out var results);
 
             string minimumTag = "";
             minimumSetOfItemIds = this._itemTagMap[queryTags[0]];
@@ -92,7 +92,7 @@ namespace PracticalSystems.InventorySystem.Manager
                 }
             }
 
-            results = new HashSet<string>(minimumSetOfItemIds);
+            results = new HashSet<int>(minimumSetOfItemIds);
             for (int i = 0; i < queryTags.Length; i++)
             {
                 if (string.CompareOrdinal(queryTags[i], minimumTag) == 0)
@@ -123,7 +123,7 @@ namespace PracticalSystems.InventorySystem.Manager
             }
             else
             {
-                Dictionary<string, InventoryItem> itemData = new()
+                Dictionary<int, InventoryItem> itemData = new()
                 {
                     { item.itemId, item }
                 };
@@ -140,7 +140,7 @@ namespace PracticalSystems.InventorySystem.Manager
             this.OnItemAdded?.Invoke(item);
         }
 
-        public bool RemoveItem(string itemId, int quantity = 1, bool forceRemove = false)
+        public bool RemoveItem(int itemId, int quantity = 1, bool forceRemove = false)
         {
             foreach (var categoryItemData in this.SourceData.InventoryCategoryItemData)
             {
@@ -169,13 +169,13 @@ namespace PracticalSystems.InventorySystem.Manager
             foreach (var tag in item.tags)
             {
                 if (!_itemTagMap.ContainsKey(tag))
-                    _itemTagMap.Add(tag, new HashSet<string>());
+                    _itemTagMap.Add(tag, new HashSet<int>());
 
                 _itemTagMap[tag].Add(item.itemId);
             }
         }
 
-        private void RemoveItemFromTagMap(string itemId)
+        private void RemoveItemFromTagMap(int itemId)
         {
             var inventoryItem = this.GetSingleInventoryItemData(itemId);
             if (inventoryItem == null || inventoryItem.tags.Count <= 0)

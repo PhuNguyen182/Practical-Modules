@@ -31,17 +31,17 @@ namespace PracticalSystems.InventorySystem.Manager
             this._inventoryProgressionDataController.AddItem(item);
         }
 
-        public bool RemoveItem(string itemId, int quantity = 1, bool forceRemove = false)
+        public bool RemoveItem(int itemId, int quantity = 1, bool forceRemove = false)
         {
             return this._inventoryProgressionDataController.RemoveItem(itemId, quantity, forceRemove);
         }
         
-        public bool HasItem(string itemId)
+        public bool HasItem(int itemId)
         {
             return this._inventoryProgressionDataController.HasItem(itemId);
         }
 
-        public InventoryItem GetInventoryItem(string itemId)
+        public InventoryItem GetInventoryItem(int itemId)
         {
             return this._inventoryProgressionDataController.GetSingleInventoryItemData(itemId);
         }
@@ -56,7 +56,7 @@ namespace PracticalSystems.InventorySystem.Manager
             return this._inventoryConfigDataController.GetItemData(inventoryItem);
         }
 
-        public List<string> GetItemIdsByTags(params string[] queryTags)
+        public List<int> GetItemIdsByTags(params string[] queryTags)
         {
             return this._inventoryProgressionDataController.GetItemIdsByTags(queryTags);
         }

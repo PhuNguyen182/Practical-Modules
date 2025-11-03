@@ -31,7 +31,7 @@ namespace PracticalSystems.InventorySystem.Models.Manager
     }
     
     [Serializable]
-    public class ItemDataDictionary : SerializedDictionary<string, ItemData>
+    public class ItemDataDictionary : SerializedDictionary<int, ItemData>
     {
         
     }
