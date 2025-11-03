@@ -55,5 +55,10 @@ namespace PracticalSystems.InventorySystem.Manager
         {
             return this._inventoryConfigDataController.GetItemData(inventoryItem);
         }
+
+        public List<string> GetItemIdsByTags(params string[] queryTags)
+        {
+            return this._inventoryProgressionDataController.GetItemIdsByTags(queryTags);
+        }
     }
 }

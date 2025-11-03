@@ -67,9 +67,9 @@ namespace PracticalSystems.InventorySystem.Manager
             return itemDataList;
         }
 
-        public List<string> GetItemIdsByTags(List<string> queryTags)
+        public List<string> GetItemIdsByTags(params string[] queryTags)
         {
-            if (queryTags is not { Count: > 0 })
+            if (queryTags is not { Length: > 0 })
                 return null;
 
             using var smallestSet = HashSetPool<string>.Get(out var minimumSetOfItemIds);
@@ -77,26 +77,28 @@ namespace PracticalSystems.InventorySystem.Manager
             using var resultSet = HashSetPool<string>.Get(out var results);
 
             string minimumTag = "";
-            foreach (var tag in queryTags)
+            minimumSetOfItemIds = this._itemTagMap[queryTags[0]];
+            
+            for (int i = 0; i < queryTags.Length; i++)
             {
-                if (!_itemTagMap.ContainsKey(tag))
+                if (!_itemTagMap.ContainsKey(queryTags[i]))
                     return null;
 
-                currentSet = this._itemTagMap[tag];
+                currentSet = this._itemTagMap[queryTags[i]];
                 if (currentSet.Count < minimumSetOfItemIds.Count)
                 {
-                    minimumTag = tag;
+                    minimumTag = queryTags[i];
                     minimumSetOfItemIds = currentSet;
                 }
             }
 
             results = new HashSet<string>(minimumSetOfItemIds);
-            foreach (var tag in queryTags)
+            for (int i = 0; i < queryTags.Length; i++)
             {
-                if (string.CompareOrdinal(tag, minimumTag) == 0)
+                if (string.CompareOrdinal(queryTags[i], minimumTag) == 0)
                     continue;
 
-                results.IntersectWith(this._itemTagMap[tag]);
+                results.IntersectWith(this._itemTagMap[queryTags[i]]);
             }
 
             return results.AsValueEnumerable().ToList();
