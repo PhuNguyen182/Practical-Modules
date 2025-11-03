@@ -22,12 +22,14 @@ namespace PracticalSystems.InventorySystem.Manager
         protected override IDataSaveService<InventoryProgressionData> DataSaveService =>
             new FileDataSaveService<InventoryProgressionData>(this.DataSerializer);
 
+        private ItemData _cachedItemData;
+        private InventoryItem _cachedInventoryItem;
         private readonly Dictionary<string, HashSet<int>> _itemTagMap = new();
         private InventoryConfigDataController _inventoryConfigDataController;
 
         public event Action<InventoryItem> OnItemAdded;
         public event Action<int, int, bool> OnItemRemoved;
-        
+
         public override void InjectDataManager(IMainDataManager mainDataManager)
         {
             this._inventoryConfigDataController = mainDataManager.GetStaticDataHandler<InventoryConfigDataController>();
@@ -38,12 +40,9 @@ namespace PracticalSystems.InventorySystem.Manager
             var allItemData = this.GetAllInventoryItemData();
             for (int i = 0; i < allItemData.Count; i++)
             {
-                ItemData itemDataConfig = this._inventoryConfigDataController.GetItemData(allItemData[i]);
-                allItemData[i].tags = itemDataConfig.tags;
                 this.AddItemToTagMap(allItemData[i]);
-                this.UpdateItem(allItemData[i]);
             }
-            
+
             this.Save();
         }
 
@@ -90,7 +89,7 @@ namespace PracticalSystems.InventorySystem.Manager
 
             string minimumTag = "";
             minimumSetOfItemIds = this._itemTagMap[queryTags[0]];
-            
+
             for (int i = 0; i < queryTags.Length; i++)
             {
                 if (!_itemTagMap.ContainsKey(queryTags[i]))
@@ -154,6 +153,12 @@ namespace PracticalSystems.InventorySystem.Manager
 
         public void UpdateItem(InventoryItem item, bool forceUpdate = false)
         {
+            if (!this.SourceData.InventoryCategoryItemData.ContainsKey(item.itemCategory)) 
+                return;
+            
+            if (!this.SourceData.InventoryCategoryItemData[item.itemCategory].ItemData.ContainsKey(item.itemId)) 
+                return;
+            
             this.SourceData.InventoryCategoryItemData[item.itemCategory].ItemData[item.itemId] = item;
             if (forceUpdate)
                 this.Save();
@@ -182,32 +187,37 @@ namespace PracticalSystems.InventorySystem.Manager
 
         private void AddItemToTagMap(InventoryItem item)
         {
-            if (item.tags.Count <= 0) 
+            _cachedItemData = this._inventoryConfigDataController.GetItemData(item);
+            if (_cachedItemData.tags.Count <= 0)
                 return;
-            
-            for (int i = 0; i < item.tags.Count; i++)
-            {
-                if (!_itemTagMap.ContainsKey(item.tags[i]))
-                    _itemTagMap.Add(item.tags[i], new HashSet<int>());
 
-                _itemTagMap[item.tags[i]].Add(item.itemId);
+            for (int i = 0; i < _cachedItemData.tags.Count; i++)
+            {
+                if (!_itemTagMap.ContainsKey(_cachedItemData.tags[i]))
+                    _itemTagMap.Add(_cachedItemData.tags[i], new HashSet<int>());
+
+                _itemTagMap[_cachedItemData.tags[i]].Add(item.itemId);
             }
         }
 
         private void RemoveItemFromTagMap(int itemId)
         {
-            var inventoryItem = this.GetSingleInventoryItemData(itemId);
-            if (inventoryItem == null || inventoryItem.tags.Count <= 0)
+            _cachedInventoryItem = this.GetSingleInventoryItemData(itemId);
+            if (_cachedInventoryItem == null)
                 return;
 
-            for (int i = 0; i < inventoryItem.tags.Count; i++)
+            _cachedItemData = this._inventoryConfigDataController.GetItemData(_cachedInventoryItem);
+            if (_cachedItemData == null || _cachedItemData.tags.Count <= 0)
+                return;
+
+            for (int i = 0; i < _cachedItemData.tags.Count; i++)
             {
-                if (!_itemTagMap.TryGetValue(inventoryItem.tags[i], out var tagMap))
+                if (!_itemTagMap.TryGetValue(_cachedItemData.tags[i], out var tagMap))
                     continue;
 
                 tagMap.Remove(itemId);
                 if (tagMap.Count <= 0)
-                    _itemTagMap.Remove(inventoryItem.tags[i]);
+                    _itemTagMap.Remove(_cachedItemData.tags[i]);
             }
         }
     }

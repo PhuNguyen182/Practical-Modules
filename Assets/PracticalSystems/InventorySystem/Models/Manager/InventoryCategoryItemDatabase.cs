@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using PracticalSystems.InventorySystem.Models.Items;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace PracticalSystems.InventorySystem.Models.Manager
         #if UNITY_EDITOR
         [Space(20)]
         [Header("Editor Only")]
+        [JsonIgnore]
         public List<ItemData> itemDataList = new();
         
         [Button]

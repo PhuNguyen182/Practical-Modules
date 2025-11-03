@@ -10,6 +10,5 @@ namespace PracticalSystems.InventorySystem.Models.Manager
         public int itemId;
         public int quantity;
         public ItemCategory itemCategory;
-        public List<string> tags = new();
     }
 }
