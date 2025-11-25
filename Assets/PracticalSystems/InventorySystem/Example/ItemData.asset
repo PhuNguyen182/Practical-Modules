@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5887247208214244a93985be1fb720de, type: 3}
   m_Name: ItemData
   m_EditorClassIdentifier: Assembly-CSharp::PracticalSystems.InventorySystem.Models.Items.ItemData
-  itemId: 001
-  itemName: weapon1
-  itemDescription: 
-  itemIcon: {fileID: 0}
-  itemPrefab: {fileID: 0}
+  itemId: 1
+  itemName: weapon 1
+  itemDescription: weapon 1 description
+  iconName: weapon 1 icon name
+  prefabName: weapon 1 prefab name
+  setId: weapon 1 set id
   itemCategory: 0
   buyPricing:
   - resourceType: 1
@@ -24,4 +25,7 @@ MonoBehaviour:
   sellPricing:
   - resourceType: 1
     amount: 23
-  setId: 
+  tags:
+  - tag1
+  - tag2
+  - tag3

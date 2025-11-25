@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23f524bb8ef647be83382dc60247a1d6, type: 3}
   m_Name: ArmorDatabase
   m_EditorClassIdentifier: Assembly-CSharp::PracticalSystems.InventorySystem.Models.Manager.InventoryCategoryItemDatabase
-  itemDataList:
-  - {fileID: 11400000, guid: 7b47149d8c848d847b781ae24f11c51e, type: 2}
   itemData:
-    m_Keys:
-    - 001
+    m_Keys: 01000000
     m_Values:
     - {fileID: 11400000, guid: 7b47149d8c848d847b781ae24f11c51e, type: 2}
+  itemDataList:
+  - {fileID: 11400000, guid: 7b47149d8c848d847b781ae24f11c51e, type: 2}

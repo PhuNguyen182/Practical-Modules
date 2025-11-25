@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: InventoryConfigData
   m_EditorClassIdentifier: Assembly-CSharp::PracticalSystems.InventorySystem.Models.Manager.InventoryConfigData
   inventoryCategoryItemDatabase:
-    m_Keys: 00000000
+    m_Keys: 00
     m_Values:
     - {fileID: 11400000, guid: 253b3da88b4227a4b8c6d3c782654abb, type: 2}
+  jsonData: 
