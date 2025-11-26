@@ -1,9 +1,12 @@
+using System;
+
 namespace PracticalSystems.AudioSystem.Data
 {
     /// <summary>
     /// Enum defining different types of audio in the game
     /// Used for categorization, mixing, and volume control
     /// </summary>
+    [Serializable]
     public enum AudioKind
     {
         /// <summary>

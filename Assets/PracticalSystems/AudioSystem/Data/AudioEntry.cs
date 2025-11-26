@@ -1,3 +1,4 @@
+using System;
 using PracticalSystems.AudioSystem.Interfaces;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace PracticalSystems.AudioSystem.Data
     /// Represents a single audio entry with all configuration data
     /// Serializable for Unity Inspector and ScriptableObject
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class AudioEntry : IAudioEntry
     {
         [SerializeField] private string audioId;
