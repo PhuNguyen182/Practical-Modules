@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using PracticalSystems.AudioSystem.Data;
 using PracticalSystems.AudioSystem.Interfaces;
+using PracticalSystems.AudioSystem.Utilities;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -33,7 +34,7 @@ namespace PracticalSystems.AudioSystem.Core
         {
             foreach (var mapping in this._audioMixerConfig.AudioTypeMappings)
             {
-                if (mapping.mixerGroup == null)
+                if (!mapping.mixerGroup)
                 {
                     Debug.LogWarning($"AudioMixerController: Missing mixer group for {mapping.audioKind}");
                     continue;
@@ -61,7 +62,7 @@ namespace PracticalSystems.AudioSystem.Core
         
         public void SetMixerParameter(string parameterName, float value)
         {
-            if (this._audioMixerConfig.AudioMixer == null)
+            if (!this._audioMixerConfig.AudioMixer)
             {
                 Debug.LogWarning("AudioMixerController: AudioMixer is null");
                 return;
@@ -78,7 +79,7 @@ namespace PracticalSystems.AudioSystem.Core
         
         public float GetMixerParameter(string parameterName)
         {
-            if (this._audioMixerConfig.AudioMixer == null)
+            if (!this._audioMixerConfig.AudioMixer)
             {
                 Debug.LogWarning("AudioMixerController: AudioMixer is null");
                 return 0f;
@@ -136,10 +137,10 @@ namespace PracticalSystems.AudioSystem.Core
         {
             if (linearVolume <= 0f)
             {
-                return -80f; // Minimum decibel value
+                return AudioConstants.MinDecibels; // Minimum decibel value
             }
             
-            return Mathf.Log10(linearVolume) * 20f;
+            return Mathf.Log10(linearVolume) * AudioConstants.MaxDecibels;
         }
         
         /// <summary>
@@ -147,12 +148,9 @@ namespace PracticalSystems.AudioSystem.Core
         /// </summary>
         private float ConvertFromDecibels(float decibels)
         {
-            if (decibels <= -80f)
-            {
-                return 0f;
-            }
-            
-            return Mathf.Pow(10f, decibels / 20f);
+            return decibels <= AudioConstants.MinDecibels
+                ? 0f
+                : Mathf.Pow(AudioConstants.DefaultPowerBase, decibels / AudioConstants.MaxDecibels);
         }
     }
 }

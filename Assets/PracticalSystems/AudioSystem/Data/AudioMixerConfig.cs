@@ -11,15 +11,6 @@ namespace PracticalSystems.AudioSystem.Data
     [CreateAssetMenu(fileName = "AudioMixerConfig", menuName = "Foundations/Audio/Audio Mixer Config")]
     public class AudioMixerConfig : ScriptableObject
     {
-        [System.Serializable]
-        public class AudioTypeMixerMapping
-        {
-            public AudioKind audioKind;
-            public AudioMixerGroup mixerGroup;
-            public string volumeParameterName;
-            public float defaultVolume = 1f;
-        }
-        
         [Header("Audio Mixer")]
         [SerializeField] private AudioMixer audioMixer;
         

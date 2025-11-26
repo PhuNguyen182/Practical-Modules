@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using PracticalSystems.AudioSystem.Data;
 using PracticalSystems.AudioSystem.Interfaces;
+using PracticalSystems.AudioSystem.Utilities;
 using UnityEngine;
 
 namespace PracticalSystems.AudioSystem.Core
@@ -61,10 +63,9 @@ namespace PracticalSystems.AudioSystem.Core
                 this._mixerController,
                 this.audioDatabaseConfig.InitialPoolSize
             );
-            this._frequencyController = new AudioFrequencyController();
             
-            // Initialize handle dictionaries
-            foreach (AudioKind audioType in System.Enum.GetValues(typeof(AudioKind)))
+            this._frequencyController = new AudioFrequencyController();
+            foreach (AudioKind audioType in Enum.GetValues(typeof(AudioKind)))
             {
                 this._handlesByType[audioType] = new List<IAudioHandle>();
             }
@@ -180,14 +181,13 @@ namespace PracticalSystems.AudioSystem.Core
             parameters.spatialBlend = 1f;
             
             var handle = await this.PlayAudioAsync(audioId, parameters, cancellationToken);
-            
-            if (handle != null)
-            {
-                // Find the player and attach to transform
-                var player = this.FindPlayerForHandle(handle);
-                player?.AttachToTransform(attachTarget);
-            }
-            
+
+            if (handle == null) 
+                return null;
+
+            // Find the player and attach to transform
+            var player = this.FindPlayerForHandle(handle);
+            player?.AttachToTransform(attachTarget);
             return handle;
         }
         
@@ -200,7 +200,7 @@ namespace PracticalSystems.AudioSystem.Core
             
             foreach (var handle in handles.ToArray())
             {
-                if (handle != null && handle.IsPlaying)
+                if (handle is { IsPlaying: true })
                 {
                     handle.Stop(fadeOutDuration);
                 }
@@ -213,7 +213,7 @@ namespace PracticalSystems.AudioSystem.Core
         {
             foreach (var handle in this._activeHandles.ToArray())
             {
-                if (handle != null && handle.IsPlaying)
+                if (handle is { IsPlaying: true })
                 {
                     handle.Stop(fadeOutDuration);
                 }
@@ -236,7 +236,7 @@ namespace PracticalSystems.AudioSystem.Core
             
             foreach (var handle in handles)
             {
-                if (handle != null && handle.IsPlaying)
+                if (handle is { IsPlaying: true })
                 {
                     handle.Pause(fadeOutDuration);
                 }
@@ -247,7 +247,7 @@ namespace PracticalSystems.AudioSystem.Core
         {
             foreach (var handle in this._activeHandles)
             {
-                if (handle != null && handle.IsPlaying)
+                if (handle is { IsPlaying: true })
                 {
                     handle.Pause(fadeOutDuration);
                 }
@@ -263,7 +263,7 @@ namespace PracticalSystems.AudioSystem.Core
             
             foreach (var handle in handles)
             {
-                if (handle != null && handle.IsPaused)
+                if (handle is { IsPaused: true })
                 {
                     handle.Resume(fadeInDuration);
                 }
@@ -274,7 +274,7 @@ namespace PracticalSystems.AudioSystem.Core
         {
             foreach (var handle in this._activeHandles)
             {
-                if (handle != null && handle.IsPaused)
+                if (handle is { IsPaused: true })
                 {
                     handle.Resume(fadeInDuration);
                 }
@@ -330,6 +330,7 @@ namespace PracticalSystems.AudioSystem.Core
         {
             // This is a simplified approach - in production, you might want to maintain a mapping
             // For now, we rely on the handle containing the player reference
+            Debug.Log(handle);
             return null;
         }
         
@@ -338,9 +339,9 @@ namespace PracticalSystems.AudioSystem.Core
         /// </summary>
         private async UniTaskVoid AutoCleanupHandleAsync(IAudioHandle handle, float duration)
         {
-            await UniTask.Delay(System.TimeSpan.FromSeconds(duration + 0.5f));
+            await UniTask.Delay(TimeSpan.FromSeconds(duration + 0.5f));
             
-            if (handle != null && !handle.IsPlaying)
+            if (handle is { IsPlaying: false })
             {
                 this._activeHandles.Remove(handle);
                 
@@ -358,10 +359,10 @@ namespace PracticalSystems.AudioSystem.Core
         {
             if (linearVolume <= 0f)
             {
-                return -80f;
+                return AudioConstants.MinDecibels;
             }
             
-            return Mathf.Log10(linearVolume) * 20f;
+            return Mathf.Log10(linearVolume) * AudioConstants.MaxDecibels;
         }
         
         /// <summary>
@@ -369,12 +370,9 @@ namespace PracticalSystems.AudioSystem.Core
         /// </summary>
         private float ConvertFromDecibels(float decibels)
         {
-            if (decibels <= -80f)
-            {
-                return 0f;
-            }
-            
-            return Mathf.Pow(10f, decibels / 20f);
+            return decibels <= AudioConstants.MinDecibels
+                ? 0f
+                : Mathf.Pow(AudioConstants.DefaultPowerBase, decibels / AudioConstants.MaxDecibels);
         }
         
         private void OnDestroy()

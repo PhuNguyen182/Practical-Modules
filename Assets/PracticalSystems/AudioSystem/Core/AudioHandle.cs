@@ -90,7 +90,7 @@ namespace PracticalSystems.AudioSystem.Core
         
         public void SetVolume(float volume)
         {
-            if (this._isDisposed || this._audioPlayer?.AudioSource == null)
+            if (this._isDisposed || !this._audioPlayer?.AudioSource)
             {
                 return;
             }
@@ -101,7 +101,7 @@ namespace PracticalSystems.AudioSystem.Core
         
         public void SetPitch(float pitch)
         {
-            if (this._isDisposed || this._audioPlayer?.AudioSource == null)
+            if (this._isDisposed || !this._audioPlayer?.AudioSource)
             {
                 return;
             }
@@ -121,7 +121,7 @@ namespace PracticalSystems.AudioSystem.Core
             
             while (elapsedTime < duration)
             {
-                if (this._isDisposed || this._audioPlayer?.AudioSource == null)
+                if (this._isDisposed || !this._audioPlayer?.AudioSource)
                 {
                     return;
                 }
@@ -133,7 +133,7 @@ namespace PracticalSystems.AudioSystem.Core
                 await UniTask.Yield();
             }
             
-            if (!this._isDisposed && this._audioPlayer?.AudioSource != null)
+            if (!this._isDisposed && this._audioPlayer?.AudioSource)
             {
                 this._audioPlayer.AudioSource.volume = targetVolume;
             }
@@ -141,7 +141,7 @@ namespace PracticalSystems.AudioSystem.Core
         
         public async UniTask WaitForCompletionAsync()
         {
-            if (this._isDisposed || this._audioPlayer?.AudioSource == null)
+            if (this._isDisposed || !this._audioPlayer?.AudioSource)
             {
                 return;
             }
@@ -155,12 +155,9 @@ namespace PracticalSystems.AudioSystem.Core
             
             while (this.IsPlaying)
             {
-                await UniTask.Yield();
-                
+                await UniTask.NextFrame();
                 if (this._isDisposed)
-                {
                     return;
-                }
             }
             
             this.StopImmediate();
@@ -181,17 +178,14 @@ namespace PracticalSystems.AudioSystem.Core
         private void StopImmediate()
         {
             if (this._isDisposed)
-            {
                 return;
-            }
             
             this._isDisposed = true;
+            if (this._audioPlayer == null) 
+                return;
             
-            if (this._audioPlayer != null)
-            {
-                this._audioPlayer.Stop();
-                this._playerPool?.ReturnAudioPlayer(this._audioPlayer);
-            }
+            this._audioPlayer.Stop();
+            this._playerPool?.ReturnAudioPlayer(this._audioPlayer);
         }
     }
 }

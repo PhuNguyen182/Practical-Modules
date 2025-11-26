@@ -70,7 +70,7 @@ namespace PracticalSystems.AudioSystem.Data
         /// <summary>
         /// Creates default playback parameters
         /// </summary>
-        public static AudioPlaybackParameters Default => new AudioPlaybackParameters
+        public static AudioPlaybackParameters Default => new()
         {
             volumeMultiplier = 1f,
             pitchMultiplier = 1f,

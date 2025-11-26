@@ -1,6 +1,8 @@
 using PracticalSystems.AudioSystem.Data;
 using PracticalSystems.AudioSystem.Interfaces;
+using PracticalSystems.AudioSystem.Utilities;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace PracticalSystems.AudioSystem.Core
 {
@@ -11,24 +13,26 @@ namespace PracticalSystems.AudioSystem.Core
     [RequireComponent(typeof(AudioSource))]
     public class AudioPlayer : MonoBehaviour, IAudioPlayer
     {
-        private AudioSource _audioSource;
+        [SerializeField] private AudioSource audioSource;
         private Transform _attachedTransform;
         private bool _isPaused;
         
-        public AudioSource AudioSource => this._audioSource;
+        public AudioSource AudioSource => this.audioSource;
         public Transform Transform => this.transform;
-        public bool IsPlaying => this._audioSource != null && this._audioSource.isPlaying && !this._isPaused;
+        public bool IsPlaying => this.audioSource != null && this.audioSource.isPlaying && !this._isPaused;
         public bool IsPaused => this._isPaused;
         
         private void Awake()
         {
-            this._audioSource = this.GetComponent<AudioSource>();
-            if (this._audioSource == null)
+            if (!this.TryGetComponent(out this.audioSource))
             {
-                this._audioSource = this.gameObject.AddComponent<AudioSource>();
+                if (!this.audioSource)
+                {
+                    this.audioSource = this.gameObject.AddComponent<AudioSource>();
+                }
             }
-            
-            this._audioSource.playOnAwake = false;
+
+            this.audioSource.playOnAwake = false;
         }
         
         public void Play(IAudioEntry audioEntry, AudioPlaybackParameters parameters)
@@ -39,7 +43,7 @@ namespace PracticalSystems.AudioSystem.Core
                 return;
             }
             
-            if (audioEntry.AudioClip == null)
+            if (!audioEntry.AudioClip)
             {
                 Debug.LogWarning($"AudioPlayer: Audio entry '{audioEntry.AudioId}' has null AudioClip");
                 return;
@@ -51,19 +55,19 @@ namespace PracticalSystems.AudioSystem.Core
             
             if (parameters.delay > 0f)
             {
-                this._audioSource.PlayDelayed(parameters.delay);
+                this.audioSource.PlayDelayed(parameters.delay);
             }
             else
             {
-                this._audioSource.Play();
+                this.audioSource.Play();
             }
         }
         
         public void Stop()
         {
-            if (this._audioSource != null)
+            if (this.audioSource != null)
             {
-                this._audioSource.Stop();
+                this.audioSource.Stop();
             }
             
             this._isPaused = false;
@@ -72,18 +76,18 @@ namespace PracticalSystems.AudioSystem.Core
         
         public void Pause()
         {
-            if (this._audioSource != null && this._audioSource.isPlaying)
+            if (this.audioSource != null && this.audioSource.isPlaying)
             {
-                this._audioSource.Pause();
+                this.audioSource.Pause();
                 this._isPaused = true;
             }
         }
         
         public void Resume()
         {
-            if (this._audioSource != null && this._isPaused)
+            if (this.audioSource != null && this._isPaused)
             {
-                this._audioSource.UnPause();
+                this.audioSource.UnPause();
                 this._isPaused = false;
             }
         }
@@ -116,65 +120,62 @@ namespace PracticalSystems.AudioSystem.Core
             this._attachedTransform = null;
             this._isPaused = false;
             
-            if (this._audioSource != null)
+            if (this.audioSource != null)
             {
-                this._audioSource.clip = null;
-                this._audioSource.volume = 1f;
-                this._audioSource.pitch = 1f;
-                this._audioSource.loop = false;
-                this._audioSource.spatialBlend = 0f;
+                this.audioSource.clip = null;
+                this.audioSource.volume = 1f;
+                this.audioSource.pitch = 1f;
+                this.audioSource.loop = false;
+                this.audioSource.spatialBlend = 0f;
             }
         }
-        
+
         /// <summary>
         /// Configures the AudioSource with entry and parameter settings
         /// </summary>
         private void ConfigureAudioSource(IAudioEntry audioEntry, AudioPlaybackParameters parameters)
         {
-            this._audioSource.clip = audioEntry.AudioClip;
-            this._audioSource.priority = audioEntry.Priority;
-            
+            this.audioSource.clip = audioEntry.AudioClip;
+            this.audioSource.priority = audioEntry.Priority;
+
             // Volume with random variation
             var finalVolume = audioEntry.DefaultVolume * parameters.volumeMultiplier;
             if (parameters.useRandomVolume)
             {
                 finalVolume += Random.Range(-parameters.randomVolumeRange, parameters.randomVolumeRange);
             }
-            this._audioSource.volume = Mathf.Clamp01(finalVolume);
-            
+
+            this.audioSource.volume = Mathf.Clamp01(finalVolume);
+
             // Pitch with random variation
             var finalPitch = audioEntry.DefaultPitch * parameters.pitchMultiplier;
             if (parameters.useRandomPitch)
             {
                 finalPitch += Random.Range(-parameters.randomPitchRange, parameters.randomPitchRange);
             }
-            this._audioSource.pitch = Mathf.Clamp(finalPitch, 0.1f, 3f);
-            
+
+            this.audioSource.pitch = Mathf.Clamp(finalPitch, AudioConstants.MinPitch, AudioConstants.MaxPitch);
+
             // Loop setting
-            if (parameters.overrideLoop)
-            {
-                this._audioSource.loop = parameters.loop;
-            }
-            else
-            {
-                this._audioSource.loop = audioEntry.IsLooping;
-            }
-            
+            this.audioSource.loop = parameters.overrideLoop ? parameters.loop : audioEntry.IsLooping;
+
             // Spatial blend
-            if (parameters.overrideSpatialBlend)
-            {
-                this._audioSource.spatialBlend = Mathf.Clamp01(parameters.spatialBlend);
-            }
-            else
-            {
-                this._audioSource.spatialBlend = Mathf.Clamp01(audioEntry.SpatialBlend);
-            }
-            
+            this.audioSource.spatialBlend =
+                Mathf.Clamp01(parameters.overrideSpatialBlend ? parameters.spatialBlend : audioEntry.SpatialBlend);
+
             // 3D audio settings
-            this._audioSource.minDistance = audioEntry.MinDistance;
-            this._audioSource.maxDistance = audioEntry.MaxDistance;
-            this._audioSource.rolloffMode = AudioRolloffMode.Linear;
+            this.audioSource.minDistance = audioEntry.MinDistance;
+            this.audioSource.maxDistance = audioEntry.MaxDistance;
+            this.audioSource.rolloffMode = AudioRolloffMode.Linear;
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (!this.audioSource)
+                this.audioSource = this.GetComponent<AudioSource>();
+        }
+#endif
     }
 }
 

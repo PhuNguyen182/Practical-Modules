@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4664b6aa2ecf94e4ca6cf6b442c595d6, type: 3}
+  m_Name: AudioMixerConfig
+  m_EditorClassIdentifier: Assembly-CSharp::PracticalSystems.AudioSystem.Data.AudioMixerConfig
+  audioMixer: {fileID: 24100000, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+  audioTypeMappings:
+  - audioKind: 0
+    mixerGroup: {fileID: 3652116111859717568, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+    volumeParameterName: BackgroundMusicVolume
+    defaultVolume: 1
+  - audioKind: 1
+    mixerGroup: {fileID: 4876804904143143907, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+    volumeParameterName: AmbientVolume
+    defaultVolume: 1
+  - audioKind: 2
+    mixerGroup: {fileID: -4381893280982799646, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+    volumeParameterName: SoundEffectVolume
+    defaultVolume: 1
+  - audioKind: 3
+    mixerGroup: {fileID: -1721456963265597784, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+    volumeParameterName: VoiceVolume
+    defaultVolume: 1
+  - audioKind: 4
+    mixerGroup: {fileID: 3557144284821204791, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+    volumeParameterName: UserInterfaceVolume
+    defaultVolume: 1
+  - audioKind: 5
+    mixerGroup: {fileID: 740634316149078722, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+    volumeParameterName: CinematicVolume
+    defaultVolume: 1
+  - audioKind: 6
+    mixerGroup: {fileID: 1926332570328604935, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+    volumeParameterName: MusicStingerVolume
+    defaultVolume: 1
+  - audioKind: 7
+    mixerGroup: {fileID: -5868822035246264225, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+    volumeParameterName: FootstepVolume
+    defaultVolume: 1
+  - audioKind: 8
+    mixerGroup: {fileID: -6007697925317621167, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+    volumeParameterName: WeaponVolume
+    defaultVolume: 1
+  - audioKind: 9
+    mixerGroup: {fileID: 1225653733677707622, guid: 8ecea3190eaeb154296f9f346f2ab711, type: 2}
+    volumeParameterName: EnvironmentVolume
+    defaultVolume: 1
+  masterVolumeParameter: MasterVolume
+  defaultMasterVolume: 1

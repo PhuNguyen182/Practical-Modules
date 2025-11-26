@@ -1,8 +1,8 @@
-using UnityEngine;
 using PracticalSystems.AudioSystem.Core;
 using PracticalSystems.AudioSystem.Data;
+using UnityEngine;
 
-namespace Foundations.Audio.Utilities
+namespace PracticalSystems.AudioSystem.Utilities
 {
     /// <summary>
     /// Utility class for setting up the audio system in a scene
