@@ -61,13 +61,14 @@ public class GenericObjectPool<T> : BaseObjectPool where T : Component
         }
     }
     
-    public void Despawn(T instance)
+    public override void Despawn(GameObject gameObject)
     {
-        if (!instance.gameObject.activeSelf)
+        if (!gameObject.activeSelf)
             return;
 
-        instance.gameObject.SetActive(false);
-        this.InactiveInstances.Enqueue(instance);
+        gameObject.SetActive(false);
+        if (gameObject.TryGetComponent(out T component))
+            this.InactiveInstances.Enqueue(component);
     }
     
     public override void Dispose()

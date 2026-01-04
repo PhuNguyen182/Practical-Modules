@@ -160,8 +160,7 @@ public static class ObjectPoolManager
         else
         {
             gameObject.transform.SetParent(parent, worldPositionStay);
-            if (objectPool is SimpleObjectPool simplePool)
-                simplePool.Despawn(gameObject);
+            objectPool.Despawn(gameObject);
         }
     }
 
@@ -177,64 +176,14 @@ public static class ObjectPoolManager
             break;
         }
 
-        switch (objectPool)
-        {
-            case null:
-                Debug.Log($"Object '{gameObject.name}' wasn't spawned from a pool. Destroying it instead.");
-                Object.Destroy(gameObject);
-                break;
-            case SimpleObjectPool simplePool:
-                simplePool.Despawn(gameObject);
-                break;
-        }
-    }
-    
-    public static void Despawn<T>(T instance, Transform parent, bool worldPositionStay = true) where T : Component
-    {
-        BaseObjectPool objectPool = null;
-        foreach (var pool in Pools.Values)
-        {
-            if (!pool.ContainsInstance(instance.GetInstanceID())) 
-                continue;
-            
-            objectPool = pool;
-            break;
-        }
-
         if (objectPool == null)
         {
-            Debug.Log($"Object {instance.name} wasn't spawned from a pool. Destroying it instead.");
-            Object.Destroy(instance.gameObject);
+            Debug.Log($"Object '{gameObject.name}' wasn't spawned from a pool. Destroying it instead.");
+            Object.Destroy(gameObject);
         }
         else
         {
-            instance.transform.SetParent(parent, worldPositionStay);
-            if (objectPool is GenericObjectPool<T> simplePool)
-                simplePool.Despawn(instance);
-        }
-    }
-
-    public static void Despawn<T>(T instance) where T : Component
-    {
-        BaseObjectPool objectPool = null;
-        foreach (var pool in Pools.Values)
-        {
-            if (!pool.ContainsInstance(instance.GetInstanceID())) 
-                continue;
-            
-            objectPool = pool;
-            break;
-        }
-
-        switch (objectPool)
-        {
-            case null:
-                Debug.Log($"Object '{instance.name}' wasn't spawned from a pool. Destroying it instead.");
-                Object.Destroy(instance.gameObject);
-                break;
-            case GenericObjectPool<T> simplePool:
-                simplePool.Despawn(instance);
-                break;
+            objectPool.Despawn(gameObject);
         }
     }
 

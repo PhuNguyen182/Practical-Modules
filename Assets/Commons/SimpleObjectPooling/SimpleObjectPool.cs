@@ -61,7 +61,7 @@ public class SimpleObjectPool : BaseObjectPool
         }
     }
     
-    public void Despawn(GameObject gameObject)
+    public override void Despawn(GameObject gameObject)
     {
         if (!gameObject.activeSelf)
             return;

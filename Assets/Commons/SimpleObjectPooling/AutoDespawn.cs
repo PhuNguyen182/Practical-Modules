@@ -14,17 +14,17 @@ public class AutoDespawn : MonoBehaviour, IUpdateHandler
 
     private void OnEnable()
     {
-        _timer = 0;
+        this._timer = 0;
         UpdateServiceManager.RegisterUpdateHandler(this);
     }
 
     public void Tick(float deltaTime)
     {
-        _timer += deltaTime;
+        this._timer += deltaTime;
 
-        if (_timer >= duration)
+        if (this._timer >= duration)
         {
-            _timer = 0;
+            this._timer = 0;
             ObjectPoolManager.Despawn(this.gameObject);
         }
     }

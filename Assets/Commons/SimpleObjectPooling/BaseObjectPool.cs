@@ -10,5 +10,6 @@ public abstract class BaseObjectPool : IDisposable
     public bool ContainsInstance(int instanceId) => this.MemberIDs.Contains(instanceId);
     
     public abstract void Preload(int initialQuantity, Transform parent = null);
+    public abstract void Despawn(GameObject gameObject);
     public abstract void Dispose();
 }
