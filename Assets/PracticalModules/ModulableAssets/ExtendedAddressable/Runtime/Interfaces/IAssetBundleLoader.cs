@@ -14,7 +14,8 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.Interface
             bool autoReleaseHandle = true);
 
         public UniTask<GameObject> LoadAsset(string key);
-        public UniTask<T> LoadAsset<T>(string key) where T : Component;
+        public UniTask<T> LoadAsset<T>(string key);
+        public UniTask<T> LoadComponentAsset<T>(string key) where T : Component;
         public void UnloadAsset<T>(T asset) where T : Component;
     }
 }

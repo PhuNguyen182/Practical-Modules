@@ -27,6 +27,11 @@ namespace PracticalSystems.AudioSystem.Interfaces
         /// Gets whether this player is paused
         /// </summary>
         public bool IsPaused { get; }
+
+        /// <summary>
+        /// Initializes the audio player pool service
+        /// </summary>
+        public void InitializePoolService(IAudioPlayerPool playerPool);
         
         /// <summary>
         /// Plays audio with specified parameters
@@ -57,6 +62,11 @@ namespace PracticalSystems.AudioSystem.Interfaces
         /// Attaches to a transform (follows the object)
         /// </summary>
         public void AttachToTransform(Transform target);
+        
+        /// <summary>
+        /// Setup lifetime duration for this audio player
+        /// </summary>
+        public void SetLifeTimeDuration(float duration);
         
         /// <summary>
         /// Detaches from transform

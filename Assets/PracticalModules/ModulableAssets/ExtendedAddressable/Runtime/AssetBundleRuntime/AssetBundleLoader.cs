@@ -44,7 +44,19 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.AssetBund
             return null;
         }
 
-        public async UniTask<T> LoadAsset<T>(string key) where T : Component
+        public async UniTask<T> LoadAsset<T>(string key)
+        {
+            AsyncOperationHandle<T> loadRequest = Addressables.LoadAssetAsync<T>(key);
+            T asset = await loadRequest.Task;
+            
+            if (loadRequest.Status == AsyncOperationStatus.Succeeded)
+                return asset;
+            
+            loadRequest.Release();
+            return default;
+        }
+
+        public async UniTask<T> LoadComponentAsset<T>(string key) where T : Component
         {
             _loadRequest = Addressables.LoadAssetAsync<GameObject>(key);
             GameObject gameObject = await _loadRequest.Task;

@@ -112,7 +112,7 @@ namespace PracticalSystems.AudioSystem.Core
             {
                 var originalVolume = audioEntry.DefaultVolume * parameters.volumeMultiplier;
                 parameters.volumeMultiplier = 0f; // Start at 0 for fade in
-                
+                audioPlayer.SetLifeTimeDuration(audioEntry.AudioClip.length);
                 audioPlayer.Play(audioEntry, parameters);
                 
                 var handle = new AudioHandle(audioPlayer, this._playerPool, audioEntry);
@@ -126,6 +126,7 @@ namespace PracticalSystems.AudioSystem.Core
             }
             else
             {
+                audioPlayer.SetLifeTimeDuration(audioEntry.AudioClip.length);
                 audioPlayer.Play(audioEntry, parameters);
                 
                 var handle = new AudioHandle(audioPlayer, this._playerPool, audioEntry);

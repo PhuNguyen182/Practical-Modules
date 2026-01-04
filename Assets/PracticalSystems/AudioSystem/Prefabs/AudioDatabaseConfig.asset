@@ -12,7 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1045342978bed8d449248853e245fd98, type: 3}
   m_Name: AudioDatabaseConfig
   m_EditorClassIdentifier: Assembly-CSharp::PracticalSystems.AudioSystem.Data.AudioDatabaseConfig
-  audioEntries: []
+  audioEntries:
+  - audioId: 
+    audioKind: 0
+    audioClip: {fileID: 0}
+    defaultVolume: 1
+    defaultPitch: 1
+    isLooping: 0
+    priority: 128
+    minTimeBetweenPlays: 0
+    maxConcurrentInstances: 5
+    spatialBlend: 0
+    minDistance: 1
+    maxDistance: 500
   addressableAudioEntries: []
   useAddressables: 0
   preloadOnStart: 1

@@ -98,13 +98,8 @@ namespace PracticalSystems.AudioSystem.Core
         {
             var playerObject = Object.Instantiate(this._audioPlayerPrefab, this._poolParent);
             playerObject.name = $"AudioPlayer_{this._nextPlayerId++}";
-            
-            var player = playerObject.GetComponent<IAudioPlayer>();
-            if (player == null)
-            {
-                player = playerObject.AddComponent<AudioPlayer>();
-            }
-            
+            var player = playerObject.GetComponent<IAudioPlayer>() ?? playerObject.AddComponent<AudioPlayer>();
+            player.InitializePoolService(this);
             return player;
         }
         
