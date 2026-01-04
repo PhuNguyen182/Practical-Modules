@@ -25,7 +25,7 @@ public class AutoDespawn : MonoBehaviour, IUpdateHandler
         if (this._timer >= duration)
         {
             this._timer = 0;
-            ObjectPoolManager.Despawn(this.gameObject);
+            GameObjectPoolManager.Despawn(this.gameObject);
         }
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public class SimpleObjectPool : BaseObjectPool
+public class SimpleGameObjectPool : BaseGameObjectPool
 {
     private int _nextId;
     private bool _disposed;
@@ -14,7 +14,7 @@ public class SimpleObjectPool : BaseObjectPool
     protected override HashSet<int> MemberIDs { get; }
     public override int StackCount => InactiveGameObjects.Count;
     
-    public SimpleObjectPool(GameObject prefab, int initialQuantity)
+    public SimpleGameObjectPool(GameObject prefab, int initialQuantity)
     {
         this._nextId = 1;
         this._prefab = prefab;
@@ -90,7 +90,7 @@ public class SimpleObjectPool : BaseObjectPool
         this._disposed = true;
     }
     
-    ~SimpleObjectPool()
+    ~SimpleGameObjectPool()
     {
         this.Dispose(false);
     }

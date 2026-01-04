@@ -120,11 +120,11 @@ namespace Foundations.UIModules.Popups.Core
         
         private T InstantiatePopup<T>(GameObject prefab) where T : class, IPopup
         {
-            GameObject instance = ObjectPoolManager.Spawn(prefab);
+            GameObject instance = GameObjectPoolManager.Spawn(prefab);
             if (!instance.TryGetComponent<T>(out var popup))
             {
                 Debug.LogError($"Popup component of type {typeof(T).Name} not found on prefab {prefab.name}");
-                ObjectPoolManager.Despawn(instance);
+                GameObjectPoolManager.Despawn(instance);
                 return null;
             }
             

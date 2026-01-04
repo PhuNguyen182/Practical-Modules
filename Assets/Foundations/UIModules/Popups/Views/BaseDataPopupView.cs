@@ -60,7 +60,7 @@ namespace Foundations.UIModules.Popups.Views
             if (!IsActive) 
                 return;
             
-            ObjectPoolManager.Despawn(this.gameObject);
+            GameObjectPoolManager.Despawn(this.gameObject);
             IsActive = false;
             OnHidden?.Invoke(this);
         }

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public static class ObjectPoolManager
+public static class GameObjectPoolManager
 {
     private const int DefaultPoolSize = 30;
-    private static readonly Dictionary<int, BaseObjectPool> Pools = new();
+    private static readonly Dictionary<int, BaseGameObjectPool> Pools = new();
 
     #region Initialization
     
@@ -15,7 +15,7 @@ public static class ObjectPoolManager
         
         int prefabID = prefab.GetInstanceID();
         if (!Pools.ContainsKey(prefabID))
-            Pools[prefabID] = new SimpleObjectPool(prefab, quantity);
+            Pools[prefabID] = new SimpleGameObjectPool(prefab, quantity);
     }
     
     private static void InitializeObjectPools<T>(T prefab = null, int quantity = DefaultPoolSize) where T : Component
@@ -25,7 +25,7 @@ public static class ObjectPoolManager
         
         int prefabID = prefab.GetInstanceID();
         if (!Pools.ContainsKey(prefabID))
-            Pools[prefabID] = new GenericObjectPool<T>(prefab, quantity);
+            Pools[prefabID] = new GenericGameObjectPool<T>(prefab, quantity);
     }
     
     #endregion
@@ -65,8 +65,8 @@ public static class ObjectPoolManager
     public static GameObject Spawn(GameObject prefab, string tag, Vector3 position, Quaternion rotation)
     {
         InitializeObjectPools(prefab);
-        BaseObjectPool pool = Pools[prefab.GetInstanceID()];
-        if (pool is not SimpleObjectPool simplePool) 
+        BaseGameObjectPool pool = Pools[prefab.GetInstanceID()];
+        if (pool is not SimpleGameObjectPool simplePool) 
             return null;
         
         GameObject bullet = simplePool.Spawn(position, rotation, null, true);
@@ -80,8 +80,8 @@ public static class ObjectPoolManager
         bool worldPositionStay = true)
     {
         InitializeObjectPools(prefab);
-        BaseObjectPool pool = Pools[prefab.GetInstanceID()];
-        if (pool is not SimpleObjectPool simplePool) 
+        BaseGameObjectPool pool = Pools[prefab.GetInstanceID()];
+        if (pool is not SimpleGameObjectPool simplePool) 
             return null;
         
         GameObject bullet = simplePool.Spawn(position, rotation, parent, worldPositionStay);
@@ -95,8 +95,8 @@ public static class ObjectPoolManager
     public static T Spawn<T>(T prefab, string tag, Vector3 position = default, Quaternion rotation = default) where T : Component
     {
         InitializeObjectPools(prefab);
-        BaseObjectPool pool = Pools[prefab.gameObject.GetInstanceID()];
-        if (pool is not GenericObjectPool<T> genericPool) 
+        BaseGameObjectPool pool = Pools[prefab.gameObject.GetInstanceID()];
+        if (pool is not GenericGameObjectPool<T> genericPool) 
             return null;
         
         T bullet = genericPool.Spawn(position, rotation, null, true);
@@ -108,8 +108,8 @@ public static class ObjectPoolManager
         Transform parent = null, bool worldPositionStay = true) where T : Component
     {
         InitializeObjectPools(prefab);
-        BaseObjectPool pool = Pools[prefab.gameObject.GetInstanceID()];
-        if (pool is not GenericObjectPool<T> genericPool) 
+        BaseGameObjectPool pool = Pools[prefab.gameObject.GetInstanceID()];
+        if (pool is not GenericGameObjectPool<T> genericPool) 
             return null;
         
         T bullet = genericPool.Spawn(position, rotation, parent, worldPositionStay);
@@ -119,8 +119,8 @@ public static class ObjectPoolManager
     private static GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent)
     {
         InitializeObjectPools(prefab);
-        BaseObjectPool pool = Pools[prefab.GetInstanceID()];
-        if (pool is not SimpleObjectPool simplePool) 
+        BaseGameObjectPool pool = Pools[prefab.GetInstanceID()];
+        if (pool is not SimpleGameObjectPool simplePool) 
             return null;
         
         return simplePool.Spawn(position, rotation, parent, true);
@@ -129,8 +129,8 @@ public static class ObjectPoolManager
     private static T Spawn<T>(T prefab, Vector3 position, Quaternion rotation) where T : Component
     {
         InitializeObjectPools(prefab);
-        BaseObjectPool pool = Pools[prefab.gameObject.GetInstanceID()];
-        if (pool is not GenericObjectPool<T> genericPool) 
+        BaseGameObjectPool pool = Pools[prefab.gameObject.GetInstanceID()];
+        if (pool is not GenericGameObjectPool<T> genericPool) 
             return null;
         
         return genericPool.Spawn(position, rotation, null, true);
@@ -142,17 +142,17 @@ public static class ObjectPoolManager
     
     public static void Despawn(GameObject gameObject, Transform parent, bool worldPositionStay = true)
     {
-        BaseObjectPool objectPool = null;
+        BaseGameObjectPool gameObjectPool = null;
         foreach (var pool in Pools.Values)
         {
             if (!pool.ContainsInstance(gameObject.GetInstanceID())) 
                 continue;
             
-            objectPool = pool;
+            gameObjectPool = pool;
             break;
         }
 
-        if (objectPool == null)
+        if (gameObjectPool == null)
         {
             Debug.Log($"Object {gameObject.name} wasn't spawned from a pool. Destroying it instead.");
             Object.Destroy(gameObject);
@@ -160,30 +160,30 @@ public static class ObjectPoolManager
         else
         {
             gameObject.transform.SetParent(parent, worldPositionStay);
-            objectPool.Despawn(gameObject);
+            gameObjectPool.Despawn(gameObject);
         }
     }
 
     public static void Despawn(GameObject gameObject)
     {
-        BaseObjectPool objectPool = null;
+        BaseGameObjectPool gameObjectPool = null;
         foreach (var pool in Pools.Values)
         {
             if (!pool.ContainsInstance(gameObject.GetInstanceID())) 
                 continue;
             
-            objectPool = pool;
+            gameObjectPool = pool;
             break;
         }
 
-        if (objectPool == null)
+        if (gameObjectPool == null)
         {
             Debug.Log($"Object '{gameObject.name}' wasn't spawned from a pool. Destroying it instead.");
             Object.Destroy(gameObject);
         }
         else
         {
-            objectPool.Despawn(gameObject);
+            gameObjectPool.Despawn(gameObject);
         }
     }
 
