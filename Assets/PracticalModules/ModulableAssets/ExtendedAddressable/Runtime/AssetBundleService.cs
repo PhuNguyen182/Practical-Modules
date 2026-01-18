@@ -21,11 +21,12 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime
 
         public AssetBundleService()
         {
-            AssetBundleLoader = new AssetBundleLoader();
-            AssetBundleResourceLocator = new AssetBundleResourceLocator();
-            AssetBundleCleaner = new AssetBundleCleaner(AssetBundleResourceLocator);
-            AssetBundleDownloader = new AssetBundleDownloader(AssetBundleResourceLocator, AssetBundleCleaner);
-            AssetBundleUpdater = new AssetBundleUpdater(AssetBundleCleaner);
+            this.AssetBundleLoader = new AssetBundleLoader();
+            this.AssetBundleResourceLocator = new AssetBundleResourceLocator();
+            this.AssetBundleCleaner = new AssetBundleCleaner(this.AssetBundleResourceLocator);
+            this.AssetBundleDownloader =
+                new AssetBundleDownloader(this.AssetBundleResourceLocator, this.AssetBundleCleaner);
+            this.AssetBundleUpdater = new AssetBundleUpdater(this.AssetBundleCleaner);
         }
 
         public async UniTask<bool> Initialize(Action onInitializationComplete = null,
