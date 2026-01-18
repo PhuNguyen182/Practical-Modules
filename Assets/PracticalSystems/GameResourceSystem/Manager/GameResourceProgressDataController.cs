@@ -13,14 +13,20 @@ namespace PracticalSystems.GameResourceSystem.Manager
     public class GameResourceProgressDataController : DynamicGameDataHandler<GameResourceProgressData>
     {
         protected override GameResourceProgressData SourceData { get; set; }
-
-        protected override IDataSerializer<GameResourceProgressData> DataSerializer =>
+        
+        private readonly IDataSerializer<GameResourceProgressData> _dataSerializer =
             new JsonDataSerializer<GameResourceProgressData>();
 
-        protected override IDataSaveService<GameResourceProgressData> DataSaveService =>
-            new FileDataSaveService<GameResourceProgressData>(DataSerializer);
+        protected override IDataSerializer<GameResourceProgressData> DataSerializer => this._dataSerializer;
+
+        protected override IDataSaveService<GameResourceProgressData> DataSaveService { get; }
 
         private readonly Dictionary<GameResourceType, BaseGameResourceHandler> _gameResourceHandlers = new();
+        
+        public GameResourceProgressDataController()
+        {
+            DataSaveService = new FileDataSaveService<GameResourceProgressData>(this._dataSerializer);   
+        }
         
         public override void Initialize()
         {

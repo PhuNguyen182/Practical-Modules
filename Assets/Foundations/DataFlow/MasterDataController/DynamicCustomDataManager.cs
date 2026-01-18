@@ -15,17 +15,21 @@ namespace Foundations.DataFlow.MasterDataController
     {
         private bool _isDisposed;
         private readonly Dictionary<Type, IDynamicGameDataHandler> _dynamicDataHandlers = new();
-
+        private static readonly Type HandlerInterfaceType = typeof(IDynamicGameDataHandler);
+        
+        private static readonly Func<Type, bool> IsNotNull = IsTypeNotNull;
+        private static readonly Func<Assembly, IEnumerable<Type>> GetTypesDelegate = GetTypesOfAssembly;
+        private static readonly Func<Type, bool> TypeIsConcrete = TypeIsConcreteClassOrStruct;
+        private static readonly Func<Type, bool> TypeValidation = IsDynamicDataHandler;
+        
         public async UniTask InitializeDataHandlers(IMainDataManager mainDataManager)
         {
-            Type interfaceType = typeof(IDynamicGameDataHandler);
-            var allDataHandlerTypes = AppDomain.CurrentDomain
-                .GetAssemblies()
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var allDataHandlerTypes = assemblies
                 .AsValueEnumerable()
-                .SelectMany(GetTypesOfAssembly)
-                .Where(type => interfaceType.IsAssignableFrom(type)
-                               && (type.IsClass || type.IsValueType)
-                               && !type.IsAbstract);
+                .SelectMany(GetTypesDelegate)
+                .Where(TypeIsConcrete)
+                .Where(TypeValidation);
             
             foreach (Type dataHandlerType in allDataHandlerTypes)
             {
@@ -37,20 +41,27 @@ namespace Foundations.DataFlow.MasterDataController
                 dataHandler.Initialize();
                 _dynamicDataHandlers.Add(dataHandlerType, dataHandler);
             }
-            
-            IEnumerable<Type> GetTypesOfAssembly(Assembly assembly)
+        }
+        
+        private static bool IsTypeNotNull(Type type) => type != null;
+
+        private static IEnumerable<Type> GetTypesOfAssembly(Assembly assembly)
+        {
+            try
             {
-                try
-                {
-                    return assembly.GetTypes();
-                }
-                catch (ReflectionTypeLoadException e)
-                {
-                    Debug.LogError($"ReflectionTypeLoadException: {e.Message}");
-                    return e.Types.Where(typeLoad => typeLoad != null);
-                }
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                Debug.LogError($"ReflectionTypeLoadException: {e.Message}");
+                return e.Types.Where(IsNotNull);
             }
         }
+
+        private static bool IsDynamicDataHandler(Type type) => HandlerInterfaceType.IsAssignableFrom(type);
+        
+        private static bool TypeIsConcreteClassOrStruct(Type type)
+            => (type.IsClass && !type.IsAbstract) || type.IsValueType;
 
         public TDataHandler GetDataHandler<TDataHandler>()
             where TDataHandler : class, IDynamicGameDataHandler

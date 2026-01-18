@@ -16,16 +16,22 @@ namespace PracticalSystems.InventorySystem.Manager
     {
         protected override InventoryProgressionData SourceData { get; set; }
 
-        protected override IDataSerializer<InventoryProgressionData> DataSerializer =>
+        private readonly IDataSerializer<InventoryProgressionData> _dataSerializer =
             new JsonDataSerializer<InventoryProgressionData>();
 
-        protected override IDataSaveService<InventoryProgressionData> DataSaveService =>
-            new FileDataSaveService<InventoryProgressionData>(this.DataSerializer);
+        protected override IDataSerializer<InventoryProgressionData> DataSerializer => this._dataSerializer;
+
+        protected override IDataSaveService<InventoryProgressionData> DataSaveService { get; }
 
         private ItemData _cachedItemData;
         private InventoryItem _cachedInventoryItem;
         private readonly Dictionary<string, HashSet<int>> _itemTagMap = new();
         private InventoryConfigDataController _inventoryConfigDataController;
+
+        public InventoryProgressionDataController()
+        {
+            DataSaveService = new FileDataSaveService<InventoryProgressionData>(this._dataSerializer);
+        }
 
         public event Action<InventoryItem> OnItemAdded;
         public event Action<int, int, bool> OnItemRemoved;
