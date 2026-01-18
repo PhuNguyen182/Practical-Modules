@@ -1,6 +1,5 @@
 #if USE_EXTENDED_ADDRESSABLE
 using System;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.Interfaces;
@@ -29,15 +28,15 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime
             AssetBundleUpdater = new AssetBundleUpdater(AssetBundleCleaner);
         }
 
-        public async UniTask<bool> Initialize(Action? onInitializationComplete = null,
-            Action? onInitializationFailed = null)
+        public async UniTask<bool> Initialize(Action onInitializationComplete = null,
+            Action onInitializationFailed = null)
         {
             try
             {
-                _initializeHandle = Addressables.InitializeAsync();
-                await _initializeHandle.Task;
+                this._initializeHandle = Addressables.InitializeAsync();
+                await this._initializeHandle;
 
-                if (_initializeHandle.Status == AsyncOperationStatus.Succeeded)
+                if (this._initializeHandle.Status == AsyncOperationStatus.Succeeded)
                 {
                     Debug.Log("Addressable initialized successfully.");
                     onInitializationComplete?.Invoke();
@@ -56,13 +55,40 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime
             }
         }
 
+        public async UniTask<bool> InitializeAsync(UniTask onInitializationComplete,
+            UniTask onInitializationFailed)
+        {
+            try
+            {
+                this._initializeHandle = Addressables.InitializeAsync();
+                await this._initializeHandle;
+
+                if (this._initializeHandle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    Debug.Log("Addressable initialized successfully.");
+                    await onInitializationComplete;
+                    return true;
+                }
+
+                Debug.LogError("Addressable initialization failed.");
+                await onInitializationFailed;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Exception during Addressable initialization: {ex.Message}");
+                await onInitializationFailed;
+                return false;
+            }
+        }
+
         public void Dispose()
         {
-            AssetBundleLoader.Dispose();
-            AssetBundleUpdater.Dispose();
+            this.AssetBundleLoader.Dispose();
+            this.AssetBundleUpdater.Dispose();
 
-            if (_initializeHandle.IsValid())
-                _initializeHandle.Release();
+            if (this._initializeHandle.IsValid())
+                Addressables.Release(this._initializeHandle);
         }
     }
 }

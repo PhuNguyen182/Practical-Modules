@@ -5,7 +5,6 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.Interfaces;
 using UnityEngine.AddressableAssets;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.AssetBundleRuntime
 {
@@ -17,14 +16,14 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.AssetBund
         public AssetBundleDownloader(IAssetBundleResourceLocator bundleResourceLocator,
             IAssetBundleCleaner bundleCleaner)
         {
-            _bundleCleaner = bundleCleaner;
-            _bundleResourceLocator = bundleResourceLocator;
+            this._bundleCleaner = bundleCleaner;
+            this._bundleResourceLocator = bundleResourceLocator;
         }
 
         public async UniTask DownloadAsset(string key, bool autoRelease = true, bool clearCacheAfterDownload = true
-            , Action<float>? onProgression = null, Action? onDownloadComplete = null, Action? onDownloadFailed = null)
+            , Action<float> onProgression = null, Action onDownloadComplete = null, Action onDownloadFailed = null)
         {
-            long downloadSize = await _bundleResourceLocator.GetDownloadSize(key);
+            long downloadSize = await this._bundleResourceLocator.GetDownloadSize(key);
             Debug.Log($"Download size: {downloadSize}");
 
             if (downloadSize <= 0)
@@ -33,61 +32,72 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.AssetBund
                 return;
             }
 
-            await DownloadBundleAsync(key, autoRelease, clearCacheAfterDownload, onProgression, onDownloadComplete,
+            await this.DownloadBundleAsync(key, autoRelease, clearCacheAfterDownload, onProgression, onDownloadComplete,
                 onDownloadFailed);
         }
 
         public async UniTask DownloadAsset(List<string> keys, bool autoRelease = true, bool clearCacheAfterDownload = true,
-            Action<float>? onProgression = null, Action? onDownloadComplete = null, Action? onDownloadFailed = null)
+            Action<float> onProgression = null, Action onDownloadComplete = null, Action onDownloadFailed = null)
         {
-            long downloadSize = await _bundleResourceLocator.GetDownloadSize(keys);
-            Debug.Log($"Download size: {downloadSize}");
+            long downloadSize = await this._bundleResourceLocator.GetDownloadSize(keys);
+            Debug.Log($"Download size: {downloadSize} bytes");
 
             if (downloadSize <= 0)
             {
-                Debug.LogError($"There is nothing to download for key: {keys}.");
+                Debug.LogError($"There is nothing to download for key: {string.Join(", ", keys)}.");
                 return;
             }
 
-            await DownloadBundleAsync(keys, autoRelease, clearCacheAfterDownload, onProgression, onDownloadComplete,
+            await this.DownloadBundleAsync(keys, autoRelease, clearCacheAfterDownload, onProgression, onDownloadComplete,
                 onDownloadFailed);
         }
 
         private async UniTask DownloadBundleAsync(object key, bool autoRelease = true, bool clearCacheAfterDownload = true,
-            Action<float>? onProgression = null, Action? onDownloadComplete = null, Action? onDownloadFailed = null)
+            Action<float> onProgression = null, Action onDownloadComplete = null, Action onDownloadFailed = null)
         {
-            AsyncOperationHandle downloadHandle = Addressables.DownloadDependenciesAsync(key, autoRelease);
-            while (!downloadHandle.IsDone)
+            try
             {
-                onProgression?.Invoke(downloadHandle.PercentComplete);
-                await UniTask.NextFrame();
-            }
-
-            if (downloadHandle.Status == AsyncOperationStatus.Succeeded)
-            {
-                Debug.Log($"Downloaded remote bundle(s) for {key} successfully.");
-                onDownloadComplete?.Invoke();
-
-                // Clear cache after download
-                if (clearCacheAfterDownload)
+                AsyncOperationHandle downloadHandle = Addressables.DownloadDependenciesAsync(key, autoRelease);
+                while (!downloadHandle.IsDone)
                 {
-                    await _bundleCleaner.ClearCachedAssetBundles();
-                    /*
-                    if (key is string clearKey)
-                        await _bundleCleaner.ClearDependencyCacheBundles(clearKey);
-                    else if (key is List<string> clearKeys)
-                        await _bundleCleaner.ClearDependencyCacheBundles(clearKeys);
-                    */
+                    onProgression?.Invoke(downloadHandle.PercentComplete);
+                    await UniTask.NextFrame();
                 }
+
+                if (downloadHandle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    Debug.Log($"Downloaded remote bundle(s) for {key} successfully.");
+                    onProgression?.Invoke(1.0f);
+                    onDownloadComplete?.Invoke();
+
+                    // Clear cache after download
+                    if (clearCacheAfterDownload)
+                    {
+                        switch (key)
+                        {
+                            case string clearKey:
+                                await this._bundleCleaner.ClearDependencyCacheBundles(clearKey);
+                                break;
+                            case List<string> clearKeys:
+                                await this._bundleCleaner.ClearDependencyCacheBundles(clearKeys);
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Failed to download remote bundle(s) for {key}.");
+                    onDownloadFailed?.Invoke();
+                }
+
+                if (!autoRelease)
+                    Addressables.Release(downloadHandle);
             }
-            else
+            catch (Exception e)
             {
-                Debug.LogError($"Failed to download remote bundle(s) for {key}.");
+                Debug.LogError($"Exception during bundle download: {e.Message}");
                 onDownloadFailed?.Invoke();
             }
-
-            if (!autoRelease)
-                downloadHandle.Release();
         }
     }
 }

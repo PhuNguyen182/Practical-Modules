@@ -1,5 +1,4 @@
 #if USE_EXTENDED_ADDRESSABLE
-using System;
 using Cysharp.Threading.Tasks;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -18,56 +17,56 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.AssetBund
         public async UniTask LoadScene(string key, LoadSceneMode mode = LoadSceneMode.Single,
             bool activateOnLoad = true)
         {
-            _sceneLoadRequest = Addressables.LoadSceneAsync(key, mode, activateOnLoad);
-            await _sceneLoadRequest;
+            this._sceneLoadRequest = Addressables.LoadSceneAsync(key, mode, activateOnLoad);
+            await this._sceneLoadRequest;
         }
 
         public async UniTask UnloadScene(UnloadSceneOptions options = UnloadSceneOptions.UnloadAllEmbeddedSceneObjects,
             bool autoReleaseHandle = true)
         {
-            if (_sceneLoadRequest.IsValid())
+            if (this._sceneLoadRequest.IsValid())
             {
-                var sceneOperation = Addressables.UnloadSceneAsync(_sceneLoadRequest, options, autoReleaseHandle);
+                var sceneOperation = Addressables.UnloadSceneAsync(this._sceneLoadRequest, options, autoReleaseHandle);
                 await sceneOperation;
             }
         }
 
         public async UniTask<GameObject> LoadAsset(string key)
         {
-            _loadRequest = Addressables.LoadAssetAsync<GameObject>(key);
-            GameObject asset = await _loadRequest.Task;
+            this._loadRequest = Addressables.LoadAssetAsync<GameObject>(key);
+            GameObject asset = await _loadRequest;
 
-            if (_loadRequest.Status == AsyncOperationStatus.Succeeded)
+            if (this._loadRequest.Status == AsyncOperationStatus.Succeeded)
                 return asset;
 
-            _loadRequest.Release();
+            Addressables.Release(this._loadRequest);
             return null;
         }
 
         public async UniTask<T> LoadAsset<T>(string key)
         {
             AsyncOperationHandle<T> loadRequest = Addressables.LoadAssetAsync<T>(key);
-            T asset = await loadRequest.Task;
+            T asset = await loadRequest;
             
             if (loadRequest.Status == AsyncOperationStatus.Succeeded)
                 return asset;
             
-            loadRequest.Release();
+            Addressables.Release(loadRequest);
             return default;
         }
 
         public async UniTask<T> LoadComponentAsset<T>(string key) where T : Component
         {
-            _loadRequest = Addressables.LoadAssetAsync<GameObject>(key);
-            GameObject gameObject = await _loadRequest.Task;
+            this._loadRequest = Addressables.LoadAssetAsync<GameObject>(key);
+            GameObject gameObject = await this._loadRequest;
 
-            if (_loadRequest.Status == AsyncOperationStatus.Succeeded)
+            if (this._loadRequest.Status == AsyncOperationStatus.Succeeded)
             {
                 gameObject.TryGetComponent(out T asset);
                 return asset;
             }
-
-            _loadRequest.Release();
+            
+            Addressables.Release(this._loadRequest);
             return null;
         }
 
@@ -79,11 +78,11 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.AssetBund
 
         public void Dispose()
         {
-            if (_loadRequest.IsValid())
-                _loadRequest.Release();
+            if (this._loadRequest.IsValid())
+                Addressables.Release(this._loadRequest);
 
-            if (_sceneLoadRequest.IsValid())
-                _sceneLoadRequest.Release();
+            if (this._sceneLoadRequest.IsValid())
+                Addressables.Release(this._sceneLoadRequest);
         }
     }
 }

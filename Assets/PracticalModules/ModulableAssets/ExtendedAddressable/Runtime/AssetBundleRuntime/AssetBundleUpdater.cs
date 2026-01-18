@@ -6,7 +6,6 @@ using PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.Interfaces;
 using UnityEngine.AddressableAssets.ResourceLocators;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.AssetBundleRuntime
 {
@@ -21,43 +20,52 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.AssetBund
 
         public async UniTask<List<string>> CheckForUpdates()
         {
-            _catalogUpdates = Addressables.CheckForCatalogUpdates();
-            List<string> catalogUpdateKeys = await _catalogUpdates.Task;
+            this._catalogUpdates = Addressables.CheckForCatalogUpdates();
+            List<string> catalogUpdateKeys = await this._catalogUpdates;
             return catalogUpdateKeys;
         }
 
         public async UniTask UpdateCatalogs(bool autoCleanBundleCached = true, bool autoRelease = true,
-            bool wantToPreserve = false, Action? onUpdateComplete = null, Action? onUpdateFailed = null)
+            bool wantToPreserve = false, Action onUpdateComplete = null, Action onUpdateFailed = null)
         {
-            List<string> catalogUpdateKeys = await CheckForUpdates();
-            _bundleUpdates = Addressables.UpdateCatalogs(autoCleanBundleCached, catalogUpdateKeys, autoRelease);
-            await _bundleUpdates.Task;
+            try
+            {
+                List<string> catalogUpdateKeys = await this.CheckForUpdates();
+                this._bundleUpdates =
+                    Addressables.UpdateCatalogs(autoCleanBundleCached, catalogUpdateKeys, autoRelease);
+                await this._bundleUpdates;
 
-            if (_bundleUpdates.Status == AsyncOperationStatus.Succeeded)
-            {
-                Debug.Log("Updated catalogs successfully.");
-                if (!autoCleanBundleCached)
+                if (this._bundleUpdates.Status == AsyncOperationStatus.Succeeded)
                 {
-                    List<string>? preserveUpdateKeys = wantToPreserve ? catalogUpdateKeys : null;
-                    await _assetBundleCleaner.ClearCachedAssetBundles(preserveUpdateKeys);
+                    Debug.Log("Updated catalogs successfully.");
+                    if (!autoCleanBundleCached)
+                    {
+                        List<string> preserveUpdateKeys = wantToPreserve ? catalogUpdateKeys : null;
+                        await this._assetBundleCleaner.ClearCachedAssetBundles(preserveUpdateKeys);
+                    }
+
+                    onUpdateComplete?.Invoke();
                 }
-                
-                onUpdateComplete?.Invoke();
+                else
+                {
+                    Debug.Log("Failed to update catalogs.");
+                    onUpdateFailed?.Invoke();
+                }
             }
-            else
+            catch (Exception e)
             {
-                Debug.Log("Failed to update catalogs.");
+                Debug.LogError($"Exception during catalog update: {e.Message}");
                 onUpdateFailed?.Invoke();
             }
         }
 
         public void Dispose()
         {
-            if (_catalogUpdates.IsValid())
-                _catalogUpdates.Release();
+            if (this._catalogUpdates.IsValid())
+                Addressables.Release(this._catalogUpdates);
 
-            if (_bundleUpdates.IsValid())
-                _bundleUpdates.Release();
+            if (this._bundleUpdates.IsValid())
+                Addressables.Release(this._bundleUpdates);
         }
     }
 }

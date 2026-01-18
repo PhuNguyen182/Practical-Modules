@@ -1,5 +1,5 @@
 #if USE_EXTENDED_ADDRESSABLE
-using UnityEngine;
+using System;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -41,7 +41,7 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.AssetBund
             bool keyExists = await IsKeyValid(keys);
             if (!keyExists)
             {
-                Debug.LogError($"Addressable key '{keys}' does not exist.");
+                Debug.LogError($"Addressable key '{string.Join(", ", keys)}' does not exist.");
                 return -1;
             }
             
@@ -51,36 +51,54 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.AssetBund
 
         private static async UniTask<long> GetDownloadSizeAsync(object key)
         {
-            AsyncOperationHandle<IList<IResourceLocation>> locationsHandle =
-                Addressables.LoadResourceLocationsAsync(key);
-            IList<IResourceLocation> locations = await locationsHandle.Task;
-
-            if (locationsHandle.Status != AsyncOperationStatus.Succeeded)
+            try
             {
-                Debug.LogError($"Failed to get resource locations for {key}");
-                locationsHandle.Release();
+                AsyncOperationHandle<IList<IResourceLocation>> locationsHandle =
+                    Addressables.LoadResourceLocationsAsync(key);
+                IList<IResourceLocation> locations = await locationsHandle;
+
+                if (locationsHandle.Status != AsyncOperationStatus.Succeeded || locations is not { Count: > 0 })
+                {
+                    Debug.LogError($"Failed to get resource locations for {key}");
+                    Addressables.Release(locationsHandle);
+                    return -1;
+                }
+
+                AsyncOperationHandle<long> sizeHandle = Addressables.GetDownloadSizeAsync(locations);
+                long sizeToDownload = await sizeHandle;
+                Addressables.Release(locationsHandle);
+                Addressables.Release(sizeHandle);
+                return sizeToDownload;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Exception during download size calculation: {e.Message}");
                 return -1;
             }
-            
-            AsyncOperationHandle<long> sizeHandle = Addressables.GetDownloadSizeAsync(locations);
-            long sizeToDownload = await sizeHandle.Task;
-            locationsHandle.Release();
-            sizeHandle.Release();
-            return sizeToDownload;
         }
-        
+
         private static async UniTask<bool> KeyOrLabelExistsAsync(object keyOrLabel)
         {
-            AsyncOperationHandle<IList<IResourceLocation>> handle = Addressables.LoadResourceLocationsAsync(keyOrLabel);
-            await handle.Task.AsUniTask();
-            bool exists = handle is { Status: AsyncOperationStatus.Succeeded, Result: { Count: > 0 } };
+            try
+            {
+                AsyncOperationHandle<IList<IResourceLocation>> handle =
+                    Addressables.LoadResourceLocationsAsync(keyOrLabel);
+                await handle;
+                bool exists = handle is { Status: AsyncOperationStatus.Succeeded, Result: { Count: > 0 } };
 
-            Debug.LogError(!exists
-                ? $"Addressable key or label {keyOrLabel} not exist."
-                : $"Addressable key or label {keyOrLabel} exist.");
+                if (!exists)
+                    Debug.LogError($"Addressable key or label {keyOrLabel} not exist!");
+                else
+                    Debug.Log($"Addressable key or label {keyOrLabel} exist!");
 
-            handle.Release();
-            return exists;
+                Addressables.Release(handle);
+                return exists;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Exception during key or label existence check: {e.Message}");
+                return false;
+            }
         }
     }
 }

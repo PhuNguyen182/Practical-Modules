@@ -13,8 +13,11 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime
         public IAssetBundleResourceLocator AssetBundleResourceLocator { get; }
         public IAssetBundleDownloader AssetBundleDownloader { get; }
 
-        public UniTask<bool> Initialize(Action? onInitializationComplete = null,
-            Action? onInitializationFailed = null);
+        public UniTask<bool> Initialize(Action onInitializationComplete = null,
+            Action onInitializationFailed = null);
+        
+        public UniTask<bool> InitializeAsync(UniTask onInitializationComplete,
+            UniTask onInitializationFailed);
     }
 }
 #endif

@@ -18,7 +18,7 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.Interface
         /// <param name="onDownloadFailed">Callback called if the process is failed</param>
         /// <returns></returns>
         public UniTask DownloadAsset(string key, bool autoRelease = true, bool clearCacheAfterDownload = true, 
-            Action<float>? onProgression = null, Action? onDownloadComplete = null, Action? onDownloadFailed = null);
+            Action<float> onProgression = null, Action onDownloadComplete = null, Action onDownloadFailed = null);
 
         /// <summary>
         /// This function will download the asset bundle from a single.
@@ -31,7 +31,7 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.Interface
         /// <param name="onDownloadFailed">Callback called if the process is failed</param>
         /// <returns></returns>
         public UniTask DownloadAsset(List<string> keys, bool autoRelease = true, bool clearCacheAfterDownload = true,
-            Action<float>? onProgression = null, Action? onDownloadComplete = null, Action? onDownloadFailed = null);
+            Action<float> onProgression = null, Action onDownloadComplete = null, Action onDownloadFailed = null);
     }
 }
 #endif

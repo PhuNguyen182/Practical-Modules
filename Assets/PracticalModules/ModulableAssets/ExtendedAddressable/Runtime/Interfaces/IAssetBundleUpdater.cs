@@ -10,7 +10,7 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Runtime.Interface
         public UniTask<List<string>> CheckForUpdates();
 
         public UniTask UpdateCatalogs(bool autoCleanBundleCached = true, bool autoRelease = true,
-            bool wantToPreserve = false, Action? onUpdateComplete = null, Action? onUpdateFailed = null);
+            bool wantToPreserve = false, Action onUpdateComplete = null, Action onUpdateFailed = null);
     }
 }
 #endif
