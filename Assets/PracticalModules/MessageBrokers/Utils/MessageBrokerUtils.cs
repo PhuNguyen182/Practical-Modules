@@ -14,7 +14,7 @@ namespace PracticalModules.MessageBrokers.Utils
         {
             TAsyncMessage message = TypeFactory.Create<TAsyncMessage>();
             message.MessageData = messageData;
-            message.CompletionSource = new();
+            message.CompletionSource = new UniTaskCompletionSource<TAsyncMessageData>();
 
             publisher.Publish(message);
             return message.CompletionSource.Task;

@@ -9,7 +9,7 @@ namespace PracticalModules.MessageBrokers.MessageFilters
 
         public override void Handle(T message, Action<T> next)
         {
-            lock (_gate)
+            lock (this._gate)
                 next(message);
         }
     }

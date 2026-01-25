@@ -11,7 +11,7 @@ namespace PracticalModules.MessageBrokers.MessageFilters
 
         public override void Handle(T message, Action<T> next)
         {
-            if (_predicate(message))
+            if (this._predicate(message))
                 next(message);
         }
     }

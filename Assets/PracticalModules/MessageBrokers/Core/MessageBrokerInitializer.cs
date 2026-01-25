@@ -11,14 +11,17 @@ namespace PracticalModules.MessageBrokers.Core
     public class MessageBrokerInitializer
     {
         private readonly BuiltinContainerBuilder _containerBuilder;
+        private static readonly Func<Assembly, IEnumerable<Type>> GetTypesOfAssemblyFunc = GetTypesOfAssembly;
+        private static readonly Func<Type, bool> TypeIsConcreteClassOrStructFunc = TypeIsConcreteClassOrStruct;
+        private static readonly Func<Type, bool> TypeValidation = IsMessageBrokerData;
+        private static readonly Type HandlerInterfaceType = typeof(IMessageType);
 
         public MessageBrokerInitializer()
         {
-            _containerBuilder = new();
-            _containerBuilder.AddMessagePipe();
-
-            AddMessageBrokers();
-            IServiceProvider serviceProvider = _containerBuilder.BuildServiceProvider();
+            this._containerBuilder = new BuiltinContainerBuilder();
+            this._containerBuilder.AddMessagePipe();
+            this.AddMessageBrokers();
+            IServiceProvider serviceProvider = this._containerBuilder.BuildServiceProvider();
             GlobalMessagePipe.SetProvider(serviceProvider);
         }
 
@@ -26,40 +29,60 @@ namespace PracticalModules.MessageBrokers.Core
         {
             const string addMessageBrokerMethodName = "AddMessageBroker";
 
-            Type interfaceType = typeof(IMessageType);
-            Type[] allMessageTypes = AppDomain.CurrentDomain
-                .GetAssemblies()
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var allMessageTypes = assemblies
                 .AsValueEnumerable()
-                .SelectMany(GetTypesOfAssembly)
-                .Where(type => interfaceType.IsAssignableFrom(type)
-                               && (type.IsClass || type.IsValueType)
-                               && !type.IsAbstract).ToArray();
+                .SelectMany(GetTypesOfAssemblyFunc)
+                .Where(TypeIsConcreteClassOrStructFunc)
+                .Where(TypeValidation);
 
             Type type = _containerBuilder.GetType();
-            MethodInfo addMessageBrokerMethod = type.GetMethods().AsValueEnumerable()
+            MethodInfo addMessageBrokerMethod = type.GetMethods(BindingFlags.Public)
+                .AsValueEnumerable()
                 .FirstOrDefault(method =>
                     string.CompareOrdinal(method.Name, addMessageBrokerMethodName) == 0 &&
                     method.IsGenericMethodDefinition &&
                     method.GetGenericArguments().Length == 1);
 
-            for (int i = 0; i < allMessageTypes.Length; i++)
+            if (addMessageBrokerMethod == null)
             {
-                Type messageType = allMessageTypes[i];
-                MethodInfo genericMethod = addMessageBrokerMethod.MakeGenericMethod(messageType);
-                genericMethod.Invoke(_containerBuilder, null);
+                throw new InvalidOperationException(
+                    "AddMessageBroker<T> method not found on BuiltinContainerBuilder");
             }
-            
-            IEnumerable<Type> GetTypesOfAssembly(Assembly assembly)
+
+            foreach (Type messageType in allMessageTypes)
             {
                 try
                 {
-                    return assembly.GetTypes();
+                    MethodInfo genericMethod = addMessageBrokerMethod.MakeGenericMethod(messageType);
+                    Action action =
+                        (Action)Delegate.CreateDelegate(typeof(Action), this._containerBuilder, genericMethod);
+                    action();
                 }
-                catch (ReflectionTypeLoadException e)
+                catch (Exception ex)
                 {
-                    return e.Types.Where(typeLoad => typeLoad != null);
+                    throw new InvalidOperationException(
+                        $"Failed to register message broker for type {messageType.FullName}", ex);
                 }
             }
         }
+
+        private static IEnumerable<Type> GetTypesOfAssembly(Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                return e.Types.Where(typeLoad => typeLoad != null);
+            }
+        }
+
+        private static bool TypeIsConcreteClassOrStruct(Type type)
+            => (type.IsClass || type.IsValueType) && !type.IsAbstract &&
+               type.GetCustomAttribute<MessageBrokerAttribute>() != null;
+
+        private static bool IsMessageBrokerData(Type type) => HandlerInterfaceType.IsAssignableFrom(type);
     }
 }

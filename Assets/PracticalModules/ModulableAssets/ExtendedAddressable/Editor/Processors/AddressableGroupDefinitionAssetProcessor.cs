@@ -16,11 +16,11 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Editor.Processors
                 AssetDatabase.LoadAssetAtPath<AddressableGroupDefinitionFile>(assetPath);
             AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
 
-            if (settings == null)
+            if (!settings)
                 return AssetDeleteResult.DidNotDelete;
 
             string groupName;
-            if (def != null && !string.IsNullOrEmpty(def.GroupName))
+            if (def && !string.IsNullOrEmpty(def.GroupName))
                 groupName = def.GroupName;
             else
                 groupName = Path.GetFileNameWithoutExtension(assetPath);
@@ -36,7 +36,7 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Editor.Processors
                     settings.RemoveAssetEntry(guid);
             }
 
-            if (group != null)
+            if (group)
             {
                 settings.RemoveGroup(group);
                 settings.SetDirty(AddressableAssetSettings.ModificationEvent.GroupRemoved, group, true);

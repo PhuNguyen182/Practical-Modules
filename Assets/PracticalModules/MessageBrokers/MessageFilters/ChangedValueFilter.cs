@@ -10,10 +10,10 @@ namespace PracticalModules.MessageBrokers.MessageFilters
         
         public override void Handle(T message, Action<T> next)
         {
-            if (EqualityComparer<T>.Default.Equals(message, _lastValue))
+            if (EqualityComparer<T>.Default.Equals(message, this._lastValue))
                 return;
 
-            _lastValue = message;
+            this._lastValue = message;
             next(message);
         }
     }

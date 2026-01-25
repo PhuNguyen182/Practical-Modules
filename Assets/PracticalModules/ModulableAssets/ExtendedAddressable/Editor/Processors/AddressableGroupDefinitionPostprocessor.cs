@@ -17,7 +17,7 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Editor.Processors
             string[] movedAssets, string[] movedFromAssetPaths)
         {
             AddressableAssetSettings settings = AddressableAssetSettingsDefaultObject.Settings;
-            if (settings == null)
+            if (!settings)
                 return;
 
             bool anyChanged = false;
@@ -26,7 +26,7 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Editor.Processors
             {
                 AddressableGroupDefinitionFile addressableGroupDefinitionFile =
                     AssetDatabase.LoadAssetAtPath<AddressableGroupDefinitionFile>(assetPath);
-                if (addressableGroupDefinitionFile == null)
+                if (!addressableGroupDefinitionFile)
                     continue;
 
                 if (string.IsNullOrEmpty(assetPath))
@@ -37,9 +37,9 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Editor.Processors
                     : Path.GetFileNameWithoutExtension(assetPath);
 
                 AddressableAssetGroup group = settings.FindGroup(desiredGroupName);
-                if (group == null)
+                if (!group)
                 {
-                    if (addressableGroupDefinitionFile.template == null)
+                    if (!addressableGroupDefinitionFile.template)
                         return;
 
                     AddressableAssetGroupTemplate groupTemplate = addressableGroupDefinitionFile.BuildAndLoadMode switch
@@ -49,7 +49,7 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Editor.Processors
                         _ => null
                     };
                     
-                    if (groupTemplate == null)
+                    if (!groupTemplate)
                         return;
                     
                     List<AddressableAssetGroupSchema> schemasCopy = new();
@@ -66,12 +66,12 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Editor.Processors
                 }
 
                 // Persist the group name on the asset
-                if (addressableGroupDefinitionFile.GroupName != group.Name)
-                {
-                    addressableGroupDefinitionFile.groupName = group.Name;
-                    EditorUtility.SetDirty(addressableGroupDefinitionFile);
-                    anyChanged = true;
-                }
+                if (addressableGroupDefinitionFile.GroupName == group.Name) 
+                    continue;
+                
+                addressableGroupDefinitionFile.groupName = group.Name;
+                EditorUtility.SetDirty(addressableGroupDefinitionFile);
+                anyChanged = true;
             }
 
             if (anyChanged)
@@ -82,5 +82,3 @@ namespace PracticalModules.ModulableAssets.ExtendedAddressable.Editor.Processors
     }
 }
 #endif
-
-

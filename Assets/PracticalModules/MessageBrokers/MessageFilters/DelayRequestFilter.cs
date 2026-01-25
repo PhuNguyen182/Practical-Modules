@@ -11,7 +11,7 @@ namespace PracticalModules.MessageBrokers.MessageFilters
             Func<int, CancellationToken, UniTask<int>> next)
         {
             await UniTask.Delay(TimeSpan.FromSeconds(request), cancellationToken: cancellationToken);
-            var response = await next(request, cancellationToken);
+            int response = await next(request, cancellationToken);
             return response;
         }
     }
